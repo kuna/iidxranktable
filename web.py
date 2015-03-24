@@ -2,7 +2,7 @@
 # start web server
 from flask import Flask, render_template, abort
 import song, view
-import env
+import env, private
 
 from flask import make_response, request, current_app
 
@@ -121,7 +121,7 @@ def imgtl():
 
 	import requests
 	import urllib2
-	header = {'X-IMGTL-TOKEN': '87b8e0cac380e5cfc190101ff70ab6a1'}
+	header = {'X-IMGTL-TOKEN': private.imgtlkey}
 	r = requests.post('https://api.img.tl/upload', data={'desc': '', 'filename': filename}, \
 		files={'file': pngdata}, headers=header)
 	"""print r.status_code
@@ -137,6 +137,7 @@ def not_found(error):
 
 def init():
 	if (env.TESTING):
+		print 'currently debugging mode.'
 		app.debug = True
 
 if __name__ == '__main__':

@@ -45,3 +45,4 @@ Temporary Items
 
 *.pyc
 test*
+private.py
