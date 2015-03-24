@@ -1,0 +1,76 @@
+
+* { padding:0; margin:0; }
+body { font-family: 'Malgun Gothic', NanumBarunRoboto,Roboto,"Helvetica Neue",Arial,NanumBarunGothicOTF,NanumBarunGothic,"나눔바른고딕",NanumGothicOTF,NanumGothic,"나눔고딕","Apple SD Gothic Neo",Dotum,"돋움",sans-serif; font-size: 14px; }
+#container { width:800px; padding:10px; overflow:hidden; }
+
+/*.outertable { border:0 2px 2px 0 solid #000; }*/
+.outertable { width:100%; }
+.outertable div:first-child { width:120px; }
+.table { display:table; border-collapse: collapse; border-spacing: 0px; }
+.row { display:table-row; }
+.cell { display:table-cell; border: 2px solid #000; vertical-align: middle; }
+
+.songlist { list-style: none; overflow: hidden; }
+.songlist li { float:left; display:block; padding:2px 0; margin:0 -1px -1px 0; width:20%; height: 22px; border-right:1px solid #ccc; border-bottom: 1px solid #ccc; overflow: hidden; position: relative; word-break: break-all; }
+.songlist .name { padding:0 8px; }
+.rowname { font-weight: bold; text-align: center; }
+
+
+/* clear lamp */
+.clear { position: absolute; width:12px; height:12px; top:6px; right:6px; display: block; border-radius: 50%; }
+.NO_PLAY.clear { }
+.FAILED.clear { background-color: #999; }
+.ASSIST_CLEAR.clear { background-color: #f0f; }
+.EASY_CLEAR.clear { background-color: #0f0; }
+.CLEAR.clear { background-color: #00f; }
+.HARD_CLEAR.clear { background-color: #f00; }
+.EX-HARD_CLEAR.clear { background-color: #ff0; }
+.FULL_COMBO.clear { background-color: #fe9; }
+
+.cell.NO_PLAY { }
+.cell.FAILED { background-color: #ccc; }
+.cell.ASSIST_CLEAR { background-color: #fcf; }
+.cell.EASY_CLEAR { background-color: #cfc; }
+.cell.CLEAR { background-color: #ccf; }
+.cell.HARD_CLEAR { background-color: #fcc; }
+.cell.EX-HARD_CLEAR { background-color: #ffc; }
+.cell.FULL_COMBO { background-color: #fed; }
+
+.songlist .graph { display:block; height:100%; position:absolute; left:0; top:0; z-index:-999;}
+.songlist .graph.A { background-color:#fee; }
+.songlist .graph.H { background-color:#ffe; }
+.songlist .graph.N { background-color:#eef; }
+
+.songlist .grid { position:absolute; display:none; background-color: #ccc; height:5px; width:1px !important; }
+.A.gA, .AA.gA, .AAA.gA,
+.AA.gAA, .AAA.gAA, .AAA.gAAA { display:block; }
+.gA { left:66.66%; }
+.gAA { left:77.77%; }
+.gAAA { left:88.88%; }
+
+/* header part */
+#title { text-align: center; margin-bottom:20px; }
+
+#user .name { font-weight: bold; }
+.sp.spdan, .dp.dpdan { font-weight: bold; }
+.dan2,
+.dan3,
+.dan4,
+.dan5,
+.dan6,
+.dan7,
+.dan8 { color: #0c0; }
+.dan9,
+.dan10,
+.dan11,
+.dan12,
+.dan13,
+.dan14,
+.dan15,
+.dan16,
+.dan17,
+.dan18 { color: #c00; }
+.dan19 { color: #cc0; }
+
+#preview { margin-bottom:20px; clear:both; width:100%; overflow:hidden; }
+#preview li { display:block; padding-right: 20px; margin-right:20px; position: relative; float:left; }

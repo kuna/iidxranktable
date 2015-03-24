@@ -5,51 +5,110 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
-		<style>
-		* { padding:0; margin:0; }
-		body { font-family: 'Malgun Gothic', serif; font-size: 14px; }
+		<link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/style.css') }}">
+		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery-2.1.3.min.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/html2canvas.min.js') }}"></script>
 
-		/*.outertable { border:0 2px 2px 0 solid #000; }*/
-		.outertable { width:620px; }
-		.outertable div:first-child { width:120px; }
-		.table { display:table; border-collapse: collapse; border-spacing: 0px; }
-		.row { display:table-row; }
-		.cell { display:table-cell; border: 2px solid #000; vertical-align: middle; }
+		<script language="javascript">
+		function binary2buffer(bin) {
+			var arrBuff = new ArrayBuffer(bin.length);
+			var writer = new Uint8Array(arrBuff);
+			for (var i = 0, len = bin.length; i < len; i++) {
+				writer[i] = bin.charCodeAt(i);
+			}
+			return arrBuff;
+		}
 
-		.songlist { list-style: none; overflow: hidden; }
-		.songlist li { float:left; display:block; padding:2px 0; margin:0 -1px -1px 0; width:20%; border-right:1px solid #ccc; border-bottom: 1px solid #ccc; overflow: hidden; position: relative; }
-		.name { padding:0 8px; }
-		.rowname { font-weight: bold; text-align: center; }
+		$(document).ready(function () {
+			$("#menu").click(function () {
+				html2canvas($("#container"), {
+					onrendered: function(canvas) {
+						$("#container").hide();
+						$(canvas).id = "img"
+						$("#rankimg").append(canvas);
+						$("#rankimg").show();
+					}
+				});
+			});
 
+			$("#send").click(function () {
+				var b = $("canvas")[0].toDataURL().substring(22);
+				$.ajax({
+					url: "/imgtl",
+					type: "POST",
+					data: { name: "{{ user['name'] }} - {{ mode }}.png", base64: b },
+					success: function (o) {
+						ret = JSON.parse(o);
+						$("#url").val(ret.data.url.direct);
+						twitter_url = "http://twitter.com/share?text={{ title }} - {{ user['name'] }}&url=" + ret.data.url.direct;
+						//ret.data.url.page;
+						console.log(o);
+					}
+				});
+			});
 
-		/* clear lamp */
-		.clear { position: absolute; width:12px; height:12px; top:6px; right:6px; display: block; }
-		.hard.clear { background-color: #f00; }
-		</style>
+			twitter_url = "";
+			$("#twitter").click(function () {
+				// share twitter
+				if (twitter_url != "")
+					window.open(twitter_url, "share", "height=300,width=500");
+			});
+		});
+		</script>
 	</head>
 	<body>
-		<!-- HTML table-->
-		<p class="title">{% block title %}{% endblock %}</p>
+		<div id="container">
+			<!-- table info -->
+			<h2 id="title">{{ title|safe }}</h2>
 
-		<div id="ranktable">
-			<div class="table outertable">
-				{% for data in datas %}
-				<div class="row">
-					<div class="cell rowname"><span class="name">{{ data.category }}</span></div>
-					<div class="cell">
-						<ul class="songlist">
-							{% for item in items %}
-							{% with (songname, clear) = item %}
-							<li><span class="name">{{ songname }}</span><span class="{{ clear }} clear"></span></li>
-							{% endwith %}
-							{% endfor %}
-						</ul>
+			<!-- user info -->
+			<p id="user"><span class="name">DJ {{ user['name'] }}</span>, <span class="{{ mode }} spdan dan{{ user['spdannum'] }}">{{ user['spdan'] }}</span> / <span class="{{ mode }} dpdan dan{{ user['dpdannum'] }}">{{ user['dpdan'] }}</span></p>
+
+			<!-- clear lamp info -->
+			<ul id="preview">
+				<li>FAILED<div class="FAILED clear"></div></li>
+				<li>ASSIST CLEAR<div class="ASSIST_CLEAR clear"></div></li>
+				<li>EASY CLEAR<div class="EASY_CLEAR clear"></div></li>
+				<li>CLEAR<div class="CLEAR clear"></div></li>
+				<li>HARD CLEAR<div class="HARD_CLEAR clear"></div></li>
+				<li>EX-HARD CLEAR<div class="EX-HARD_CLEAR clear"></div></li>
+				<li>FULLCOMBO<div class="FULL_COMBO clear"></div></li>
+			</ul>
+
+			<div id="ranktable">
+				<div class="table outertable">
+					{% for data in datas %}
+					<div class="row">
+						<div class="cell rowname cell {{ data.categoryclearstring }}"><span class="name">{{ data.category }}</span></div>
+						<div class="cell">
+							<ul class="songlist">
+								{% for song in data.songs %}
+								<li>
+									<!--<div class="graph {{ song['data']['diff'] }}" style="width: {{ song['rate'] }}%">
+									</div>
+									<div class="grid {{ song['rank'] }} gA"></div>
+									<div class="grid {{ song['rank'] }} gAA"></div>
+									<div class="grid {{ song['rank'] }} gAAA"></div>-->
+									<span class="name">{{ song.data.title }}</span><span class="{{ song['clearstring'] }} clear"></span>
+								</li>
+								{% endfor %}
+							</ul>
+						</div>
 					</div>
+					{% endfor %}
 				</div>
-				{% endfor %}
 			</div>
 		</div>
 		<div id="rankimg">
+		</div>
+
+		<div id="menu">
+			<input type="button" id="capture" value="capture">
+			<input type="button" id="send" value="send" >
+			<input type="text" id="url" value="">
+			<input type="button" id="twitter" value="share picture in twitter">
+
+			<!-- for post upload -->
 		</div>
 	</body>
 </html>
