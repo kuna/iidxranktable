@@ -5,6 +5,7 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
+		<!-- TODO temp style -->
 		<style>
 		* { padding:0; margin:0; }
 		body { font-family: 'Malgun Gothic', serif; font-size: 14px; }
@@ -23,30 +24,39 @@
 
 
 		/* clear lamp */
-		.clear { position: absolute; width:12px; height:12px; top:6px; right:6px; display: block; }
+		.clear { position: absolute; width:12px; height:12px; top:5px; right:5px; display: block; }
 		.hard.clear { background-color: #f00; }
 		</style>
 	</head>
-	<body>
-		<!-- HTML table-->
-		<p class="title">{% block title %}{% endblock %}</p>
 
+
+	<body>
+		<!-- TODO: automated clear lamp & level showing, csv file fill,  -->
+
+		<!-- HTML table-->
+		<p class="title">Beatmania IIDX SP lv.12 Hard Guage Rank (Version 5.5 xert* / @xert_obj)</p>
 		<div id="ranktable">
 			<div class="table outertable">
-				{% for data in datas %}
 				<div class="row">
-					<div class="cell rowname"><span class="name">{{ data.category }}</span></div>
+					<div class="cell rowname"><span class="name">Leggendaria</span></div>
 					<div class="cell">
 						<ul class="songlist">
-							{% for item in items %}
-							{% with (songname, clear) = item %}
-							<li><span class="name">{{ songname }}</span><span class="{{ clear }} clear"></span></li>
-							{% endwith %}
-							{% endfor %}
+							<li><span class="name">abcdwefewfewfew</span><span class="hard clear"></span></li>
+							<li><span class="name">abcd</span></li>
+							<li><span class="name">abcd</span></li>
+							<li><span class="name">abcd</span></li>
+							<li><span class="name">abcd</span></li>
+							<li><span class="name">abcd</span></li>
+							<li><span class="name">abcd</span></li>
+							<li><span class="name">abcd</span></li>
+							<li><span class="name">abcd</span></li>
 						</ul>
 					</div>
 				</div>
-				{% endfor %}
+				<div class="row">
+					<div class="cell">처리력 S+</div>
+					<div class="cell">abc</div>
+				</div>
 			</div>
 		</div>
 		<div id="rankimg">

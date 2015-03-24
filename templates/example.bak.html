@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+	<head>
+		<title>iidx.me table rank</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+		<!-- TODO temp style -->
+		<style>
+		* { padding:0; margin:0; }
+		table { border-spacing: 0 border-collapse:collapse; }
+
+		/*.outertable { border:0 2px 2px 0 solid #000; }*/
+		.outertable td { border:2px solid #000; }
+		.outertable tr:not(:last-child) td { border-bottom:none; }
+		.outertable td:not(:last-child) { border-right:none; }
+
+		.innertable td { border:1px dotted #000; }
+		.innertable { border:none; }
+
+		.outertable { width:620px; }
+		.outertable td:first-child { width:120px; }
+
+		.innertable { table-layout: fixed; width:100%;}
+		.innertable td { width:auto !important; }
+
+		/* clear lamp */
+		.clear { float:right; width:10px; height:10px; display: block; }
+		.hard.clear { background-color: #f00; }
+		</style>
+	</head>
+
+
+	<body>
+		<!-- TODO: automated clear lamp & level showing, csv file fill,  -->
+
+		<!-- HTML table-->
+		<p class="title">Beatmania IIDX SP lv.12 Hard Guage Rank (Version 5.5 xert* / @xert_obj)</p>
+		<div id="ranktable">
+			<div class="outertable">
+			</div>
+
+			<table cellpadding=0 cellspacing=0 class="outertable">
+				<tr><td>Leggendaria</td><td>
+					<table cellpadding=0 cellspacing=0 class="innertable">
+						<script>add('test');</script>
+						<tr><td>test aaaaaaaa</td><td>test</td><td>test</td><td>test</td></tr>
+						<tr><td>test <span class="hard clear"></span></td><td>test</td><td>test</td><td>test</td></tr>
+					</table>
+				</td></tr>
+				<tr><td>처리력 S+</td><td>
+					<table cellpadding=0 cellspacing=0 class="innertable">
+						<tr><td>test</td><td>test</td><td>test</td><td>test</td></tr>
+					</table>
+				</td></tr>
+			</table>
+		</div>
+		<div id="rankimg">
+		</div>
+	</body>
+</html>
