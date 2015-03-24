@@ -2,6 +2,7 @@
 # and render to image
 import urllib
 import json
+import iidx
 
 def getiidxinfo(user, type, lv):
 	url = ('http://json.iidx.me/%s/%s/level/%d/' % (user, type, lv))
@@ -52,22 +53,7 @@ def processCSV(musicdata, csvdata):
 		music['data']['diff'] = music['data']['diff'][-1:].upper()
 		# change PLAY
 		clear = int(music['clear'])
-		if (clear == 0):
-			music['clearstring'] = u'NO_PLAY'
-		elif (clear == 1):
-			music['clearstring'] = u'FAILED'
-		elif (clear == 2):
-			music['clearstring'] = u'ASSIST_CLEAR'
-		elif (clear == 3):
-			music['clearstring'] = u'EASY_CLEAR'
-		elif (clear == 4):
-			music['clearstring'] = u'CLEAR'
-		elif (clear == 5):
-			music['clearstring'] = u'HARD_CLEAR'
-		elif (clear == 6):
-			music['clearstring'] = u'EX-HARD_CLEAR'
-		elif (clear == 7):
-			music['clearstring'] = u'FULL_COMBO'
+		music['clearstring'] = iidx.getclearstring(clear)
 
 		# make rate
 		if (music['score'] == None):

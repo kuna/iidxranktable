@@ -1,0 +1,33 @@
+<html><head>
+<title>iidx.me clear table</title>
+<script>
+function getlink(type, nick, diff) {
+	var dname = window.location.host;
+	return "http://" + dname + "/iidx/" + type + "/" + nick + "/" + diff
+}
+function addlink(type, nick, diff) {
+	var p = document.createElement("p");
+	var a = document.createElement("a");
+	a.href =  getlink(type, nick, diff);
+	a.target = "_blank";
+	a.innerHTML =  getlink(type, "[nick]", diff);
+	p.appendChild(a);
+	document.getElementById("links").appendChild(p);
+}
+
+window.onload = function () {
+	addlink("sp", "kuna", "12.7");
+	addlink("sp", "kuna", "12");
+	addlink("dp", "kuna", "12");
+	addlink("dp", "kuna", "11");
+	addlink("dp", "kuna", "10");
+};
+</script>
+</head>
+<body>
+<p>hello, visitor.</p>
+<p>you can use these services:</p>
+<div id="links"></div>
+<p>([nick] is the nickname of <a href="iidx.me">iidx.me</a> service.)</p>
+<p>contact: @lazykuna</p>
+</body></html>

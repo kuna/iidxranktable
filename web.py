@@ -1,66 +1,27 @@
 #-*- coding: utf-8 -*-
 # start web server
-from flask import Flask, render_template
+from flask import Flask, render_template, abort
 import song, view
 import env
 
 from flask import make_response, request, current_app
 
 import base64
+import iidx
 
 app = Flask(__name__)
 
 @app.route('/')
-def main():
-	return render_template('main.html')
+def index():
+	return render_template('index.html')
 
 def render_score(player, score, mode_, title_):
-	def getdanstring(dan):
-		if (dan == 1):
-			return u"-"
-		elif (dan == 2):
-			return u"七級"
-		elif (dan == 3):
-			return u"六級"
-		elif (dan == 4):
-			return u"五級"
-		elif (dan == 5):
-			return u"四級"
-		elif (dan == 6):
-			return u"三級"
-		elif (dan == 7):
-			return u"二級"
-		elif (dan == 8):
-			return u"一級"
-		elif (dan == 9):
-			return u"初段"
-		elif (dan == 10):
-			return u"二段"
-		elif (dan == 11):
-			return u"三段"
-		elif (dan == 12):
-			return u"四段"
-		elif (dan == 13):
-			return u"五段"
-		elif (dan == 14):
-			return u"六段"
-		elif (dan == 15):
-			return u"七段"
-		elif (dan == 16):
-			return u"八段"
-		elif (dan == 17):
-			return u"九段"
-		elif (dan == 18):
-			return u"十段"
-		elif (dan == 19):
-			return u"皆伝"
-
 	name = player['userdata']['djname']
 	spdan = player['userdata']['spclass']
 	dpdan = player['userdata']['dpclass']
 
 	return render_template('common.html', mode=mode_, title=title_, \
-		user={'name': name, 'spdan': getdanstring(spdan), 'spdannum':spdan, 'dpdan': getdanstring(dpdan), 'dpdannum': dpdan},\
+		user={'name': name, 'spdan': iidx.getdanstring(spdan), 'spdannum':spdan, 'dpdan': iidx.getdanstring(dpdan), 'dpdannum': dpdan},\
 		datas=score)
 
 @app.route('/iidx/sp/<user>/12.7')
@@ -93,7 +54,7 @@ def iidxsp12(user):
 	# create score data
 	score = song.processCSV(player['musicdata'], data)
 
-	return render_score(player, score, "sp", "Beatmania IIDX SP lv.12 <span style='color:red;'>Hard Guage</span> Rank")
+	return render_score(player, score, "sp", "Beatmania IIDX SP lv.12 Hard Guage Rank")
 
 @app.route('/iidx/dp/<user>/12')
 def iidxdp12(user):
@@ -169,6 +130,10 @@ def imgtl():
 	f.write(pngdata)
 	f.close()"""
 	return r.text
+
+@app.errorhandler(404)
+def not_found(error):
+	return render_template('404.html'), 404
 
 def init():
 	if (env.TESTING):
