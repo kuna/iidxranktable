@@ -5,9 +5,11 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
+		<link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
 		<link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/style.css') }}">
 		<script type="text/javascript" src="{{ url_for('static', filename='js/jquery-2.1.3.min.js') }}"></script>
 		<script type="text/javascript" src="{{ url_for('static', filename='js/html2canvas.min.js') }}"></script>
+		<script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
 
 		<script language="javascript">
 		function binary2buffer(bin) {
@@ -20,13 +22,25 @@
 		}
 
 		$(document).ready(function () {
+			$("#pleaseWaitDialog").show();
+			$("#capture").show();
+			$("#send").hide();
+			$("#url").hide();
+			$("#twitter").hide();
+
 			$("#menu").click(function () {
+				$("#capture").button('loading');
 				html2canvas($("#container"), {
 					onrendered: function(canvas) {
 						$("#container").hide();
 						$(canvas).id = "img"
 						$("#rankimg").append(canvas);
 						$("#rankimg").show();
+
+						// button
+						$("#capture").button('reset');
+						$("#capture").hide();
+						$("#send").show();
 					}
 				});
 			});
@@ -43,6 +57,10 @@
 						twitter_url = "http://twitter.com/share?text={{ title }} - {{ user['name'] }}&url=" + ret.data.url.direct;
 						//ret.data.url.page;
 						console.log(o);
+
+						$("#send").hide();
+						$("#url").css('display', 'inline-block');	// block breaks layout
+						$("#twitter").css('display', 'inline-block');
 					}
 				});
 			});
@@ -103,12 +121,10 @@
 		</div>
 
 		<div id="menu">
-			<input type="button" id="capture" value="capture">
-			<input type="button" id="send" value="send" >
-			<input type="text" id="url" value="">
-			<input type="button" id="twitter" value="share picture in twitter">
-
-			<!-- for post upload -->
+			<button id="capture" class="btn btn-default" data-loading-text="please wait..." ><span class="glyphicon glyphicon-camera"></span> capture</button>
+			<button id="send" class="btn btn-default"><span class="glyphicon glyphicon-upload"></span> upload for url/twitter</button>
+			<input type="text" id="url" value="" class="form-control" disabled="disabled">
+			<button id="twitter" class="btn btn-info"><span class="glyphicon glyphicon-send"></span> twitter</button>
 		</div>
 	</body>
 </html>
