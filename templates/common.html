@@ -12,6 +12,9 @@
 		<script type="text/javascript" src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
 
 		<script language="javascript">
+		var png_base64 = "";
+		var fname = "{{ user['name'] }} - {{ mode }}.png";
+
 		function binary2buffer(bin) {
 			var arrBuff = new ArrayBuffer(bin.length);
 			var writer = new Uint8Array(arrBuff);
@@ -32,9 +35,17 @@
 				$("#capture").button('loading');
 				html2canvas($("#container"), {
 					onrendered: function(canvas) {
+						png_base64 = canvas.toDataURL();
+						var href = $("<a>", {
+							href: png_base64,
+							download: fname
+						});
+						var img = $("<img>", {
+							src: png_base64
+						});
 						$("#container").hide();
-						$(canvas).id = "img"
-						$("#rankimg").append(canvas);
+						href.append(img)
+						$("#rankimg").append(href);
 						$("#rankimg").show();
 
 						// button
@@ -46,11 +57,11 @@
 			});
 
 			$("#send").click(function () {
-				var b = $("canvas")[0].toDataURL().substring(22);
+				var b = png_base64.substring(22);
 				$.ajax({
 					url: "/imgtl",
 					type: "POST",
-					data: { name: "{{ user['name'] }} - {{ mode }}.png", base64: b },
+					data: { name: fname, base64: b },
 					success: function (o) {
 						ret = JSON.parse(o);
 						$("#url").val(ret.data.url.direct);
@@ -75,7 +86,7 @@
 		</script>
 	</head>
 	<body>
-		<div id="container">
+		<div id="container"><div class="inner">
 			<!-- table info -->
 			<h2 id="title">{{ title|safe }}</h2>
 
@@ -116,7 +127,7 @@
 					{% endfor %}
 				</div>
 			</div>
-		</div>
+		</div></div>
 		<div id="rankimg">
 		</div>
 

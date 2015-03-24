@@ -1,7 +1,8 @@
 
 * { padding:0; margin:0; }
 body { font-family: 'Malgun Gothic', NanumBarunRoboto,Roboto,"Helvetica Neue",Arial,NanumBarunGothicOTF,NanumBarunGothic,"나눔바른고딕",NanumGothicOTF,NanumGothic,"나눔고딕","Apple SD Gothic Neo",Dotum,"돋움",sans-serif; font-size: 14px; }
-#container { width:800px; padding:10px; overflow:hidden; }
+#container { width:800px; }
+#container .inner { padding:10px; overflow:hidden; background-color:#fff;  }
 
 /*.outertable { border:0 2px 2px 0 solid #000; }*/
 .outertable { width:100%; }
@@ -78,13 +79,3 @@ body { font-family: 'Malgun Gothic', NanumBarunRoboto,Roboto,"Helvetica Neue",Ar
 
 #menu { position:absolute; top:80px; left:400px; width:400px; padding: 0 10px; text-align: right; }
 #url { width:200px; }
-
-
-/* for loading */
-.full-screen {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    top: 0;
-    left: 0;
-}

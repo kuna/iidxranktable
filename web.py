@@ -108,7 +108,7 @@ def test():
 	player = json.loads(f.read())
 	f.close()
 
-	data = song.getCSVdata("./data/dp.10.txt")
+	data = song.getCSVdata("./data/test.dp.10.txt")
 	score = song.processCSV(player['musicdata'], data)
 
 	return render_score(player, score, "dp", "Beatmania IIDX SP lv.12 Hard Guage Rank")
