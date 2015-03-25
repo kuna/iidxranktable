@@ -1,4 +1,2 @@
-
-
 # if testing
 TESTING = False

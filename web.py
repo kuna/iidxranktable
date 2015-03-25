@@ -123,12 +123,7 @@ def imgtl():
 	import urllib2
 	header = {'X-IMGTL-TOKEN': private.imgtlkey}
 	r = requests.post('https://api.img.tl/upload', data={'desc': '', 'filename': filename}, \
-		files={'file': pngdata}, headers=header)
-	"""print r.status_code
-	print r.text
-	f = open('test.png', 'wb')
-	f.write(pngdata)
-	f.close()"""
+		files={'file': (filename, pngdata, 'application/octet-stream')}, headers=header)
 	return r.text
 
 @app.errorhandler(404)
