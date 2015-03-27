@@ -11,6 +11,7 @@ import iidx
 
 app = Flask(__name__)
 
+@app.route('/iidx')
 @app.route('/')
 def index():
 	return render_template('index.html')
@@ -137,4 +138,4 @@ def init():
 
 if __name__ == '__main__':
 	init()
-	app.run(host='0.0.0.0', port=1100)
+	app.run(host='127.0.0.1', port=1100)
