@@ -3,4 +3,4 @@ iidxranktable
 
 online iidx clear table service for [iidx.me](http://iidx.me) users.
 
-~~currently running on [snu server](http://martini.snu.ac.kr:1100) for temporary.~~ currently no server.
+currently running on [AWS](http://54.69.39.175/iidx), or [rhythmg.ay](http://rhythmg.ay/iidx).
