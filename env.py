@@ -1,2 +1,0 @@
-# if testing
-TESTING = True
