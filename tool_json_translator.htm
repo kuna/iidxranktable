@@ -6,15 +6,26 @@
 
 <script src="./static/js/jquery-2.1.3.min.js"></script>
 <script>
+function convert2JSON() {
+	// remove player and so on, just remaining title and id
+	delete data["userdata"];
+	delete data["status"];
+	for (var i in data["musicdata"]) {
+		delete data["musicdata"][i]["clear"] ;
+		delete data["musicdata"][i]["score"];
+		delete data["musicdata"][i]["miss"] ;
+	}
+
+	return JSON.stringify(data);
+}
 
 function process(json) {
 	$('#songs').empty()
 
 	data = $.parseJSON(json);
-	musicdata = data.musicdata;
-	for (i=0; i<musicdata.length; i++) {
+	var musicdata = data.musicdata;
+	for (var i=0; i<musicdata.length; i++) {
 		var newele = $('<div class="music"></div>');
-		console.log(musicdata[i]);
 		newele.append("<span class='title'>" + musicdata[i].data.title + "</span>");
 		newele.append("<span class='number'>" + musicdata[i].data.id + "</span>");
 		$('#songs').append(newele)
@@ -26,6 +37,9 @@ function process(json) {
 $(document).ready(function () {
 	$('#go').click(function () {
 		process($("#json").val());
+	});
+	$('#out').click(function () {
+		$("#output").val(convert2JSON());
 	});
 
 	console.log('init fniished');
@@ -47,8 +61,10 @@ body { font-size:12px; }
 <div id="result"></div>
 <div id="songs"></div>
 
-<textarea cols=10 rows=10 id="json"></textarea>
+<textarea cols=10 rows=10 id="json"></textarea><br>
 <input type="button" value="go" id="go">
+<input type="button" value="out" id="out"><br>
+<textarea cols=10 rows=10 id="output"></textarea>
 
 </body>
 </html>
