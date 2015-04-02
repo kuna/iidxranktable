@@ -26,7 +26,7 @@ body { font-family: 'Malgun Gothic', NanumBarunRoboto,Roboto,"Helvetica Neue",Ar
 .CLEAR.clear { background-color: #00f; }
 .HARD_CLEAR.clear { background-color: #f00; }
 .EX-HARD_CLEAR.clear { background-color: #ff0; }
-.FULL_COMBO.clear { background-color: #fe9; }
+.FULL_COMBO.clear { background-color: #6ef; }
 
 .cell.NO_PLAY { }
 .cell.FAILED { background-color: #ccc; }
@@ -68,7 +68,7 @@ body { font-family: 'Malgun Gothic', NanumBarunRoboto,Roboto,"Helvetica Neue",Ar
 .dan13,
 .dan14,
 .dan15,
-.dan16,
+.dan16 { color: #00c; }
 .dan17,
 .dan18 { color: #c00; }
 .dan19 { color: #cc0; }

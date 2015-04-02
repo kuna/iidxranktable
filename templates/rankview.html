@@ -70,7 +70,7 @@ $(document).ready(function () {
 {% block body %}
 <div id="container"><div class="inner">
 	<!-- table info -->
-	<h2 id="title">{{ title|safe }}</h2>
+	<h2 id="title">{{ titlehtml|safe }}</h2>
 
 	<!-- user info -->
 	<p id="user"><span class="name">DJ {{ user['name'] }}</span>, <span class="{{ mode }} spdan dan{{ user['spdannum'] }}">{{ user['spdan'] }}</span> / <span class="{{ mode }} dpdan dan{{ user['dpdannum'] }}">{{ user['dpdan'] }}</span></p>
