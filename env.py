@@ -1,2 +1,2 @@
 # if testing
-TESTING = False
+TESTING = True

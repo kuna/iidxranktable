@@ -8,6 +8,7 @@ from flask import make_response, request, current_app
 
 import base64
 import iidx
+import jsondata
 
 app = Flask(__name__)
 
@@ -16,103 +17,74 @@ app = Flask(__name__)
 def index():
 	return render_template('index.html')
 
-def render_score(player, score, mode_, title_):
+def render_score(player, score, mode_, title_, titlehtml_):
 	name = player['userdata']['djname']
 	spdan = player['userdata']['spclass']
 	dpdan = player['userdata']['dpclass']
 
-	return render_template('common.html', mode=mode_, title=title_, \
+	return render_template('common.html', mode=mode_, title=title_, titlehtml=titlehtml_, \
 		user={'name': name, 'spdan': iidx.getdanstring(spdan), 'spdannum':spdan, 'dpdan': iidx.getdanstring(dpdan), 'dpdannum': dpdan},\
 		datas=score)
 
-@app.route('/iidx/sp/<user>/12.7')
-def iidxsp127(user):
-	# clddal.kr
-	# parse web
-	player = song.getiidxinfo(user, 'sp', 12)
-	if ('userdata' not in player or player['status'] != 'success'):
-		abort(404)
+def render_songlist(optionpath, user):
+	# read option json
+	option = jsondata.loadJSONfile(optionpath)
+
+	# parse web (get player json file)
+	player = None
+	if (user == None):
+		data = jsondata.loadJSONfile(option['jsonfile'])
+	else:
+		player = song.getiidxinfo(user, option['type'], option['level'])
+
+	if (player == None or 'userdata' not in player or player['status'] != 'success'):
+		abort(404)	# should show abort(404)
+		return
 
 	# load data file
-	data = song.getCSVdata("./data/sp.12.7.txt")
+	data = song.getCSVdata(option['datafile'])
+	if (data == None):
+		abort(404)	# 404
+		return
 
 	# create score data
 	score = song.processCSV(player['musicdata'], data)
 
-	return render_score(player, score, "sp", "Beatmania IIDX SP lv.12 Rank")
+	return render_score(player, score, option['type'], option['title'], option['titlehtml'])
+
 
 @app.route('/iidx/sp/<user>/12')
 def iidxsp12(user):
-	# http://nozomi.2ch.sc/test/read.cgi/otoge/1405129623/
-	# parse web
-	player = song.getiidxinfo(user, 'sp', 12)
-	if ('userdata' not in player or player['status'] != 'success'):
-		abort(404)
+	return render_songlist("./data/sp.12.json", user)
 
-	# load data file
-	data = song.getCSVdata("./data/sp.12.txt")
+@app.route('/iidx/sp/<user>/12.7')
+def iidxsp127(user):
+	return render_songlist("./data/sp.12.7.json", user)
 
-	# create score data
-	score = song.processCSV(player['musicdata'], data)
+@app.route('/iidx/sp/<user>/11')
+def iidxsp11(user):
+	return render_songlist("./data/sp.11.json", user)
 
-	return render_score(player, score, "sp", "Beatmania IIDX SP lv.12 Hard Guage Rank")
+@app.route('/iidx/sp/<user>/10')
+def iidxsp10(user):
+	return render_songlist("./data/sp.10.json", user)
+
 
 @app.route('/iidx/dp/<user>/12')
 def iidxdp12(user):
-	# parse web
-	player = song.getiidxinfo(user, 'dp', 12)
-	if ('userdata' not in player or player['status'] != 'success'):
-		abort(404)
-
-	# load data file
-	data = song.getCSVdata("./data/dp.12.txt")
-
-	# create score data
-	score = song.processCSV(player['musicdata'], data)
-
-	return render_score(player, score, "dp", "Beatmania IIDX DP lv.12 Rank")
+	return render_songlist("./data/dp.12.json", user)
 
 @app.route('/iidx/dp/<user>/11')
 def iidxdp11(user):
-	# parse web
-	player = song.getiidxinfo(user, 'dp', 11)
-	if ('userdata' not in player or player['status'] != 'success'):
-		abort(404)
-
-	# load data file
-	data = song.getCSVdata("./data/dp.11.txt")
-
-	# create score data
-	score = song.processCSV(player['musicdata'], data)
-
-	return render_score(player, score, "dp", "Beatmania IIDX DP lv.11 Rank")
+	return render_songlist("./data/dp.11.json", user)
 
 @app.route('/iidx/dp/<user>/10')
 def iidxdp10(user):
-	# parse web
-	player = song.getiidxinfo(user, 'dp', 10)
-	if ('userdata' not in player or player['status'] != 'success'):
-		abort(404)
-
-	# load data file
-	data = song.getCSVdata("./data/dp.10.txt")
-
-	# create score data
-	score = song.processCSV(player['musicdata'], data)
-
-	return render_score(player, score, "dp", "Beatmania IIDX DP lv.10 Rank")
+	return render_songlist("./data/dp.10.json", user)
 
 @app.route('/test')
 def test():
-	import json
-	f = open('./data/test', 'rb')
-	player = json.loads(f.read())
-	f.close()
-
-	data = song.getCSVdata("./data/test.dp.10.txt")
-	score = song.processCSV(player['musicdata'], data)
-
-	return render_score(player, score, "dp", "Beatmania IIDX SP lv.12 Hard Guage Rank")
+	return render_songlist("./data/dp.10.json")
 
 @app.route('/imgtl', methods=['POST'])
 def imgtl():
