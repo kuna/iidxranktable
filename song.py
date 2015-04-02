@@ -97,7 +97,7 @@ def processCSV(musicdata, csvdata):
 				if (record):
 					# write difficulty if same song exists
 					# ex: gigadelic [A]
-					if ('option' in song):
+					if (song['option'] != None):
 						record['data']['title'] += " [" + record['data']['diff'] + "]"
 					# add current song in current category
  					catearray['songs'].append(record)

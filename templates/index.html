@@ -13,24 +13,37 @@ function addDPbutton(text, url) {
 	$("#dpcontainer").append('<a href="' + url + '"><button type="button" class="btn btn-danger">' + text + '</button></a>');
 }
 
+function moveUserpage() {
+	var username = $("#username").val();
+	if (username == "") {
+		window.location.href = dname + "/iidx";
+	} else {
+		window.location.href = dname + "/iidx/" + username;
+	}
+}
+
 $(document).ready(function () {
 	$("#goto").click(function () {
-		var username = $("#username").val();
-		if (username == "") {
-			window.location.href = dname + "/iidx";
-		} else {
-			window.location.href = dname + "/iidx/" + username;
+		moveUserpage();
+	});
+
+	$("#username").keypress(function (e) {
+		if (e.which == 13) {
+			moveUserpage();
+			return false;
 		}
 	});
 
-	addSPbutton("SP12.7", "/iidx/sp/{{ username }}/12.7");
-	addSPbutton("SP12", "/iidx/sp/{{ username }}/12");
-	addSPbutton("SP11", "/iidx/sp/{{ username }}/11");
-	addSPbutton("SP10", "/iidx/sp/{{ username }}/10");
+	if ("{{ username }}".length > 0) {
+		addSPbutton("SP12.7", "/iidx/sp/{{ username }}/12.7");
+		addSPbutton("SP12", "/iidx/sp/{{ username }}/12");
+		addSPbutton("SP11", "/iidx/sp/{{ username }}/11");
+		addSPbutton("SP10", "/iidx/sp/{{ username }}/10");
 
-	addDPbutton("DP12", "/iidx/dp/{{ username }}/12");
-	addDPbutton("DP11", "/iidx/dp/{{ username }}/11");
-	addDPbutton("DP10", "/iidx/dp/{{ username }}/10");
+		addDPbutton("DP12", "/iidx/dp/{{ username }}/12");
+		addDPbutton("DP11", "/iidx/dp/{{ username }}/11");
+		addDPbutton("DP10", "/iidx/dp/{{ username }}/10");
+	}
 });
 </script>
 

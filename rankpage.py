@@ -30,7 +30,7 @@ def render_songlist(optionpath, user):
 	if (user == None):
 		data = jsondata.loadJSONfile(option['jsonfile'])
 	else:
-		player = song.getiidxinfo(user, option['type'], option['level'])
+		player = jsondata.getiidxinfo(user, option['type'], option['level'])
 
 	if (player == None or 'userdata' not in player or player['status'] != 'success'):
 		print "userdata not found"

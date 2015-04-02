@@ -12,6 +12,10 @@ app = Flask(__name__)
 
 #####################################################
 
+@app.route('/iidx/sp/<user>/12.7')
+def iidxsp127(user):
+	return rankpage.render_songlist("./data/sp.12.7.json", user)
+
 @app.route('/iidx/sp/<user>/12')
 def iidxsp12(user):
 	return rankpage.render_songlist("./data/sp.12.json", user)
