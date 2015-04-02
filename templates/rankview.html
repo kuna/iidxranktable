@@ -1,0 +1,122 @@
+{% extends "common.html" %}
+{% block head %}
+<script type="text/javascript" src="{{ url_for('static', filename='js/html2canvas.min.js') }}"></script>
+<script language="javascript">
+var png_base64 = "";
+var ftitle = "{{ title }} - DJ {{ user['name'] }}"
+var fname = ftitle + ".png";
+
+$(document).ready(function () {
+	$("#pleaseWaitDialog").show();
+	$("#capture").show();
+	$("#send").hide();
+	$("#url").hide();
+	$("#twitter").hide();
+
+	$("#menu").click(function () {
+		$("#capture").button('loading');
+		html2canvas($("#container"), {
+			onrendered: function(canvas) {
+				png_base64 = canvas.toDataURL();
+				var href = $("<a>", {
+					href: png_base64,
+					download: fname
+				});
+				var img = $("<img>", {
+					src: png_base64
+				});
+				$("#container").hide();
+				href.append(img)
+				$("#rankimg").append(href);
+				$("#rankimg").show();
+
+				// button
+				$("#capture").button('reset');
+				$("#capture").hide();
+				$("#send").show();
+			}
+		});
+	});
+
+	$("#send").click(function () {
+		var b = png_base64.substring(22);
+		$.ajax({
+			url: "/imgtl",
+			type: "POST",
+			data: { name: fname, base64: b },
+			success: function (o) {
+				ret = JSON.parse(o);
+				$("#url").val(ret.data.url.direct);
+				twitter_url = "http://twitter.com/share?text=" + ftitle + "%20#iidx&url=" + ret.data.url.page;
+				//ret.data.url.page;
+				console.log(o);
+
+				$("#send").hide();
+				$("#url").css('display', 'inline-block');	// block breaks layout
+				$("#twitter").css('display', 'inline-block');
+			}
+		});
+	});
+
+	twitter_url = "";
+	$("#twitter").click(function () {
+		// share twitter
+		if (twitter_url != "")
+			window.open(twitter_url, "share", "height=300,width=500");
+	});
+});
+</script>
+{% endblock %}
+{% block body %}
+<div id="container"><div class="inner">
+	<!-- table info -->
+	<h2 id="title">{{ title|safe }}</h2>
+
+	<!-- user info -->
+	<p id="user"><span class="name">DJ {{ user['name'] }}</span>, <span class="{{ mode }} spdan dan{{ user['spdannum'] }}">{{ user['spdan'] }}</span> / <span class="{{ mode }} dpdan dan{{ user['dpdannum'] }}">{{ user['dpdan'] }}</span></p>
+
+	<!-- clear lamp info -->
+	<ul id="preview">
+		<li>FAILED<div class="FAILED clear"></div></li>
+		<li>ASSIST CLEAR<div class="ASSIST_CLEAR clear"></div></li>
+		<li>EASY CLEAR<div class="EASY_CLEAR clear"></div></li>
+		<li>CLEAR<div class="CLEAR clear"></div></li>
+		<li>HARD CLEAR<div class="HARD_CLEAR clear"></div></li>
+		<li>EX-HARD CLEAR<div class="EX-HARD_CLEAR clear"></div></li>
+		<li>FULLCOMBO<div class="FULL_COMBO clear"></div></li>
+	</ul>
+
+	<div id="ranktable">
+		<div class="table outertable">
+			{% for data in datas %}
+			<div class="row">
+				<div class="cell rowname cell {{ data.categoryclearstring }}"><span class="name">{{ data.category }}</span></div>
+				<div class="cell">
+					<ul class="songlist">
+						{% for song in data.songs %}
+						<li>
+							<!--<div class="graph {{ song['data']['diff'] }}" style="width: {{ song['rate'] }}%">
+							</div>
+							<div class="grid {{ song['rank'] }} gA"></div>
+							<div class="grid {{ song['rank'] }} gAA"></div>
+							<div class="grid {{ song['rank'] }} gAAA"></div>-->
+							<span class="name">{{ song.data.title }}</span><span class="{{ song['clearstring'] }} clear"></span>
+						</li>
+						{% endfor %}
+					</ul>
+				</div>
+			</div>
+			{% endfor %}
+		</div>
+	</div>
+</div></div>
+<div id="rankimg">
+</div>
+
+<div id="menu">
+	<button id="capture" class="btn btn-default" data-loading-text="please wait..." ><span class="glyphicon glyphicon-camera"></span> capture</button>
+	<button id="send" class="btn btn-default"><span class="glyphicon glyphicon-upload"></span> upload for url/twitter</button>
+	<input type="text" id="url" value="" class="form-control" disabled="disabled">
+	<button id="twitter" class="btn btn-info"><span class="glyphicon glyphicon-send"></span> twitter</button>
+</div>
+{% endblock %}

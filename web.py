@@ -12,17 +12,12 @@ import jsondata
 
 app = Flask(__name__)
 
-@app.route('/iidx')
-@app.route('/')
-def index():
-	return render_template('index.html')
-
 def render_score(player, score, mode_, title_, titlehtml_):
 	name = player['userdata']['djname']
 	spdan = player['userdata']['spclass']
 	dpdan = player['userdata']['dpclass']
 
-	return render_template('common.html', mode=mode_, title=title_, titlehtml=titlehtml_, \
+	return render_template('rankview.html', mode=mode_, title=title_, titlehtml=titlehtml_, \
 		user={'name': name, 'spdan': iidx.getdanstring(spdan), 'spdannum':spdan, 'dpdan': iidx.getdanstring(dpdan), 'dpdannum': dpdan},\
 		datas=score)
 
@@ -52,6 +47,7 @@ def render_songlist(optionpath, user):
 
 	return render_score(player, score, option['type'], option['title'], option['titlehtml'])
 
+#####################################################
 
 @app.route('/iidx/sp/<user>/12')
 def iidxsp12(user):
@@ -82,9 +78,24 @@ def iidxdp11(user):
 def iidxdp10(user):
 	return render_songlist("./data/dp.10.json", user)
 
+#####################################################
+
+@app.route('/iidx/<user>')
+def userpage(user):
+	return render_template('index.html', username=user)
+
+@app.route('/iidx')
+@app.route('/')
+def index():
+	return render_template('index.html')
+
+#####################################################
+
 @app.route('/test')
 def test():
 	return render_songlist("./data/dp.10.json")
+
+#####################################################
 
 @app.route('/imgtl', methods=['POST'])
 def imgtl():
@@ -98,6 +109,8 @@ def imgtl():
 	r = requests.post('https://api.img.tl/upload', data={'desc': '', 'filename': filename}, \
 		files={'file': (filename, pngdata, 'application/octet-stream')}, headers=header)
 	return r.text
+
+#####################################################
 
 @app.errorhandler(404)
 def not_found(error):
