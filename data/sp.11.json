@@ -2,6 +2,7 @@
 	"type": "sp",
 	"level": 11,
 	"datafile": "./data/sp.11.txt",
+	"jsonfile": "./data/song.sp.11.json",
 	"title": "Beatmania IIDX SP lv.11 Hard Guage Rank",
 	"titlehtml": "Beatmania IIDX SP lv.11 <span style='color:#f00;'>Hard Guage</span> Rank",
 	"from": "http://clickagain.sakura.ne.jp (clddal.kr)"

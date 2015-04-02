@@ -3,12 +3,7 @@
 import urllib
 import json
 import iidx
-
-def getiidxinfo(user, type, lv):
-	url = ('http://json.iidx.me/%s/%s/level/%d/' % (user, type, lv))
-	res = urllib.urlopen(url)
-	data = json.loads(res.read())
-	return data
+import jsondata
 
 # dict: category -> songs[] (song)
 def getCSVdata(csvpath):
@@ -16,18 +11,18 @@ def getCSVdata(csvpath):
 		# H/A/N confine command, ALL command
 		attr = {}
 		if (code == "ALL"):
-			attr = {'option': 'ALL'}
+			attr = {'id': None, 'option': 'ALL'}
 		elif (not code[-1:].isdigit()):
 			attr = {'id': code[:-1], 'option':code[-1:]}
 		else:
-			attr = {'id': code}
+			attr = {'id': code, 'option': None}
 		return attr
 
-	f = open(csvpath, 'rb')
-	lines = f.readlines()
-	f.close() 
+	lines = jsondata.loadTextfile(csvpath).split('\n')
 	csvdata = []
 	for l in lines:
+		if (l == ""):
+			continue
 		l = l.decode('utf8')
 		l = l.replace('\n', '').replace('\r', '')
 		arr = l.split('\t')
@@ -36,17 +31,24 @@ def getCSVdata(csvpath):
 		csvdata.append({'category': arr[0], 'songs': songs})
 	return csvdata
 
+# check is data exists(rank table data) in musicdata(user data).
+# if rank item exists in user's record, return record
+# if all of the recorddata OKAY, return True
+# else, return None (False)
+def isexists(recorddata, rankitem, removeprevious=False):
+	if (rankitem['option'] == 'ALL'):
+		return True
+	else:
+		for music in recorddata:
+			if (music['data']['id'] == rankitem['id']):
+				if (rankitem['option'] == None or rankitem['option'].upper() == music['data']['diff'][-1:].upper()):
+					if removeprevious:
+						recorddata.remove(music)
+					return music
+	return None
+
 # dict: category -> songs[] (title, code, clear, ex, ...)
 def processCSV(musicdata, csvdata):
-	def getdict(val):
-		for music in musicdata:
-			if (music['data']['id'] == val['id']):
-				if (('option' in val and val['option'] == music['data']['diff']) or \
-					'option' not in val):
-					musicdata.remove(music);
-					return music
-		return None		
-
 	# preprocess musicdata
 	for music in musicdata:
 		# ex: dpa -> A
@@ -88,10 +90,10 @@ def processCSV(musicdata, csvdata):
 		catearray['songs'] = []
 		# if songid is ALL, then add all left songs.
 		for song in category['songs']:
-			if ('option' in song and song['option'] == 'ALL'):
+			record = isexists(musicdata, song)
+			if (record == True):
 				catearray['songs'] = musicdata
 			else:
-				record = getdict(song)
 				if (record):
 					# write difficulty if same song exists
 					# ex: gigadelic [A]

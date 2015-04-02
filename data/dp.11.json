@@ -2,6 +2,7 @@
 	"type": "dp",
 	"level": 11,
 	"datafile": "./data/dp.11.txt",
+	"jsonfile": "./data/song.dp.11.json",
 	"title": "Beatmania IIDX DP lv.11 Rank",
 	"titlehtml": "Beatmania IIDX DP lv.11 Rank",
 	"from": "http://zasa.sakura.ne.jp"

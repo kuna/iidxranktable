@@ -2,6 +2,7 @@
 	"type": "sp",
 	"level": 12,
 	"datafile": "./data/sp.12.txt",
+	"jsonfile": "./data/song.sp.12.json",
 	"title": "Beatmania IIDX SP lv.12 Hard Guage Rank",
 	"titlehtml": "Beatmania IIDX SP lv.12 Hard Guage Rank",
 	"from": "http://nozomi.2ch.sc/test/read.cgi/otoge/1405129623/ (rhythm game gallery XERT*)"
