@@ -46,3 +46,4 @@ Temporary Items
 *.pyc
 test*
 private.py
+env.py
