@@ -1,33 +1,61 @@
 {% extends "common.html" %}
 {% block head %}
 <script>
-function getlink(type, nick, diff) {
-	var dname = window.location.host;
-	return "http://" + dname + "/iidx/" + type + "/" + nick + "/" + diff
-}
-function addlink(type, nick, diff) {
-	var p = document.createElement("p");
-	var a = document.createElement("a");
-	a.href =  getlink(type, nick, diff);
-	a.target = "_blank";
-	a.innerHTML =  getlink(type, "[nick]", diff);
-	p.appendChild(a);
-	document.getElementById("links").appendChild(p);
+var dname = "http://" + window.location.host;
+
+function addSPbutton(text, url) {
+	url = url.replace("//", "/");
+	$("#spcontainer").append('<a href="' + url + '"><button type="button" class="btn btn-primary">' + text + '</button></a>');
 }
 
-window.onload = function () {
-	addlink("sp", "kuna", "12.7");
-	addlink("sp", "kuna", "12");
-	addlink("dp", "kuna", "12");
-	addlink("dp", "kuna", "11");
-	addlink("dp", "kuna", "10");
-};
+function addDPbutton(text, url) {
+	url = url.replace("//", "/");
+	$("#dpcontainer").append('<a href="' + url + '"><button type="button" class="btn btn-danger">' + text + '</button></a>');
+}
+
+$(document).ready(function () {
+	$("#goto").click(function () {
+		var username = $("#username").val();
+		if (username == "") {
+			window.location.href = dname + "/iidx";
+		} else {
+			window.location.href = dname + "/iidx/" + username;
+		}
+	});
+
+	addSPbutton("SP12.7", "/iidx/sp/{{ username }}/12.7");
+	addSPbutton("SP12", "/iidx/sp/{{ username }}/12");
+	addSPbutton("SP11", "/iidx/sp/{{ username }}/11");
+	addSPbutton("SP10", "/iidx/sp/{{ username }}/10");
+
+	addDPbutton("DP12", "/iidx/dp/{{ username }}/12");
+	addDPbutton("DP11", "/iidx/dp/{{ username }}/11");
+	addDPbutton("DP10", "/iidx/dp/{{ username }}/10");
+});
 </script>
+
+<style type="text/css">
+#container { margin-top:100px; }
+#goto { cursor:pointer; cursor:hand;/*fallback*/ }
+.row { clear:both; margin:10px auto; max-width: 400px }
+.row button { margin-right:6px; }
+</style>
 {% endblock %}
 {% block body %}
-<p>hello, visitor.</p>
-<p>you can use these services:</p>
-<div id="links"></div>
-<p>([nick] is the nickname of <a href="iidx.me">iidx.me</a> service.)</p>
-<p>contact: @lazykuna</p>
+<div id="container">
+	<div class="row input-group">
+		<input type="text" class="form-control" value="{{ username }}" aria-describedby="basic-addon2" id="username">
+		<span class="input-group-addon" id="goto">iidx.me ID</span>
+	</div>
+
+	<div class="row center" id="spcontainer">
+	</div>
+
+	<div class="row center" id="dpcontainer">
+	</div>
+
+	<div class="row">
+		<p>contact: @lazykuna</p>
+	</div>
+</div>
 {% endblock %}
