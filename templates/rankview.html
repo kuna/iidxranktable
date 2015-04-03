@@ -72,7 +72,7 @@ $(document).ready(function () {
 			success: function (o) {
 				ret = JSON.parse(o);
 				$("#url").val(ret.data.url.direct);
-				twitter_url = "http://twitter.com/share?text=" + ftitle + "%20#iidx&url=" + ret.data.url.page;
+				twitter_url = "http://twitter.com/share?text=" + ftitle + "&hashtags=iidx&url=" + ret.data.url.page;
 				//ret.data.url.page;
 				console.log(o);
 
