@@ -8,13 +8,37 @@ var ftitle = "{{ title }} - DJ {{ user['name'] }}"
 var fname = ftitle + ".png";
 
 $(document).ready(function () {
+	$('#show_rank').click(function () {
+		$('.rank').show();
+	});
+	$('#order_rate').click(function () {
+		$('.songlist').each(function (e) {
+			$(this).find('li').sort(function (a, b) {
+			 	return $(b).attr('data-rate') - $(a).attr('data-rate');
+			})
+			.appendTo(this);
+		});
+	});
+	$('#order_clear').click(function () {
+		$('.songlist').each(function (e) {
+			$(this).find('li').sort(function (a, b) {
+				var as = $(a).attr('data-clear');
+				if (as == "None") as=0;
+				var bs = $(b).attr('data-clear');
+				if (bs == "None") bs=0;
+			 	return bs - as;
+			})
+			.appendTo(this);
+		});
+	});
+
 	$("#pleaseWaitDialog").show();
 	$("#capture").show();
 	$("#send").hide();
 	$("#url").hide();
 	$("#twitter").hide();
 
-	$("#menu").click(function () {
+	$("#capture").click(function () {
 		$("#capture").button('loading');
 		html2canvas($("#container"), {
 			onrendered: function(canvas) {
@@ -72,7 +96,7 @@ $(document).ready(function () {
 <div id="menu">
 	<!-- addon button -->
 	<button id="show_rank" class="btn btn-default" data-loading-text="coming soon!" >show rank</button>
-	<button id="order_score" class="btn btn-default" data-loading-text="please wait..." >order by score</button>
+	<button id="order_rate" class="btn btn-default" data-loading-text="please wait..." >order by rate</button>
 	<button id="order_clear" class="btn btn-default" data-loading-text="please wait..." >order by clear</button>
 
 	<button id="capture" class="btn btn-default" data-loading-text="please wait..." ><span class="glyphicon glyphicon-camera"></span> capture</button>
@@ -107,13 +131,8 @@ $(document).ready(function () {
 				<div class="cell">
 					<ul class="songlist">
 						{% for song in data.songs %}
-						<li>
-							<!--<div class="graph {{ song['data']['diff'] }}" style="width: {{ song['rate'] }}%">
-							</div>
-							<div class="grid {{ song['rank'] }} gA"></div>
-							<div class="grid {{ song['rank'] }} gAA"></div>
-							<div class="grid {{ song['rank'] }} gAAA"></div>-->
-							<span class="name">{{ song.data.title }}</span><span class="{{ song['clearstring'] }} clear"></span>
+						<li class="{{ song['clearstring'] }}" data-clear="{{ song['clear'] }}" data-rate="{{ song['rate'] }}">
+							<span class="name">{{ song.data.title }}</span><div class="rank {{ song['rank'] }}"></div>
 						</li>
 						{% endfor %}
 					</ul>

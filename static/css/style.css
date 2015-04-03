@@ -20,24 +20,53 @@ body { font-family: 'Malgun Gothic', NanumBarunRoboto,Roboto,"Helvetica Neue",Ar
 
 
 /* clear lamp */
-.clear { position: absolute; width:12px; height:12px; top:6px; right:6px; display: block; border-radius: 50%; }
+.clear { position: absolute; width:12px; height:12px; top:6px; right:6px; display: block; }
 .NO_PLAY.clear { }
+/*
 .FAILED.clear { background-color: #999; }
 .ASSIST_CLEAR.clear { background-color: #f0f; }
 .EASY_CLEAR.clear { background-color: #0f0; }
 .CLEAR.clear { background-color: #00f; }
 .HARD_CLEAR.clear { background-color: #f00; }
 .EX-HARD_CLEAR.clear { background-color: #ff0; }
-.FULL_COMBO.clear { background-color: #6ef; }
+.FULL_COMBO.clear { background-color: #6ef; }*/
+.FAILED.clear { background: url('../img/clearlamp_failed.png') 0 0 no-repeat; }
+.ASSIST_CLEAR.clear { background: url('../img/clearlamp_assist.png') 0 0 no-repeat; }
+.EASY_CLEAR.clear { background: url('../img/clearlamp_easy.png') 0 0 no-repeat; }
+.CLEAR.clear { background: url('../img/clearlamp_normal.png') 0 0 no-repeat; }
+.HARD_CLEAR.clear { background: url('../img/clearlamp_hard.png') 0 0 no-repeat; }
+.EX-HARD_CLEAR.clear { background: url('../img/clearlamp_exhard.png') 0 0 no-repeat; }
+.FULL_COMBO.clear { background: url('../img/clearlamp_fullcombo.png') 0 0 no-repeat; }
 
+li.FAILED { background: url('../img/clearlampbg_failed.png') top right repeat-y; }
+li.ASSIST_CLEAR { background: url('../img/clearlampbg_assist.png') top right repeat-y; }
+li.EASY_CLEAR { background: url('../img/clearlampbg_easy.png') top right repeat-y; }
+li.CLEAR { background: url('../img/clearlampbg_clear.png') top right repeat-y; }
+li.HARD_CLEAR { background: url('../img/clearlampbg_hard.png') top right repeat-y; }
+li.EX-HARD_CLEAR { background: url('../img/clearlampbg_exhard.png') top right repeat-y; }
+li.FULL_COMBO { background: url('../img/clearlampbg_fullcombo.png') top right repeat-y; }
+
+/* cell clear */
 .cell.NO_PLAY { }
-.cell.FAILED { background-color: #ccc; }
-.cell.ASSIST_CLEAR { background-color: #fcf; }
-.cell.EASY_CLEAR { background-color: #cfc; }
-.cell.CLEAR { background-color: #ccf; }
-.cell.HARD_CLEAR { background-color: #fcc; }
-.cell.EX-HARD_CLEAR { background-color: #ffc; }
-.cell.FULL_COMBO { background-color: #fed; }
+.cell.FAILED { background: url('../img/clearlamp_failed.png') 28px 50% no-repeat; }
+.cell.ASSIST_CLEAR { background: url('../img/clearlamp_assist.png') 28px 50% no-repeat; }
+.cell.EASY_CLEAR { background: url('../img/clearlamp_easy.png') 28px 50% no-repeat; }
+.cell.CLEAR { background: url('../img/clearlamp_clear.png') 28px 50% no-repeat; }
+.cell.HARD_CLEAR { background: url('../img/clearlamp_hard.png') 28px 50% no-repeat; }
+.cell.EX-HARD_CLEAR { background: url('../img/clearlamp_exhard.png') 28px 50% no-repeat; }
+.cell.FULL_COMBO { background: url('../img/clearlamp_fullcombo.png') 28px 50% no-repeat; }
+
+/* rank show */
+.rank { position: absolute; width:16px; height:10px; top:7px; right:8px; 
+	display: none; background: url('../img/rank.png') no-repeat; }
+.rank.AAA { background-position: 0 0; }
+.rank.AA { background-position: 0 -17px; }
+.rank.A { background-position: 0 -34px; }
+.rank.B { background-position: 0 -50px; }
+.rank.C { background-position: 0 -67px; }
+.rank.D { background-position: 0 -82px; }
+.rank.E { background-position: 0 -98px; }
+.rank.F { background-position: 0 -116px; }
 
 .songlist .graph { display:block; height:100%; position:absolute; left:0; top:0; z-index:-999;}
 .songlist .graph.A { background-color:#fee; }
@@ -56,10 +85,10 @@ body { font-family: 'Malgun Gothic', NanumBarunRoboto,Roboto,"Helvetica Neue",Ar
 
 #user span { font-weight: bold; font-size:13px; }
 #user .name { background-color: #000; margin-right:6px; }
-#user .spdan, #user .dpdan { color:#999; background-color: #eee; min-width: 50px; }
+#user .spdan, #user .dpdan { background-color: #eee; opacity:0.5; }
 #user .spdan { border-top-right-radius:0; border-bottom-right-radius:0; }
 #user .dpdan { border-top-left-radius:0; border-bottom-left-radius:0; }
-.sp.spdan, .dp.dpdan { font-weight: bold; color:#fff !important; }
+.sp.spdan, .dp.dpdan { font-weight: bold; opacity:1 !important; }
 .dan2,
 .dan3,
 .dan4,
