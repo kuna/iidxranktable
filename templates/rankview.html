@@ -69,12 +69,24 @@ $(document).ready(function () {
 </script>
 {% endblock %}
 {% block body %}
+<div id="menu">
+	<!-- addon button -->
+	<button id="show_rank" class="btn btn-default" data-loading-text="coming soon!" >show rank</button>
+	<button id="order_score" class="btn btn-default" data-loading-text="please wait..." >order by score</button>
+	<button id="order_clear" class="btn btn-default" data-loading-text="please wait..." >order by clear</button>
+
+	<button id="capture" class="btn btn-default" data-loading-text="please wait..." ><span class="glyphicon glyphicon-camera"></span> capture</button>
+	<button id="send" class="btn btn-default"><span class="glyphicon glyphicon-upload"></span> upload for url/twitter</button>
+	<input type="text" id="url" value="" class="form-control" disabled="disabled">
+	<button id="twitter" class="btn btn-info"><span class="glyphicon glyphicon-send"></span> twitter</button>
+</div>
+
 <div id="container"><div class="inner">
 	<!-- table info -->
 	<h2 id="title">{{ titlehtml|safe }}</h2>
 
 	<!-- user info -->
-	<p id="user"><span class="name">DJ {{ user['name'] }}</span>, <span class="{{ mode }} spdan dan{{ user['spdannum'] }}">{{ user['spdan'] }}</span> / <span class="{{ mode }} dpdan dan{{ user['dpdannum'] }}">{{ user['dpdan'] }}</span></p>
+	<p id="user"><span class="label name">DJ {{ user['name'] }}</span> <span class="label {{ mode }} spdan dan{{ user['spdannum'] }}">{{ user['spdan'] }}</span><span class="label {{ mode }} dpdan dan{{ user['dpdannum'] }}">{{ user['dpdan'] }}</span></p>
 
 	<!-- clear lamp info -->
 	<ul id="preview">
@@ -112,12 +124,5 @@ $(document).ready(function () {
 	</div>
 </div></div>
 <div id="rankimg">
-</div>
-
-<div id="menu">
-	<button id="capture" class="btn btn-default" data-loading-text="please wait..." ><span class="glyphicon glyphicon-camera"></span> capture</button>
-	<button id="send" class="btn btn-default"><span class="glyphicon glyphicon-upload"></span> upload for url/twitter</button>
-	<input type="text" id="url" value="" class="form-control" disabled="disabled">
-	<button id="twitter" class="btn btn-info"><span class="glyphicon glyphicon-send"></span> twitter</button>
 </div>
 {% endblock %}

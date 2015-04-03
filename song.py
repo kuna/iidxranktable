@@ -57,8 +57,8 @@ def processCSV(musicdata, csvdata):
 		clear = int(music['clear'])
 		music['clearstring'] = iidx.getclearstring(clear)
 
-		# make rate
-		if (music['score'] == None):
+		# make rate (sometimes note data isn't provided)
+		if (music['score'] == None or music['data']['notes'] == None):
 			music['rate'] = 0
 		else:
 			music['rate'] = music['score'] / float(music['data']['notes']) / 2 * 100
