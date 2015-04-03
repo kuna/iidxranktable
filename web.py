@@ -67,9 +67,9 @@ def index():
 
 @app.route('/imgtl', methods=['POST'])
 def imgtl():
-	print "got imgtl request: %s" % request.form['name']
 	filename = request.form['name']
 	pngdata = base64.decodestring(request.form['base64'])
+	print "got imgtl request: %s (%d byte)" % (request.form['name'], len(pngdata))
 
 	import requests
 	import urllib2

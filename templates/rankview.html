@@ -65,17 +65,24 @@ $(document).ready(function () {
 
 	$("#send").click(function () {
 		var b = png_base64.substring(22);
+		$("#send").button('loading');
 		$.ajax({
 			url: "/imgtl",
 			type: "POST",
 			data: { name: fname, base64: b },
 			success: function (o) {
 				ret = JSON.parse(o);
+				if (ret.error) {
+					alert(ret.error);
+					return;
+				}
+
 				$("#url").val(ret.data.url.direct);
 				twitter_url = "http://twitter.com/share?text=" + ftitle + "&hashtags=iidx&url=" + ret.data.url.page;
 				//ret.data.url.page;
 				console.log(o);
 
+				$("#send").button('reset');
 				$("#send").hide();
 				$("#url").css('display', 'inline-block');	// block breaks layout
 				$("#twitter").css('display', 'inline-block');
@@ -95,12 +102,12 @@ $(document).ready(function () {
 {% block body %}
 <div id="menu">
 	<!-- addon button -->
-	<button id="show_rank" class="btn btn-default" data-loading-text="coming soon!" >show rank</button>
-	<button id="order_rate" class="btn btn-default" data-loading-text="please wait..." >order by rate</button>
-	<button id="order_clear" class="btn btn-default" data-loading-text="please wait..." >order by clear</button>
+	<button id="show_rank" class="btn btn-default">show rank</button>
+	<button id="order_rate" class="btn btn-default">order by rate</button>
+	<button id="order_clear" class="btn btn-default">order by clear</button>
 
 	<button id="capture" class="btn btn-default" data-loading-text="please wait..." ><span class="glyphicon glyphicon-camera"></span> capture</button>
-	<button id="send" class="btn btn-default"><span class="glyphicon glyphicon-upload"></span> upload for url/twitter</button>
+	<button id="send" class="btn btn-default" data-loading-text="uploading..."><span class="glyphicon glyphicon-upload"></span> upload for url/twitter</button>
 	<input type="text" id="url" value="" class="form-control" disabled="disabled">
 	<button id="twitter" class="btn btn-info"><span class="glyphicon glyphicon-send"></span> twitter</button>
 </div>
