@@ -81,6 +81,8 @@ def parse(username, type, diff):
 
 
 # main code
+#sample: http://json.iidx.me/delmitz/dp/level/10
+
 print "--------------------------------"
 print "* initalizing DB ..."
 app = Flask(__name__)
