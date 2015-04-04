@@ -4,7 +4,7 @@
 <script type="text/javascript" src="{{ url_for('static', filename='js/html2canvas.min.js') }}"></script>
 <script language="javascript">
 var png_base64 = "";
-var ftitle = "{{ title }} - DJ {{ user['name'] }}"
+var ftitle = "{{ option['title'] }} - DJ {{ user['name'] }}"
 var fname = ftitle + ".png";
 
 $(document).ready(function () {
@@ -114,10 +114,10 @@ $(document).ready(function () {
 
 <div id="container"><div class="inner">
 	<!-- table info -->
-	<h2 id="title">{{ titlehtml|safe }}</h2>
+	<h2 id="title">{{ option['titlehtml']|safe }}</h2>
 
 	<!-- user info -->
-	<p id="user"><span class="label name">DJ {{ user['name'] }}</span> <span class="label {{ mode }} spdan dan{{ user['spdannum'] }}">{{ user['spdan'] }}</span><span class="label {{ mode }} dpdan dan{{ user['dpdannum'] }}">{{ user['dpdan'] }}</span></p>
+	<p id="user"><span class="label name">DJ {{ user['name'] }}</span> <span class="label {{ option['type'] }} spdan dan{{ user['spdannum'] }}">{{ user['spdan'] }}</span><span class="label {{ option['type'] }} dpdan dan{{ user['dpdannum'] }}">{{ user['dpdan'] }}</span></p>
 
 	<!-- clear lamp info -->
 	<ul id="preview">
@@ -152,3 +152,4 @@ $(document).ready(function () {
 <div id="rankimg">
 </div>
 {% endblock %}
+{% block etc %}{{ option['from'] }}<br>updated {{ option['date'] }}{% endblock %}

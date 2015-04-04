@@ -3,7 +3,7 @@ import iidx
 import jsondata
 import song
 
-def render_score(player, score, mode_, title_, titlehtml_):
+def render_score(player, score, option_):
 	name = ""
 	spdan = ""
 	dpdan = ""
@@ -12,7 +12,7 @@ def render_score(player, score, mode_, title_, titlehtml_):
 		spdan = player['userdata']['spclass']
 		dpdan = player['userdata']['dpclass']
 
-	return render_template('rankview.html', mode=mode_, title=title_, titlehtml=titlehtml_, \
+	return render_template('rankview.html', option=option_, \
 		user={'name': name, 'spdan': iidx.getdanstring(spdan), 'spdannum':spdan, 'dpdan': iidx.getdanstring(dpdan), 'dpdannum': dpdan},\
 		datas=score)
 
@@ -47,4 +47,4 @@ def render_songlist(optionpath, user):
 	# create score data
 	score = song.processCSV(player['musicdata'], data)
 
-	return render_score(player, score, option['type'], option['title'], option['titlehtml'])
+	return render_score(player, score, option)
