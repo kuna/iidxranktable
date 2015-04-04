@@ -2,8 +2,9 @@
 	"type": "sp",
 	"level": 10,
 	"datafile": "./data/sp.10.txt",
-	"jsonfile": "./data/song.sp.10.json",
+	"jsonfile": "./data/songdata/song.sp.10.json",
 	"title": "Beatmania IIDX SP lv.10 Hard Guage Rank",
 	"titlehtml": "Beatmania IIDX SP lv.10 <span style='color:#f00;'>Hard Guage</span> Rank",
-	"from": "http://clickagain.sakura.ne.jp (clddal.kr)"
+	"from": "http://clickagain.sakura.ne.jp (clddal.kr)",
+	"date": "20150402"
 }

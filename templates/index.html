@@ -52,10 +52,22 @@ $(document).ready(function () {
 #goto { cursor:pointer; cursor:hand;/*fallback*/ }
 .row { clear:both; margin-bottom:10px; }
 .row button { margin-right:6px; }
+
+h4.djname { float:left; }
+h4.level { float:right; cursor:help; }
+h4.level span { display:none; }
+h4.level:hover span { display:inline; }
 </style>
 {% endblock %}
 {% block body %}
 <div id="container">
+	{% if username %}
+	<div class="row">
+		<h4 class="djname">DJ {{ username }}</h4>
+		<h4 class="level"><span class="label label-default">COMING SOON</span>★?? / ★??</h4>
+	</div>
+	{% endif %}
+
 	<div class="row input-group">
 		<input type="text" class="form-control" value="{{ username }}" aria-describedby="basic-addon2" id="username">
 		<span class="input-group-addon" id="goto">iidx.me ID</span>
@@ -65,10 +77,6 @@ $(document).ready(function () {
 	</div>
 
 	<div class="row center" id="dpcontainer">
-	</div>
-
-	<div class="row">
-		<p>contact: @lazykuna</p>
 	</div>
 </div>
 {% endblock %}
