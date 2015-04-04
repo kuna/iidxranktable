@@ -69,7 +69,7 @@ $(document).ready(function () {
 		$.ajax({
 			url: "/imgtl",
 			type: "POST",
-			data: { name: encodeURI(fname), base64: b },
+			data: { name: fname.replace( /[^\x00-\x80]/g,'_'), base64: b },
 			success: function (o) {
 				ret = JSON.parse(o);
 				if (ret.error) {
