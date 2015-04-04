@@ -69,7 +69,7 @@ $(document).ready(function () {
 		$.ajax({
 			url: "/imgtl",
 			type: "POST",
-			data: { name: fname, base64: b },
+			data: { name: encodeURI(fname), base64: b },
 			success: function (o) {
 				ret = JSON.parse(o);
 				if (ret.error) {
@@ -108,7 +108,7 @@ $(document).ready(function () {
 
 	<button id="capture" class="btn btn-default" data-loading-text="please wait..." ><span class="glyphicon glyphicon-camera"></span> capture</button>
 	<button id="send" class="btn btn-default" data-loading-text="uploading..."><span class="glyphicon glyphicon-upload"></span> upload for url/twitter</button>
-	<input type="text" id="url" value="" class="form-control" disabled="disabled">
+	<input type="text" id="url" value="" class="form-control" readonly>
 	<button id="twitter" class="btn btn-info"><span class="glyphicon glyphicon-send"></span> twitter</button>
 </div>
 
