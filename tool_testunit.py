@@ -10,7 +10,8 @@ def test(json):
 	print "----------------------------------------------------"
 	songdata = song.getCSVdata(option["datafile"])
 	userdata = jsondata.loadJSONfile(option["jsonfile"])
-	orig_userdata = copy.deepcopy(userdata) 	# copy
+	orig_userdata = copy.deepcopy(userdata)
+	duplicatecheck = {}
 	for songs in songdata:
 		for song_ in songs["songs"]:
 			# ALL option: no need to continue
@@ -18,13 +19,17 @@ def test(json):
 				userdata["musicdata"] = []
 				break;
 
-			if (not song.isexists(orig_userdata["musicdata"], song_)):
+			if (not song.isexists(userdata["musicdata"], song_, True)):
 				print "unmatched(redundant) song exists in RANKFILE - %s/%s (%s)" % (song_["id"], song_["option"], songs["category"])
-			else:
-				if (not song.isexists(userdata["musicdata"], song_, True)):
-					d = song.isexists(orig_userdata["musicdata"], song_)
-					print "song seems like duplicated in RANKFILE - %s/%s (%s) (title: %s)" % \
-					(song_["id"], song_["option"], songs["category"], d['data']['title'])
+
+			code = str(song_["id"]) + str(song_["option"])
+			if (code in duplicatecheck):
+				d = song.isexists(orig_userdata["musicdata"], song_)
+				print "song seems like duplicated in RANKFILE - %s/%s (%s) (title: %s)" % \
+				(song_["id"], song_["option"], songs["category"], d['data']['title'])
+
+			duplicatecheck[code] = 0
+
 
 	if (len(userdata["musicdata"]) > 0):
 		print "REDUNT MUSICDATA FOUND! DATABASE UPDATE NECESSARY"
