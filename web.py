@@ -58,6 +58,7 @@ def test():
 def userpage(user):
 	return render_template('index.html', username=user)
 
+@app.route('/iidx/')
 @app.route('/iidx')
 @app.route('/')
 def index():
