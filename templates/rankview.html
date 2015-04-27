@@ -1,13 +1,23 @@
 {% extends "common.html" %}
 {% block head %}
 <link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/style.css') }}">
+<link rel=stylesheet type=text/css id="rankpage_style" href="{{ url_for('static', filename='css/rankpage_default.css') }}">
 <script type="text/javascript" src="{{ url_for('static', filename='js/html2canvas.min.js') }}"></script>
 <script language="javascript">
 var png_base64 = "";
 var ftitle = "{{ option['title'] }} - DJ {{ user['name'] }}"
 var fname = ftitle + ".png";
+var rankpage_style_arr = [
+"{{ url_for('static', filename='css/rankpage_default.css') }}",
+"{{ url_for('static', filename='css/rankpage_light.css') }}",
+];
+var rankpage_style_idx = 0;
 
 $(document).ready(function () {
+	$('#change_rank_css').click(function () {
+		rankpage_style_idx = (rankpage_style_idx + 1) % rankpage_style_arr.length;
+		$("#rankpage_style").attr("href", rankpage_style_arr[rankpage_style_idx]);
+	});
 	$('#show_rank').click(function () {
 		$('.rank').show();
 	});
@@ -102,6 +112,8 @@ $(document).ready(function () {
 {% block body %}
 <div id="menu">
 	<!-- addon button -->
+	<button id="home" class="btn btn-default" style="float:left;" onclick="history.back(); return false;">return</button>
+	<button id="change_rank_css" class="btn btn-default">skin</button>
 	<button id="show_rank" class="btn btn-default">show rank</button>
 	<button id="order_rate" class="btn btn-default">order by rate</button>
 	<button id="order_clear" class="btn btn-default">order by clear</button>
@@ -138,8 +150,8 @@ $(document).ready(function () {
 				<div class="cell">
 					<ul class="songlist">
 						{% for song in data.songs %}
-						<li class="{{ song['clearstring'] }}" data-clear="{{ song['clear'] }}" data-rate="{{ song['rate'] }}">
-							<span class="name">{{ song.data.title }}</span><div class="rank {{ song['rank'] }}"></div>
+						<li class="{{ song['clearstring'] }} diff{{ song['data']['diff'] }}" data-clear="{{ song['clear'] }}" data-rate="{{ song['rate'] }}">
+							<span class="name">{{ song['data']['title'] }}</span><div class="rank {{ song['rank'] }}"></div>
 						</li>
 						{% endfor %}
 					</ul>

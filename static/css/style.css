@@ -38,14 +38,6 @@ body { font-family: 'Malgun Gothic', NanumBarunRoboto,Roboto,"Helvetica Neue",Ar
 .EX-HARD_CLEAR.clear { background: url('../img/clearlamp_exhard.png') 0 0 no-repeat; }
 .FULL_COMBO.clear { background: url('../img/clearlamp_fullcombo.png') 0 0 no-repeat; }
 
-li.FAILED { background: url('../img/clearlampbg_failed.png') top right repeat-y; }
-li.ASSIST_CLEAR { background: url('../img/clearlampbg_assist.png') top right repeat-y; }
-li.EASY_CLEAR { background: url('../img/clearlampbg_easy.png') top right repeat-y; }
-li.CLEAR { background: url('../img/clearlampbg_normal.png') top right repeat-y; }
-li.HARD_CLEAR { background: url('../img/clearlampbg_hard.png') top right repeat-y; }
-li.EX-HARD_CLEAR { background: url('../img/clearlampbg_exhard.png') top right repeat-y; }
-li.FULL_COMBO { background: url('../img/clearlampbg_fullcombo.png') top right repeat-y; }
-
 /* cell clear */
 .cell.NO_PLAY { }
 .cell.FAILED { background: url('../img/clearlamp_failed.png') 28px 50% no-repeat; }

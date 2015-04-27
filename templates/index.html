@@ -63,7 +63,7 @@ h4.level:hover span { display:inline; }
 <div id="container">
 	{% if username %}
 	<div class="row">
-		<h4 class="djname">{{ username }}.iidx.me</h4>
+		<h4 class="djname">iidx.me/{{ username }}</h4>
 		<h4 class="level"><span class="label label-default">COMING SOON</span>★?? / ★??</h4>
 	</div>
 	{% endif %}
@@ -78,5 +78,9 @@ h4.level:hover span { display:inline; }
 
 	<div class="row center" id="dpcontainer">
 	</div>
+
+	{% block notice %}
+		
+	{% endblock %}
 </div>
 {% endblock %}

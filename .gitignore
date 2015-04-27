@@ -48,3 +48,4 @@ test*
 private.py
 env.py
 !testunit.py
+*.swp
