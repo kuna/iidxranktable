@@ -14,7 +14,7 @@ body { font-family: 'Malgun Gothic', NanumBarunRoboto,Roboto,"Helvetica Neue",Ar
 .cell { display:table-cell; border: 2px solid #000; vertical-align: middle; }
 
 .songlist { list-style: none; overflow: hidden; margin:0; }
-.songlist li { float:left; display:block; padding:2px 0; width:20%; height: 25px; border-right:1px solid #ccc; border-bottom: 1px solid #ccc; overflow: hidden; position: relative; word-break: break-all; }
+.songlist li { float:left; display:block; padding:2px 0; width:20%; height: 25px; border-right:1px solid #ccc; border-bottom: 1px solid #ccc; overflow: hidden; position: relative; word-break: break-all; border-collapse:separate; }
 .songlist .name { padding:0 8px; }
 .rowname { font-weight: bold; text-align: center; }
 
