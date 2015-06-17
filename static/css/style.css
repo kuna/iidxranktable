@@ -1,6 +1,18 @@
+/*
+font from
+http://mplus.font-face.jp/#/
+*/
+@font-face {
+    font-family: 'M+ 1c medium';
+    src: url('../fonts/mplus-1c-medium-sub.eot');
+    src: url('../fonts/mplus-1c-medium-sub.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/mplus-1c-medium-sub.woff') format('woff'),
+    url('../fonts/mplus-1c-medium-sub.ttf') format('truetype');
+}
+
 
 * { padding:0; margin:0; }
-body { font-family: 'Malgun Gothic', NanumBarunRoboto,Roboto,"Helvetica Neue",Arial,NanumBarunGothicOTF,NanumBarunGothic,"나눔바른고딕",NanumGothicOTF,NanumGothic,"나눔고딕","Apple SD Gothic Neo",Dotum,"돋움",sans-serif; font-size: 14px; }
+body { font-family: 'M+ 1c medium', 'Malgun Gothic', NanumBarunGothicOTF,"Helvetica Neue",Arial,"Apple SD Gothic Neo",Dotum,"돋움",sans-serif; font-size: 14px; }
 #rankimg,
 #menu,
 #container { width:100%; min-width:720px; max-width:1080px; margin: 0 auto 20px; clear: both; }
