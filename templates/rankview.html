@@ -1,8 +1,12 @@
 {% extends "common.html" %}
 {% block head %}
+<!-- override metadata -->
+<meta name="viewport" content="width=1120, user-scalable=1">
+
 <link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/style.css') }}">
 <link rel=stylesheet type=text/css id="rankpage_style" href="{{ url_for('static', filename='css/rankpage_default.css') }}">
 <script type="text/javascript" src="{{ url_for('static', filename='js/html2canvas.min.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='js/ranklist.js') }}"></script>
 <script language="javascript">
 var png_base64 = "";
 var ftitle = "{{ option['title'] }} - DJ {{ user['name'] }}"
@@ -107,9 +111,22 @@ $(document).ready(function () {
 			window.open(twitter_url, "share", "height=300,width=500");
 	});
 
+	// do auto kerning (not using currently)
 	//$("#ranktable").kerning();
 });
+
+//
+// update all text into canvas
+//
+$(function () {
+	$(".songlist .name").each(function (e) {
+		var canvas = new ranklist(150, 20, $(this).text(), "#000000", "14px");
+		$(this).empty();
+		$(this).append($(canvas.makeCanvas()));
+	});
+});
 </script>
+
 {% endblock %}
 {% block body %}
 <div id="menu">
