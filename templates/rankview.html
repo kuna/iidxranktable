@@ -135,25 +135,31 @@ $(document).ready(function () {
 
 	<!-- clear lamp info -->
 	<ul id="preview">
-		<li>FAILED<div class="FAILED clear"></div></li>
-		<li>ASSIST CLEAR<div class="ASSIST_CLEAR clear"></div></li>
-		<li>EASY CLEAR<div class="EASY_CLEAR clear"></div></li>
-		<li>CLEAR<div class="CLEAR clear"></div></li>
-		<li>HARD CLEAR<div class="HARD_CLEAR clear"></div></li>
-		<li>EX-HARD CLEAR<div class="EX-HARD_CLEAR clear"></div></li>
-		<li>FULLCOMBO<div class="FULL_COMBO clear"></div></li>
+		<li>FAILED<span class="clearcount">(10)</span><div class="lamp_sample lamp_category FAILED"></div></li>
+		<li>ASSIST CLEAR<span class="clearcount">(10)</span><div class="lamp_sample lamp_category ASSIST_CLEAR"></div></li>
+		<li>EASY CLEAR<span class="clearcount">(10)</span><div class="lamp_sample lamp_category EASY_CLEAR"></div></li>
+		<li>CLEAR<span class="clearcount">(10)</span><div class="lamp_sample lamp_category CLEAR"></div></li>
+		<li>HARD CLEAR<span class="clearcount">(10)</span><div class="lamp_sample lamp_category HARD_CLEAR"></div></li>
+		<li>EX-HARD CLEAR<span class="clearcount">(10)</span><div class="lamp_sample lamp_category EX-HARD_CLEAR"></div></li>
+		<li>FULLCOMBO<span class="clearcount">(10)</span><div class="lamp_sample lamp_category FULL_COMBO"></div></li>
 	</ul>
 
 	<div id="ranktable">
 		<div class="table outertable">
 			{% for data in datas %}
 			<div class="row">
-				<div class="cell rowname cell {{ data.categoryclearstring }}"><span class="name">{{ data.category }}</span></div>
+				<div class="cell rowname">
+					<span class="name">{{ data.category }}</span>
+					<span class="lamp_category {{ data.categoryclearstring }}"></span>
+				</div>
 				<div class="cell">
 					<ul class="songlist">
 						{% for song in data.songs %}
-						<li class="{{ song['clearstring'] }} diff{{ song['data']['diff'] }}" data-clear="{{ song['clear'] }}" data-rate="{{ song['rate'] }}">
-							<span class="name">{{ song['data']['title'] }}</span><div class="rank {{ song['rank'] }}"></div>
+						<li class="diff{{ song['data']['diff'] }}" 
+							data-clear="{{ song['clear'] }}" data-rate="{{ song['rate'] }}">
+							<span class="name">{{ song['data']['title'] }}</span>
+							<div class="lamp_clear {{ song['clearstring'] }}"></div>
+							<div class="rank {{ song['rank'] }}"></div>
 						</li>
 						{% endfor %}
 					</ul>

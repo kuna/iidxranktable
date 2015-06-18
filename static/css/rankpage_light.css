@@ -1,8 +1,18 @@
-li.FAILED { background: url('../img/clearlampbg_failed.png') top right repeat-y; }
-li.ASSIST_CLEAR { background: url('../img/clearlampbg_assist.png') top right repeat-y; }
-li.EASY_CLEAR { background: url('../img/clearlampbg_easy.png') top right repeat-y; }
-li.CLEAR { background: url('../img/clearlampbg_normal.png') top right repeat-y; }
-li.HARD_CLEAR { background: url('../img/clearlampbg_hard.png') top right repeat-y; }
-li.EX-HARD_CLEAR { background: url('../img/clearlampbg_exhard.png') top right repeat-y; }
-li.FULL_COMBO { background: url('../img/clearlampbg_fullcombo.png') top right repeat-y; }
+.lamp_clear { background:url('../img/clearlampbg.png') no-repeat; display:block; position:absolute; 
+	right:0px; top:0px; width:30px; height:30px; }
+.lamp_clear.NO_PLAY { display:none; }
+.lamp_clear.FAILED { background-position:0 0; }
+.lamp_clear.ASSIST_CLEAR { background-position:0 -30px; }
+.lamp_clear.EASY_CLEAR { background-position:0 -60px; }
+.lamp_clear.CLEAR { background-position:0 -90px; }
+.lamp_clear.HARD_CLEAR { background-position:0 -120px; }
+.lamp_clear.EX-HARD_CLEAR { background-position:0 -150px; }
+.lamp_clear.FULL_COMBO { background-position:0 -180px; }
 
+/* background. preferred to DP user */
+li.diffA { background-color: none; }
+li.diffH { background-color: none; }
+li.diffN { background-color: none; }
+
+/* and song cell border color overlapped */
+.songlist li { border-color: #ccc; }

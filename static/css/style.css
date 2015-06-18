@@ -18,47 +18,48 @@ body { font-family: 'M+ 1c medium', 'Malgun Gothic', NanumBarunGothicOTF,"Helvet
 #container { width:100%; min-width:720px; max-width:1080px; margin: 0 auto 20px; clear: both; }
 #container .inner { padding:10px; overflow:hidden; background-color:#fff;  }
 
-/*.outertable { border:0 2px 2px 0 solid #000; }*/
+/*
+ * outer table (category / level)
+ */
 .outertable { width:100%; }
 .outertable div:first-child { width:120px; }
-.table { display:table; border-collapse: collapse; border-spacing: 0px; }
+.table { display:table; border-spacing: 0px; }
 .row { display:table-row; }
-.cell { display:table-cell; border: 2px solid #000; vertical-align: middle; }
+.cell { display:table-cell; vertical-align: middle; }
 
+/* outer table border setting */
+.table:first-child { border-top: 2px solid #000; }
+.row { }
+.cell { border-left: 2px solid #000; border-bottom: 2px solid #000; }
+.cell:last-child { border-right: 2px solid #000; }
+
+/*
+ * inner table (song list / name)
+ */
 .songlist { list-style: none; overflow: hidden; margin:0; }
-.songlist li { float:left; display:block; padding:2px 0; width:20%; height: 25px; border-right:1px solid #ccc; border-bottom: 1px solid #ccc; overflow: hidden; position: relative; word-break: break-all; border-collapse:separate; }
+.songlist li { float:left; display:block; padding:2px 0; width:20%; height: 25px; 
+		border-right:1px solid #ccc; border-bottom: 1px solid #ccc; 
+		overflow: hidden; position: relative; word-break: break-all; }
 .songlist .name { padding:0 8px; /*letter-spacing: -0.5px*/ }
 .rowname { font-weight: bold; text-align: center; }
 
 
-/* clear lamp */
-.clear { position: absolute; width:12px; height:12px; top:6px; right:6px; display: block; }
-.NO_PLAY.clear { }
-/*
-.FAILED.clear { background-color: #999; }
-.ASSIST_CLEAR.clear { background-color: #f0f; }
-.EASY_CLEAR.clear { background-color: #0f0; }
-.CLEAR.clear { background-color: #00f; }
-.HARD_CLEAR.clear { background-color: #f00; }
-.EX-HARD_CLEAR.clear { background-color: #ff0; }
-.FULL_COMBO.clear { background-color: #6ef; }*/
-.FAILED.clear { background: url('../img/clearlamp_failed.png') 0 0 no-repeat; }
-.ASSIST_CLEAR.clear { background: url('../img/clearlamp_assist.png') 0 0 no-repeat; }
-.EASY_CLEAR.clear { background: url('../img/clearlamp_easy.png') 0 0 no-repeat; }
-.CLEAR.clear { background: url('../img/clearlamp_normal.png') 0 0 no-repeat; }
-.HARD_CLEAR.clear { background: url('../img/clearlamp_hard.png') 0 0 no-repeat; }
-.EX-HARD_CLEAR.clear { background: url('../img/clearlamp_exhard.png') 0 0 no-repeat; }
-.FULL_COMBO.clear { background: url('../img/clearlamp_fullcombo.png') 0 0 no-repeat; }
+/* clear lamp (sample for top) */
+#preview { clear:both; width:100%; height:40px; }
+#preview li { display:block; margin-right:20px; position: relative; float:left; }
+.lamp_sample { margin-left: 5px; }
+#preview li .clearcount { font-size:10px; font-style:italic; position:absolute; top:22px; left:0; }
 
-/* cell clear */
-.cell.NO_PLAY { }
-.cell.FAILED { background: url('../img/clearlamp_failed.png') 28px 50% no-repeat; }
-.cell.ASSIST_CLEAR { background: url('../img/clearlamp_assist.png') 28px 50% no-repeat; }
-.cell.EASY_CLEAR { background: url('../img/clearlamp_easy.png') 28px 50% no-repeat; }
-.cell.CLEAR { background: url('../img/clearlamp_clear.png') 28px 50% no-repeat; }
-.cell.HARD_CLEAR { background: url('../img/clearlamp_hard.png') 28px 50% no-repeat; }
-.cell.EX-HARD_CLEAR { background: url('../img/clearlamp_exhard.png') 28px 50% no-repeat; }
-.cell.FULL_COMBO { background: url('../img/clearlamp_fullcombo.png') 28px 50% no-repeat; }
+/* cell clear lamp */
+.lamp_category { display:inline-block; height:20px; width:24px; background: url('../img/clearlamp.png') no-repeat; }
+.lamp_category.NO_PLAY { display:none; }
+.lamp_category.FAILED { background-position: 0 6px; }
+.lamp_category.ASSIST_CLEAR { background-position: 0 -24px; }
+.lamp_category.EASY_CLEAR { background-position: 0 -54px; }
+.lamp_category.CLEAR { background-position: 0 -84px; }
+.lamp_category.HARD_CLEAR { background-position: 0 -114px; }
+.lamp_category.EX-HARD_CLEAR { background-position: 0 -144px; }
+.lamp_category.FULL_COMBO { background-position: 0 -174px; }
 
 /* rank show */
 .rank { position: absolute; width:16px; height:10px; top:7px; right:8px; 
@@ -111,10 +112,6 @@ body { font-family: 'M+ 1c medium', 'Malgun Gothic', NanumBarunGothicOTF,"Helvet
 .dan17,
 .dan18 { background-color: #c00 !important; }
 .dan19 { background-color: #cc0 !important; }
-
-#preview { margin-bottom:20px; clear:both; width:100%; overflow:hidden; }
-#preview li { display:block; padding-right: 30px; margin-right:20px; position: relative; float:left; }
-#preview li .clear { }
 
 #url { width:200px; }
 #menu { padding: 20px; text-align: right; }

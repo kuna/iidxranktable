@@ -1,10 +1,13 @@
-li.FAILED { background: url('../img/clearlamp_failed.png') right 6px top 6px no-repeat; }
-li.ASSIST_CLEAR { background: url('../img/clearlamp_assist.png') right 6px top 6px no-repeat; }
-li.EASY_CLEAR { background: url('../img/clearlamp_easy.png') right 6px top 6px no-repeat; }
-li.CLEAR { background: url('../img/clearlamp_normal.png') right 6px top 6px no-repeat; }
-li.HARD_CLEAR { background: url('../img/clearlamp_hard.png') right 6px top 6px no-repeat; }
-li.EX-HARD_CLEAR { background: url('../img/clearlamp_exhard.png') right 6px top 6px no-repeat; }
-li.FULL_COMBO { background: url('../img/clearlamp_fullcombo.png') right 6px top 6px no-repeat; }
+.lamp_clear { background:url('../img/clearlamp.png') no-repeat; display:block; position:absolute; 
+	right:0px; top:6px; width:24px; height:24px; }
+.lamp_clear.NO_PLAY { display:none; }
+.lamp_clear.FAILED { background-position:0 0; }
+.lamp_clear.ASSIST_CLEAR { background-position:0 -30px; }
+.lamp_clear.EASY_CLEAR { background-position:0 -60px; }
+.lamp_clear.CLEAR { background-position:0 -90px; }
+.lamp_clear.HARD_CLEAR { background-position:0 -120px; }
+.lamp_clear.EX-HARD_CLEAR { background-position:0 -150px; }
+.lamp_clear.FULL_COMBO { background-position:0 -180px; }
 
 /* background. preferred to DP user */
 li.diffA { background-color: #fdd; }
