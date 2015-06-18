@@ -15,7 +15,7 @@ http://mplus.font-face.jp/#/
 body { font-family: 'M+ 1c medium', 'Malgun Gothic', NanumBarunGothicOTF,"Helvetica Neue",Arial,"Apple SD Gothic Neo",Dotum,"돋움",sans-serif; font-size: 14px; }
 #rankimg,
 #menu,
-#container { width:100%; min-width:720px; max-width:1080px; margin: 0 auto 20px; clear: both; }
+#container { width:1080px; margin: 0 auto 20px; clear: both; }
 #container .inner { padding:10px; overflow:hidden; background-color:#fff;  }
 
 /*

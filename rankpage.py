@@ -12,8 +12,32 @@ def render_score(player, score, option_):
 		spdan = player['userdata']['spclass']
 		dpdan = player['userdata']['dpclass']
 
-	return render_template('rankview.html', option=option_, \
-		user={'name': name, 'spdan': iidx.getdanstring(spdan), 'spdannum':spdan, 'dpdan': iidx.getdanstring(dpdan), 'dpdannum': dpdan},\
+	# count clear counts
+	clearcount = {
+		'noplay': 0,
+		'failed': 0,
+		'assist': 0,
+		'easy': 0,
+		'normal': 0,
+		'hard': 0,
+		'exhard': 0,
+		'fullcombo': 0
+	}
+	for category in score:
+		for x in category['songs']:
+			clearcount['noplay'] = clearcount['noplay'] + (x['clear'] == 0)
+			clearcount['failed'] = clearcount['failed'] + (x['clear'] == 1)
+			clearcount['assist'] = clearcount['assist'] + (x['clear'] == 2)
+			clearcount['easy'] = clearcount['easy'] + (x['clear'] == 3)
+			clearcount['normal'] = clearcount['normal'] + (x['clear'] == 4)
+			clearcount['hard'] = clearcount['hard'] + (x['clear'] == 5)
+			clearcount['exhard'] = clearcount['exhard'] + (x['clear'] == 6)
+			clearcount['fullcombo'] = clearcount['fullcombo'] + (x['clear'] == 7)
+
+	return render_template('rankview.html', option=option_,
+		user={'name': name, 'spdan': iidx.getdanstring(spdan),
+			'spdannum':spdan, 'dpdan': iidx.getdanstring(dpdan), 'dpdannum': dpdan},
+		clearcount=clearcount,
 		datas=score)
 
 def render_songlist(optionpath, user):

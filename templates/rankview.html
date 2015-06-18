@@ -135,13 +135,13 @@ $(document).ready(function () {
 
 	<!-- clear lamp info -->
 	<ul id="preview">
-		<li>FAILED<span class="clearcount">(10)</span><div class="lamp_sample lamp_category FAILED"></div></li>
-		<li>ASSIST CLEAR<span class="clearcount">(10)</span><div class="lamp_sample lamp_category ASSIST_CLEAR"></div></li>
-		<li>EASY CLEAR<span class="clearcount">(10)</span><div class="lamp_sample lamp_category EASY_CLEAR"></div></li>
-		<li>CLEAR<span class="clearcount">(10)</span><div class="lamp_sample lamp_category CLEAR"></div></li>
-		<li>HARD CLEAR<span class="clearcount">(10)</span><div class="lamp_sample lamp_category HARD_CLEAR"></div></li>
-		<li>EX-HARD CLEAR<span class="clearcount">(10)</span><div class="lamp_sample lamp_category EX-HARD_CLEAR"></div></li>
-		<li>FULLCOMBO<span class="clearcount">(10)</span><div class="lamp_sample lamp_category FULL_COMBO"></div></li>
+		<li>FAILED<span class="clearcount">({{ clearcount.failed }})</span><div class="lamp_sample lamp_category FAILED"></div></li>
+		<li>ASSIST CLEAR<span class="clearcount">({{ clearcount.assist }})</span><div class="lamp_sample lamp_category ASSIST_CLEAR"></div></li>
+		<li>EASY CLEAR<span class="clearcount">({{ clearcount.easy }})</span><div class="lamp_sample lamp_category EASY_CLEAR"></div></li>
+		<li>CLEAR<span class="clearcount">({{ clearcount.normal }})</span><div class="lamp_sample lamp_category CLEAR"></div></li>
+		<li>HARD CLEAR<span class="clearcount">({{ clearcount.hard }})</span><div class="lamp_sample lamp_category HARD_CLEAR"></div></li>
+		<li>EX-HARD CLEAR<span class="clearcount">({{ clearcount.exhard }})</span><div class="lamp_sample lamp_category EX-HARD_CLEAR"></div></li>
+		<li>FULLCOMBO<span class="clearcount">({{ clearcount.fullcombo }})</span><div class="lamp_sample lamp_category FULL_COMBO"></div></li>
 	</ul>
 
 	<div id="ranktable">
