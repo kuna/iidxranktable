@@ -1,23 +1,29 @@
 import db
-import parser_clddal, parser_clickagain, parser_zasa, parser_iidxme
+import parser_clickagain, parser_zasa, parser_iidxme
 
 
 def main():
 	print 'opening DB ...'
 	db_session = db.init_db()
 
-	print 'parsing clickagain'
-	clddal_db = parser_clddal.parse()
+	for lvl in range(12, 13):
+		print 'parsing iidxme sp (%d)' % lvl
+		data = parser_iidxme.parse_songs(lvl, "sp")
+		added_data = 0
+		for song in data:
+			if not db.Song.query.filter(songid=song['id'], songtype=song['diff']).count():
+				song = db.Song(songname=song['title'], 
+					songtype=song['diff'],
+					songid=song['id'],
+					songlevel=song['level'],
+					songnotes=song['notes'])
+				db_session.add(song)
+				added_data = added_data+1
+		db_session.commit()
+		print "added %d datas" % added_data
 
-	print 'add to DB ...'
-	added_data = 0
-	for data in clddal_db:
-		if not db.RankTable.query.filter(songname=data[0], songtype=data[1]).count():
-			rankTable = db.RankTable(songname=data[0], songtype=data[1])
-			db_session.add(rankTable)
-			added_data = added_data+1
-	db_session.commit()
-	print "added %d datas" % added_data
+	print 'parsing clickagain'
+	# TODO
 
 	print 'finished. closing DB ...'
 	db_session.remove()

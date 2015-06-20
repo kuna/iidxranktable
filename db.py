@@ -1,4 +1,3 @@
-from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, Integer, String, func
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -7,28 +6,33 @@ from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 import os
 
-db = SQLAlchemy()
+Base = declarative_base()
 
 class RankTable(db.Model):
-	id = db.Column('object_id', db.Integer, primary_key=True, index=True)
+	id = db.Column(db.Integer, primary_key=True, index=True)
+	category = db.relationship('RankCategory', backref='ranktable', lazy='select')
+
 	tablename = db.Column('tablename', db.String(100))
 
 class RankCategory(db.Model):
-	id = db.Column('object_id', db.Integer, primary_key=True, index=True)
-	table = db.relationship('RankTable', backref='rankcategories', lazy='select')
+	id = db.Column(db.Integer, primary_key=True, index=True)
+	rankitem = db.relationship('RankItem', backref='category', lazy='select')
+
+	table_id = db.Column(db.Integer, db.ForeignKey('rank_table.id'))
 	categoryname = db.Column('categoryname', db.String(20))
 
 class RankItem(db.Model):
-	id = db.Column('object_id', db.Integer, primary_key=True, index=True)
-	song = db.relationship('Song', backref='rankitems', lazy='select')	# this cannot be null & can direct same song
-	category = db.relationship('RankCategory', backref='rankitems', lazy='select')
+	id = db.Column(db.Integer, primary_key=True, index=True)
+	song_id = db.Column(db.Integer, db.ForeignKey('song.id'))	# this cannot be null & can direct same song
+	category_id = db.Column(db.Integer, db.ForeignKey('rank_category.id'))
 
 	songtype = db.Column('songtype', db.String(8))		# dph/spa ...
 	songtitle = db.Column('songtitle', db.String(40))
 
 class Song(db.Model):
-	id = db.Column('object_id', db.Integer, primary_key=True, index=True)
-	records = db.relationship('PlayRecord', backref='song', lazy='select')
+	id = db.Column(db.Integer, primary_key=True, index=True)
+	playrecord = db.relationship('PlayRecord', backref='song', lazy='select')
+	rankitem = db.relationship('RankItem', backref='song', lazy='select')
 
 	songid = db.Column('songid', db.Integer)
 	songtype = db.Column('songtype', db.String(8))		# dph/spa ...
@@ -38,9 +42,9 @@ class Song(db.Model):
 
 class PlayRecord(db.Model):
 	__tablename__ = 'play'
-	id = db.Column('object_id', db.Integer, primary_key=True, index=True)
-	player_id = db.Column('player_id', db.Integer, db.ForeignKey('player.id'), nullable=False)
-	song_id = db.Column('song_id', db.Integer, db.ForeignKey('song.id'), nullable=False)
+	id = db.Column(db.Integer, primary_key=True, index=True)
+	player_id = db.Column(db.Integer, db.ForeignKey('player.id'))
+	song_id = db.Column(db.Integer, db.ForeignKey('song.id'))
 
 	playtype = db.Column('playtype', db.String(8))	# SPN/SPH/SPA ...
 	playscore = db.Column('playscore', db.Integer)
@@ -50,9 +54,9 @@ class PlayRecord(db.Model):
 
 class Player(db.Model):
 	__tablename__ = 'player'
-	id = db.Column('object_id', db.Integer, primary_key=True, index=True)
+	id = db.Column(db.Integer, primary_key=True, index=True)
 	time = db.Column('time', db.DateTime, nullable=False, default=func.now())
-	records = db.relationship('PlayRecord', backref='player', lazy='select')
+	playrecord = db.relationship('PlayRecord', backref='player', lazy='select')
 
 	iidxid = db.Column('iidxid', db.String(12))
 	sppoint = db.Column('sppoint', db.Integer)
@@ -77,7 +81,6 @@ def init_db():
 	db_session = scoped_session(sessionmaker(autocommit=False,
 	                                         autoflush=False,
 	                                         bind=engine))
-	Base = declarative_base()
 	Base.query = db_session.query_property()
 	Base.metadata.create_all(bind=engine)
 	return db_session

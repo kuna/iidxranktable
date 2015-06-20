@@ -48,8 +48,8 @@ def parse_user(username):
 # parse_songs: return songs in level
 # (title, level, notes, version, diff, id ...)
 #
-def parse_songs(level):
-	parsedata = jsondata.loadJSONurl("http://json.iidx.me/delmitz/sp/level/" + str(level))
+def parse_songs(level, mode):
+	parsedata = jsondata.loadJSONurl("http://json.iidx.me/delmitz/%s/level/%d" % (mode, level))
 
 	# remove scores
 	ret = []
@@ -59,6 +59,7 @@ def parse_songs(level):
 		#del music['clear']
 		#del music['score']
 		#del music['miss']
+		music['data']['diff'] = music['data']['diff'].upper()
 		ret.append(music['data'])
 
 	return ret
@@ -70,4 +71,4 @@ def parse_songs(level):
 def parse_clearinfo(username):
 	pass
 
-print parse_users()
+#print parse_users()

@@ -106,4 +106,4 @@ def parse(tableID, uri):
 
 	return res
 
-print parse12_7()
+#print parse12_7()
