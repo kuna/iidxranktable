@@ -7,6 +7,7 @@ from flask import make_response, request, current_app
 
 import base64
 import rankpage
+import db
 
 app = Flask(__name__)
 
@@ -92,4 +93,6 @@ def init():
 
 if __name__ == '__main__':
 	init()
-	app.run(host='0.0.0.0', port=1100)
+	db_session = db.init_db()
+	app.run(host='127.0.0.1', port=1100)
+	db_session.remove()
