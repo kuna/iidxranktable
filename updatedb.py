@@ -11,8 +11,8 @@ def main():
 		data = parser_iidxme.parse_songs(lvl, "sp")
 		added_data = 0
 		for song in data:
-			if not db.Song.query.filter(songid=song['id'], songtype=song['diff']).count():
-				song = db.Song(songname=song['title'], 
+			if not db.Song.query.filter_by(songid=song['id'], songtype=song['diff']).count():
+				song = db.Song(songtitle=song['title'], 
 					songtype=song['diff'],
 					songid=song['id'],
 					songlevel=song['level'],

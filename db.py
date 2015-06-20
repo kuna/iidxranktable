@@ -1,6 +1,6 @@
-from sqlalchemy import Column, Integer, String, func
+from sqlalchemy import Column, Integer, String, func, ForeignKey, Float, DateTime
 from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy.orm import scoped_session, sessionmaker, relationship, backref
 from sqlalchemy.ext.declarative import declarative_base
 
 from datetime import datetime
@@ -8,63 +8,67 @@ import os
 
 Base = declarative_base()
 
-class RankTable(db.Model):
-	id = db.Column(db.Integer, primary_key=True, index=True)
-	category = db.relationship('RankCategory', backref='ranktable', lazy='select')
+class RankTable(Base):
+	__tablename__ = 'ranktable'
+	id = Column(Integer, primary_key=True, index=True)
+	category = relationship('RankCategory', backref='ranktable', lazy='select')
 
-	tablename = db.Column('tablename', db.String(100))
+	tablename = Column('tablename', String(100))
 
-class RankCategory(db.Model):
-	id = db.Column(db.Integer, primary_key=True, index=True)
-	rankitem = db.relationship('RankItem', backref='category', lazy='select')
+class RankCategory(Base):
+	__tablename__ = 'rankcategory'
+	id = Column(Integer, primary_key=True, index=True)
+	rankitem = relationship('RankItem', backref='category', lazy='select')
 
-	table_id = db.Column(db.Integer, db.ForeignKey('rank_table.id'))
-	categoryname = db.Column('categoryname', db.String(20))
+	table_id = Column(Integer, ForeignKey('ranktable.id'))
+	categoryname = Column('categoryname', String(20))
 
-class RankItem(db.Model):
-	id = db.Column(db.Integer, primary_key=True, index=True)
-	song_id = db.Column(db.Integer, db.ForeignKey('song.id'))	# this cannot be null & can direct same song
-	category_id = db.Column(db.Integer, db.ForeignKey('rank_category.id'))
+class RankItem(Base):
+	__tablename__ = 'rankitem'
+	id = Column(Integer, primary_key=True, index=True)
+	song_id = Column(Integer, ForeignKey('song.id'))	# this cannot be null & can direct same song
+	category_id = Column(Integer, ForeignKey('rankcategory.id'))
 
-	songtype = db.Column('songtype', db.String(8))		# dph/spa ...
-	songtitle = db.Column('songtitle', db.String(40))
+	songtype = Column('songtype', String(8))		# dph/spa ...
+	songtitle = Column('songtitle', String(40))
 
-class Song(db.Model):
-	id = db.Column(db.Integer, primary_key=True, index=True)
-	playrecord = db.relationship('PlayRecord', backref='song', lazy='select')
-	rankitem = db.relationship('RankItem', backref='song', lazy='select')
+class Song(Base):
+	__tablename__ = 'song'
+	id = Column(Integer, primary_key=True, index=True)
+	playrecord = relationship('PlayRecord', backref='song', lazy='select')
+	rankitem = relationship('RankItem', backref='song', lazy='select')
 
-	songid = db.Column('songid', db.Integer)
-	songtype = db.Column('songtype', db.String(8))		# dph/spa ...
-	songtitle = db.Column('songtitle', db.String(40))
-	songlevel = db.Column('songlevel', db.Integer)
-	songnotes = db.Column('songnotes', db.Integer)
+	songid = Column('songid', Integer)
+	songtype = Column('songtype', String(8))		# dph/spa ...
+	songtitle = Column('songtitle', String(40))
+	songlevel = Column('songlevel', Integer)
+	songnotes = Column('songnotes', Integer)
 
-class PlayRecord(db.Model):
-	__tablename__ = 'play'
-	id = db.Column(db.Integer, primary_key=True, index=True)
-	player_id = db.Column(db.Integer, db.ForeignKey('player.id'))
-	song_id = db.Column(db.Integer, db.ForeignKey('song.id'))
+class PlayRecord(Base):
+	__tablename__ = 'playrecord'
+	id = Column(Integer, primary_key=True, index=True)
+	player_id = Column(Integer, ForeignKey('player.id'))
+	song_id = Column(Integer, ForeignKey('song.id'))
 
-	playtype = db.Column('playtype', db.String(8))	# SPN/SPH/SPA ...
-	playscore = db.Column('playscore', db.Integer)
-	playrate = db.Column('playrate', db.Float)
-	playclear = db.Column('playclear', db.Integer)
-	playmiss = db.Column('playmiss', db.Integer)
+	playtype = Column('playtype', String(8))	# SPN/SPH/SPA ...
+	playscore = Column('playscore', Integer)
+	playrate = Column('playrate', Float)
+	playclear = Column('playclear', Integer)
+	playmiss = Column('playmiss', Integer)
 
-class Player(db.Model):
+class Player(Base):
 	__tablename__ = 'player'
-	id = db.Column(db.Integer, primary_key=True, index=True)
-	time = db.Column('time', db.DateTime, nullable=False, default=func.now())
-	playrecord = db.relationship('PlayRecord', backref='player', lazy='select')
+	id = Column(Integer, primary_key=True, index=True)
+	time = Column('time', DateTime, nullable=False, default=func.now())
+	playrecord = relationship('PlayRecord', backref='player', lazy='select')
 
-	iidxid = db.Column('iidxid', db.String(12))
-	sppoint = db.Column('sppoint', db.Integer)
-	dppoint = db.Column('dppoint', db.Integer)
-	spclass = db.Column('spclass', db.Integer)
-	dpclass = db.Column('dpclass', db.Integer)
-	splevel = db.Column('splevel', db.Integer)	# need to calculate
-	dplevel = db.Column('dplevel', db.Integer)	# need to calculate
+	iidxid = Column('iidxid', String(12))
+	sppoint = Column('sppoint', Integer)
+	dppoint = Column('dppoint', Integer)
+	spclass = Column('spclass', Integer)
+	dpclass = Column('dpclass', Integer)
+	splevel = Column('splevel', Integer)	# need to calculate
+	dplevel = Column('dplevel', Integer)	# need to calculate
 
 	@property
 	def is_expired(self):
