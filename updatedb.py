@@ -180,11 +180,11 @@ def main():
 	global db_session
 	db_session = db.init_db()
 
-	#update_iidxme()
+	update_iidxme()
 
-	#update_SP()
+	update_SP()
 
-	#update_DP()
+	update_DP()
 
 	update_relation()
 
