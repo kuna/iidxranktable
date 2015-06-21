@@ -115,7 +115,7 @@ def addMetadata(musicdata, data):
 	def getCategoryName(songid):
 		for category in data.category:
 			for item in category.rankitem:
-				if (item.song.songid == songid):
+				if (item.song.songid == int(songid)):
 					return category.categoryname
 		return None		# cannot find category
 
