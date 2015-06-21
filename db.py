@@ -15,6 +15,25 @@ class RankTable(Base):
 	category = relationship('RankCategory', backref='ranktable', lazy='select')
 
 	tablename = Column('tablename', String(100))
+	tabletitle = Column('tabletitle', String(100))
+	level = Column('level', Integer)
+	type = Column('type', String(100))
+
+	@property
+	def songs(self):
+		song_obj = []
+		for category in self.category:
+			song_obj = song_obj + category.songs
+		return song_obj
+
+	@property
+	def unknownsongs(self):
+		return Song.query\
+			.filter(Song.songlevel == self.level)\
+			.filter(Song.songtype.like(self.type + "%"))\
+			.except_(Song.query.join(RankItem).join(RankCategory)\
+				.filter(RankCategory.ranktable == self))\
+			.all()
 
 class RankCategory(Base):
 	__tablename__ = 'rankcategory'
@@ -23,6 +42,15 @@ class RankCategory(Base):
 
 	table_id = Column(Integer, ForeignKey('ranktable.id'))
 	categoryname = Column('categoryname', String(20))
+
+	@property
+	def songs(self):
+		song_obj = []
+		for rankitem in self.rankitem:
+			x = rankitem.song
+			if (x != None):
+				song_obj.append(x)
+		return song_obj
 
 class RankItem(Base):
 	__tablename__ = 'rankitem'

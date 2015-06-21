@@ -5,6 +5,8 @@ import json
 import iidx
 import jsondata
 
+# ---------------------- depreciated -------------------------------
+
 # dict: category -> songs[] (song)
 def getCSVdata(csvpath):
 	def processCode(code):
@@ -48,7 +50,7 @@ def isexists(recorddata, rankitem, removeprevious=False):
 	return None
 
 # dict: category -> songs[] (title, code, clear, ex, ...)
-def processCSV(musicdata, csvdata):
+def processCSV(musicdata, data):
 	# preprocess musicdata
 	for music in musicdata:
 		# ex: dpa -> A

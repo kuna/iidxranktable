@@ -16,6 +16,17 @@ def getTextDistance(a_, b_):
 	a = a_.upper()
 	b = b_.upper()
 
+	# remove redundant space and etc...
+	a = a.replace(' ', '')
+	b = b.replace(' ', '')
+
+	# cutting string to short one makes good result in most case.
+	str_len = len(a)
+	if (len(b) < str_len):
+		str_len = len(b)
+	a = a[:str_len]
+	b = b[:str_len]
+
 	# (a, b) sized int array
 	arr = [[0 for x in range(len(b)+1)] for x in range(len(a)+1)]
 
@@ -33,7 +44,8 @@ def getTextDistance(a_, b_):
 			else:
 				arr[i][j] = min(arr[i-1][j]+1, arr[i][j-1]+1, arr[i-1][j-1]+1)
 
-	return arr[len(a)][len(b)]
+	# longer sequence seems more reliable
+	return float(arr[len(a)][len(b)]) / str_len
 
 #
 # getNearTextDistance

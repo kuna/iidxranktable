@@ -2,6 +2,7 @@ from flask import Flask, render_template, abort
 import iidx
 import jsondata
 import song
+import db
 
 def render_score(player, score, option_):
 	name = ""
@@ -40,35 +41,27 @@ def render_score(player, score, option_):
 		clearcount=clearcount,
 		datas=score)
 
-def render_songlist(optionpath, user):
-	# read option json
-	option = jsondata.loadJSONfile(optionpath)
-
-	# if no user required, just render it without clear graph
-	# TODO
-	#if (user == None):
-	#	return render_score(None, score, option['type'], option['title'], option['titlehtml'])
-
+def render_songlist(data, title, userjson):
 	# parse web (get player json file)
-	player = None
-	if (user == None):
-		data = jsondata.loadJSONfile(option['jsonfile'])
-	else:
-		player = jsondata.getiidxinfo(user, option['type'], option['level'])
-
+	# TODO if no user required, just render it without clear graph
+	player = jsondata.loadJSONurl(userjson)
 	if (player == None or 'userdata' not in player or player['status'] != 'success'):
 		print "userdata not found"
 		abort(404)	# should show abort(404)
 		return
 
-	# load data file
-	data = song.getCSVdata(option['datafile'])
-	if (data == None):
-		print "level datafile not found"
-		abort(404)	# 404
-		return
-
 	# create score data
-	score = song.processCSV(player['musicdata'], data)
+	score = song.processCSV(player['musicdata'], data.RankCategory)
 
 	return render_score(player, score, option)
+
+#
+# ------------------ customs (view) -------------------------
+#
+
+def render_SP12_7():
+	#load from DB
+	data = db.RankTable.query.filter_by(tablename='SP12_7')[0]
+	title = "Beatmania IIDX SP lv.12 Hard Guage Rank"
+	userjson = "http://json.iidx.me/kuna/%s/level/%d/" % ("sp", 12)
+	return render_songlist(data, title, userjson)

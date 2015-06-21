@@ -1,3 +1,5 @@
+#-*- coding: utf-8 -*-
+
 import db
 import parser_clickagain, parser_zasa, parser_iidxme, parser_custom
 import textdistance
@@ -27,16 +29,23 @@ def update_iidxme():
 		data = parser_iidxme.parse_songs(lvl, "dp")
 		update(data)
 
-def updateDB(data, tablename):
+def updateDB(data, tablename, tabletitle, type, level):
 	added_data = 0
 
 	# get table first
 	table = db.RankTable.query.filter_by(tablename=tablename)
 	if (not table.count()):
-		table = db.RankTable(tablename=tablename)
+		table = db.RankTable(tablename=tablename,
+			tabletitle=tabletitle,
+			type=type,
+			level=level)
 		db_session.add(table)
 	else:
-		table = table[0]
+		table = table.one()
+		# update table info
+		table.tabletitle = tabletitle
+		table.type = type
+		table.level = level
 
 	# process items
 	for group in data:
@@ -48,7 +57,7 @@ def updateDB(data, tablename):
 			table.category.append(category)
 			db_session.add(category)
 		else:
-			category = category[0]
+			category = category.one()
 
 		# make rank item
 		# if already exists then update category only
@@ -70,18 +79,26 @@ def updateDB(data, tablename):
 
 def update_SP():
 	print 'parsing 2ch'
-	updateDB(parser_custom.parse12(), "SP12_2ch")
+	updateDB(parser_custom.parse12(), "SP12_2ch", 
+		u"Beatmania IIDX SP lv.12 Hard Guage Rank", "SP", 12)
 	print 'parsing clickagain'
-	updateDB(parser_clickagain.parse12_7(), "SP12_7")
-	updateDB(parser_clickagain.parse12(), "SP12")
-	updateDB(parser_clickagain.parse11(), "SP11")
-	updateDB(parser_clickagain.parse10(), "SP10")
+	updateDB(parser_clickagain.parse12_7(), "SP12_7", 
+		u"Beatmania IIDX SP lv.12 7記 Hard Guage Rank", "SP", 12)
+	updateDB(parser_clickagain.parse12(), "SP12", 
+		u"Beatmania IIDX SP lv.12 Hard Guage Rank", "SP", 12)
+	updateDB(parser_clickagain.parse11(), "SP11", 
+		u"Beatmania IIDX SP lv.11 Hard Guage Rank", "SP", 11)
+	updateDB(parser_clickagain.parse10(), "SP10", 
+		u"Beatmania IIDX SP lv.10 Hard Guage Rank", "SP", 10)
 
 def update_DP():
 	print 'parsing zasa'
-	updateDB(parser_zasa.parse12(), "DP12")
-	updateDB(parser_zasa.parse11(), "DP11")
-	updateDB(parser_zasa.parse10(), "DP10")
+	updateDB(parser_zasa.parse12(), "DP12", 
+		u"Beatmania IIDX DP lv.12 Rank", "DP", 12)
+	updateDB(parser_zasa.parse11(), "DP11", 
+		u"Beatmania IIDX DP lv.11 Rank", "DP", 11)
+	updateDB(parser_zasa.parse10(), "DP10", 
+		u"Beatmania IIDX DP lv.10 Rank", "DP", 10)
 
 #
 # suggest similar song object from name/diff
@@ -126,7 +143,7 @@ def smart_suggestion(name, diff):
 			if (code > len(suggestions)):
 				print 'out of suggestions'
 				continue
-			return db.Song.query.filter_by(songtype=diff, songtitle=suggestions[code-1][0])[0]
+			return db.Song.query.filter_by(songtype=diff, songtitle=suggestions[code-1][0]).one()
 		elif (code < 0):
 			# search song which that code exists
 			songs = db.Song.query.filter_by(songtype=diff, songid=-code)
@@ -135,7 +152,7 @@ def smart_suggestion(name, diff):
 				print 'no song of such code exists'
 				continue
 			else:
-				song = songs[0]
+				song = songs.one()
 				print 'you selected song [%s]. if okay then [y]' % song.songtitle
 				okay = raw_input("> ")
 				if (okay == "y"):
@@ -148,6 +165,7 @@ def smart_suggestion(name, diff):
 # make relation with song
 #
 def update_relation():
+	print 'making relation with song table ...'
 	# scan rankitem one by one
 	updated_cnt = 0
 	for item in db.RankItem.query.all():
@@ -162,7 +180,7 @@ def update_relation():
 					item.song_id = song.id
 				db_session.commit()
 			else:
-				song = songs[0]
+				song = songs.one()
 				#song.rankitem.append(item)
 				item.song_id = song.id
 		updated_cnt += 1
@@ -180,11 +198,11 @@ def main():
 	global db_session
 	db_session = db.init_db()
 
-	update_iidxme()
+	#update_iidxme()
 
-	update_SP()
+	#update_SP()
 
-	update_DP()
+	#update_DP()
 
 	update_relation()
 
