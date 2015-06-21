@@ -1,5 +1,5 @@
 import db
-import parser_clickagain, parser_zasa, parser_iidxme
+import parser_clickagain, parser_zasa, parser_iidxme, parser_custom
 import textdistance
 
 def update_iidxme():
@@ -69,6 +69,8 @@ def updateDB(data, tablename):
 	print "added %d datas" % added_data
 
 def update_SP():
+	print 'parsing 2ch'
+	updateDB(parser_custom.parse12(), "SP12_2ch")
 	print 'parsing clickagain'
 	updateDB(parser_clickagain.parse12_7(), "SP12_7")
 	updateDB(parser_clickagain.parse12(), "SP12")
@@ -155,13 +157,18 @@ def update_relation():
 			songs = db.Song.query.filter_by(songtitle=item.songtitle, songtype=item.songtype)
 			if songs.count() <= 0:
 				# do smart suggestion
-				item.song_id = smart_suggestion(item.songtitle, item.songtype)
+				song = smart_suggestion(item.songtitle, item.songtype)
+				if (song != None):
+					item.song_id = song.id
+				db_session.commit()
 			else:
 				song = songs[0]
+				#song.rankitem.append(item)
 				item.song_id = song.id
 		updated_cnt += 1
 
 	print "%d items updated." % updated_cnt
+	db_session.commit()
 
 
 def main():
@@ -173,7 +180,7 @@ def main():
 	global db_session
 	db_session = db.init_db()
 
-	update_iidxme()
+	#update_iidxme()
 
 	#update_SP()
 

@@ -11,6 +11,7 @@ Base = declarative_base()
 class RankTable(Base):
 	__tablename__ = 'ranktable'
 	id = Column(Integer, primary_key=True, index=True)
+	time = Column('time', DateTime, nullable=False, default=func.now())		# db updated time
 	category = relationship('RankCategory', backref='ranktable', lazy='select')
 
 	tablename = Column('tablename', String(100))
