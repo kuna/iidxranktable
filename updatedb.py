@@ -3,9 +3,7 @@ import parser_clickagain, parser_zasa, parser_iidxme
 import textdistance
 
 def update_iidxme():
-	for lvl in range(12, 13):
-		print 'parsing iidxme sp (%d)' % lvl
-		data = parser_iidxme.parse_songs(lvl, "sp")
+	def update(data):
 		added_data = 0
 		for song in data:
 			if not db.Song.query.filter_by(songid=song['id'], songtype=song['diff']).count():
@@ -18,6 +16,16 @@ def update_iidxme():
 				added_data = added_data+1
 		db_session.commit()
 		print "added %d datas" % added_data
+
+	for lvl in range(6, 13):
+		print 'parsing iidxme sp (%d)' % lvl
+		data = parser_iidxme.parse_songs(lvl, "sp")
+		update(data)
+
+	for lvl in range(6, 13):
+		print 'parsing iidxme dp (%d)' % lvl
+		data = parser_iidxme.parse_songs(lvl, "dp")
+		update(data)
 
 def updateDB(data, tablename):
 	added_data = 0
@@ -36,6 +44,8 @@ def updateDB(data, tablename):
 		category = db.RankCategory.query.filter_by(table_id=table.id, categoryname=group[0])
 		if (not category.count()):
 			category = db.RankCategory(table_id=table.id, categoryname=group[0])
+			# append category to group
+			table.category.append(category)
 			db_session.add(category)
 		else:
 			category = category[0]
@@ -48,10 +58,13 @@ def updateDB(data, tablename):
 				rankitem = db.RankItem(songtitle=item[0], 
 					songtype=item[1],
 					category_id=category.id)
+				# append item to category
+				category.rankitem.append(rankitem)
 				db_session.add(rankitem)
 				added_data = added_data+1
 			else:
 				rankitem[0].category_id = category.id
+
 	db_session.commit()
 	print "added %d datas" % added_data
 
@@ -92,8 +105,9 @@ def smart_suggestion(name, diff):
 	while (1):
 		print "cannot find matching one, but some suggestion was found"
 		idx = 1
+		print "0. (deleted)"
 		for sug_title in suggestions:
-			print "%d. %s (%s)" % (idx, sug_title, diff)
+			print "%d. %s (%s)" % (idx, sug_title[0], diff)
 			idx += 1
 		print "enter the song you want or enter song code you want in negative"
 		print "(ex: -23456)"
@@ -105,7 +119,7 @@ def smart_suggestion(name, diff):
 			continue
 
 		if (code == 0):
-			continue;
+			return None
 		elif (code > 0):
 			if (code > len(suggestions)):
 				print 'out of suggestions'
@@ -135,9 +149,10 @@ def update_relation():
 	# scan rankitem one by one
 	updated_cnt = 0
 	for item in db.RankItem.query.all():
-		if (item.song_id == 0):
+		if (item.song_id == None):
 			# if song_id not set, scan it
-			songs = db.Song.filter_by(songtitle=item.songtitle, songtype=item.songtype)
+			print 'current: %s' % item.songtitle
+			songs = db.Song.query.filter_by(songtitle=item.songtitle, songtype=item.songtype)
 			if songs.count() <= 0:
 				# do smart suggestion
 				item.song_id = smart_suggestion(item.songtitle, item.songtype)
@@ -150,15 +165,19 @@ def update_relation():
 
 
 def main():
+	#
+	# you should execute it through IDLE because of unicode
+	#
+
 	print 'opening DB ...'
 	global db_session
 	db_session = db.init_db()
 
 	update_iidxme()
 
-	update_SP()
+	#update_SP()
 
-	update_DP()
+	#update_DP()
 
 	update_relation()
 
