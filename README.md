@@ -11,6 +11,8 @@ run ```pip install -r requirements.txt``` and ```python web.py```.
 
 to update DB, run ```python updatedb.py```.
 
+If you entered wrong information, then ```SQLite Browser``` will help you.
+
 ### TODO
 
 calculating user's performance

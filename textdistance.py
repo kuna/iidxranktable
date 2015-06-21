@@ -3,6 +3,10 @@
 # textdistance.py
 # used Levenshtein distance
 #
+# This program uses Levenshtein distance to search proper song, and I edit this algorithm -
+# this algorithm captures smaller string and cut to same length, and divide comparing score to string length.
+#
+
 
 # getTextDistance(a, b)
 # => get text distance from each other

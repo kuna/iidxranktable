@@ -29,7 +29,7 @@ def update_iidxme():
 		data = parser_iidxme.parse_songs(lvl, "dp")
 		update(data)
 
-def updateDB(data, tablename, tabletitle, type, level):
+def updateDB(data, tablename, tabletitle, copyright, type, level):
 	added_data = 0
 
 	# get table first
@@ -37,6 +37,7 @@ def updateDB(data, tablename, tabletitle, type, level):
 	if (not table.count()):
 		table = db.RankTable(tablename=tablename,
 			tabletitle=tabletitle,
+			copyright = copyright
 			type=type,
 			level=level)
 		db_session.add(table)
@@ -46,6 +47,7 @@ def updateDB(data, tablename, tabletitle, type, level):
 		table.tabletitle = tabletitle
 		table.type = type
 		table.level = level
+		table.copyright = copyright
 
 	# process items
 	for group in data:
@@ -80,25 +82,41 @@ def updateDB(data, tablename, tabletitle, type, level):
 def update_SP():
 	print 'parsing 2ch'
 	updateDB(parser_custom.parse12(), "SP12_2ch", 
-		u"Beatmania IIDX SP lv.12 Hard Guage Rank", "SP", 12)
+		u"Beatmania IIDX SP lv.12 Hard Guage Rank",
+		u"copyright",
+		"SP", 12)
 	print 'parsing clickagain'
 	updateDB(parser_clickagain.parse12_7(), "SP12_7", 
-		u"Beatmania IIDX SP lv.12 7記 Hard Guage Rank", "SP", 12)
+		u"Beatmania IIDX SP lv.12 7記 Hard Guage Rank",
+		u"copyright", 
+		"SP", 12)
 	updateDB(parser_clickagain.parse12(), "SP12", 
-		u"Beatmania IIDX SP lv.12 Hard Guage Rank", "SP", 12)
+		u"Beatmania IIDX SP lv.12 Hard Guage Rank",
+		u"copyright", 
+		"SP", 12)
 	updateDB(parser_clickagain.parse11(), "SP11", 
-		u"Beatmania IIDX SP lv.11 Hard Guage Rank", "SP", 11)
+		u"Beatmania IIDX SP lv.11 Hard Guage Rank",
+		u"copyright", 
+		"SP", 11)
 	updateDB(parser_clickagain.parse10(), "SP10", 
-		u"Beatmania IIDX SP lv.10 Hard Guage Rank", "SP", 10)
+		u"Beatmania IIDX SP lv.10 Hard Guage Rank",
+		u"copyright", 
+		"SP", 10)
 
 def update_DP():
 	print 'parsing zasa'
 	updateDB(parser_zasa.parse12(), "DP12", 
-		u"Beatmania IIDX DP lv.12 Rank", "DP", 12)
+		u"Beatmania IIDX DP lv.12 Rank", 
+		u"copyright", 
+		"DP", 12)
 	updateDB(parser_zasa.parse11(), "DP11", 
-		u"Beatmania IIDX DP lv.11 Rank", "DP", 11)
+		u"Beatmania IIDX DP lv.11 Rank", 
+		u"copyright", 
+		"DP", 11)
 	updateDB(parser_zasa.parse10(), "DP10", 
-		u"Beatmania IIDX DP lv.10 Rank", "DP", 10)
+		u"Beatmania IIDX DP lv.10 Rank", 
+		u"copyright", 
+		"DP", 10)
 
 #
 # suggest similar song object from name/diff

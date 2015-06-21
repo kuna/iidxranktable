@@ -61,19 +61,19 @@ def getdanstring(dan):
 		return u"皆伝"
 
 def getrank(rate):
-	if (music['rate'] >= 8.0/9*100):
+	if (rate >= 8.0/9*100):
 		return u"AAA"
-	elif (music['rate'] >= 7.0/9*100):
+	elif (rate >= 7.0/9*100):
 		return u"AA"
-	elif (music['rate'] >= 6.0/9*100):
+	elif (rate >= 6.0/9*100):
 		return u"A"
-	elif (music['rate'] >= 5.0/9*100):
+	elif (rate >= 5.0/9*100):
 		return u"B"
-	elif (music['rate'] >= 4.0/9*100):
+	elif (rate >= 4.0/9*100):
 		return u"C"
-	elif (music['rate'] >= 3.0/9*100):
+	elif (rate >= 3.0/9*100):
 		return u"D"
-	elif (music['rate'] >= 2.0/9*100):
+	elif (rate >= 2.0/9*100):
 		return u"E"
 	else:
 		return u"F"

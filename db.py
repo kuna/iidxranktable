@@ -18,6 +18,7 @@ class RankTable(Base):
 	tabletitle = Column('tabletitle', String(100))
 	level = Column('level', Integer)
 	type = Column('type', String(100))
+	copyright = Column('copyright', String(100))
 
 	@property
 	def songs(self):
