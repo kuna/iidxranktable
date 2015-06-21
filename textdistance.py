@@ -10,7 +10,12 @@
 #
 from operator import itemgetter
 
-def getTextDistance(a, b):
+def getTextDistance(a_, b_):
+	# before start, modify text in proper mode (same uppercase etc..)
+	# TODO add replace?
+	a = a_.upper()
+	b = b_.upper()
+
 	# (a, b) sized int array
 	arr = [[0 for x in range(len(b)+1)] for x in range(len(a)+1)]
 

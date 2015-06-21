@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, func, ForeignKey, Float, DateTime
+from sqlalchemy import Column, Integer, String, func, ForeignKey, Float, DateTime, UniqueConstraint 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker, relationship, backref
 from sqlalchemy.ext.declarative import declarative_base
@@ -34,6 +34,7 @@ class RankItem(Base):
 
 class Song(Base):
 	__tablename__ = 'song'
+	__table_args__ = (UniqueConstraint('songid', 'songtype'), )
 	id = Column(Integer, primary_key=True, index=True)
 	playrecord = relationship('PlayRecord', backref='song', lazy='select')
 	rankitem = relationship('RankItem', backref='song', lazy='select')
