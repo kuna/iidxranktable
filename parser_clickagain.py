@@ -54,6 +54,9 @@ def parse12_7():
 		tds = tr.find_all('td')
 		if (len(tds) < 9):
 			# group
+			# if group idx = 8 (that means 8기) then must exit
+			if (group_idx >= 8):
+				break
 			group_name = str(group_idx) + u'기'
 			group_idx += 1
 			continue

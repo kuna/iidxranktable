@@ -1,3 +1,5 @@
+#-*- coding: utf-8 -*-
+
 from flask import Flask, render_template, abort
 import iidx
 import jsondata
@@ -115,7 +117,8 @@ def addMetadata(musicdata, data):
 	def getCategoryName(songid):
 		for category in data.category:
 			for item in category.rankitem:
-				if (item.song.songid == int(songid)):
+				# ASSERT! some deleted song may have no 'song relation item'
+				if (item.song and item.song.songid == int(songid)):
 					return category.categoryname
 		return None		# cannot find category
 
@@ -135,8 +138,52 @@ def addMetadata(musicdata, data):
 				catearray['categoryclear'] = song['clear']
 				catearray['categoryclearstring'] = song['clearstring']
 
-	# TODO: process category sorting?
-	return r
+	# process category sorting
+	def sort_func(x, y):
+		def getValue(_x):
+			x = _x['category']
+			order_arr = (
+				u'Leggenderia',
+				u'처리력 S+',
+				u'개인차 S+',
+				u'처리력 S',
+				u'개인차 S',
+				u'처리력 A+',
+				u'개인차 A+',
+				u'처리력 A',
+				u'개인차 A',
+				u'처리력 B+',
+				u'개인차 B+',
+				u'처리력 B',
+				u'개인차 B',
+				u'처리력 C',
+				u'개인차 C',
+				u'처리력 D',
+				u'개인차 D',
+				u'처리력 E',
+				u'개인차 E',
+				u'처리력 F',
+				u'7기',
+				u'6기',
+				u'5기',
+				u'4기',
+				u'3기',
+				u'2기',
+				u'1기')
+			if (x == '-'):
+				return 999
+			elif (x in order_arr):
+				return order_arr.index(x)
+			else:
+				try:
+					return 100-int(float(x)*10)
+				except:
+					return 100
+		# make score
+		# bigger: later
+		return getValue(x) - getValue(y)
+	return sorted(r, cmp=sort_func)
+
 
 #
 # ------------------ customs (view) -------------------------

@@ -37,7 +37,7 @@ def updateDB(data, tablename, tabletitle, copyright, type, level):
 	if (not table.count()):
 		table = db.RankTable(tablename=tablename,
 			tabletitle=tabletitle,
-			copyright = copyright
+			copyright = copyright,
 			type=type,
 			level=level)
 		db_session.add(table)
