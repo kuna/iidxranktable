@@ -10,9 +10,9 @@
 .lamp_clear.FULL_COMBO { background-position:0 -180px; }
 
 /* background. preferred to DP user */
-li.diffA { background-color: #fdd; }
-li.diffH { background-color: #ffd; }
-li.diffN { background-color: #ddf; }
+li.diffA { background-color: #fee; }
+li.diffH { background-color: #ffe; }
+li.diffN { background-color: #eef; }
 
 /* and song cell border color overlapped */
 .songlist li { border-color: #999; }
