@@ -111,7 +111,7 @@ def addMetadata(musicdata, data):
 		r_ = { 'category': categoryname, 
 				'songs': [],
 				'categoryclearstring': u'FULL_COMBO',
-				'categoryclear': 7 }
+				'categoryclear': 7 }	# default setting
 		r.append(r_)
 		return r_
 	def getCategoryName(songid):

@@ -31,16 +31,14 @@ def parse(dif1, dif2):
 	# common
 	# http://stackoverflow.com/questions/17509607/submitting-to-a-web-form-using-python
 	formdata = {'reg': 'a220',
-		'cat[]': '13',
-		'cat[]': '5',
-		'cat[]': '79',
+		'cat[]': '[13, 5, 79]',
 		#'submit': u'表示',
 		'dif1': dif1,
 		'dif2': dif2,
 		'votelink': '1',
 		'rank1': '1',
 		'rank2': '13',
-		'mode': 'p1',
+		'mode': 'p4',
 		'ver1': '010',
 		'ver2': '220',
 		'rowWidth': '0'
@@ -66,21 +64,11 @@ def parse(dif1, dif2):
 
 		spns = tr.find_all('span', class_='POINT')
 		for sp in spns:
-			sp_text = sp.get_text()
+			sp_text = sp.find('span').get_text()
 			title = sp_text[:-4]
-			diff = sp_text[-3:]
-			if (diff == "[N]"):
-				diff = "DPN"
-			elif (diff == "[H]"):
-				diff = "DPH"
-			elif (diff == "[A]"):
-				diff = "DPA"
-			else:
-				diff = "DPA"	# unknown
+			diff = "DP" + sp.find('span')['class'][0]
 			group = getGroup(res, group_title)
 			group[1].append( (title, diff) )
 
 	return res
 
-
-#print parse12()
