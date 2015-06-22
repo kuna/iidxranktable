@@ -118,7 +118,7 @@ $(document).ready(function () {
 //
 // update all text into canvas
 //
-$(function () {
+$(window).load(function () {
 	$(".songlist .name").each(function (e) {
 		var canvas = new ranklist(150, 20, $(this).text(), "#000000", "14px");
 		$(this).empty();
