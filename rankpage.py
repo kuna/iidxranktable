@@ -143,7 +143,7 @@ def addMetadata(musicdata, data):
 		def getValue(_x):
 			x = _x['category']
 			order_arr = (
-				u'Leggenderia',
+				u'Leggendaria',
 				u'처리력 S+',
 				u'개인차 S+',
 				u'처리력 S',
