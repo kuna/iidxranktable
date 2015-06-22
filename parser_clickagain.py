@@ -25,6 +25,12 @@ def processTitle(input):
 # ==================================================================
 #
 
+def parse8():
+	return parse("8AC", "http://clickagain.sakura.ne.jp/cgi-bin/sort11/data.cgi?level8=1&mix=1")
+
+def parse9():
+	return parse("9AC", "http://clickagain.sakura.ne.jp/cgi-bin/sort11/data.cgi?level9=1&mix=1")
+
 def parse10():
 	return parse("10AC", "http://clickagain.sakura.ne.jp/cgi-bin/sort11/data.cgi?level10=1&mix=1")
 
@@ -33,6 +39,22 @@ def parse11():
 
 def parse12():
 	return parse("12AC", "http://clickagain.sakura.ne.jp/cgi-bin/sort11/data.cgi?level12=1&mix=1")
+
+
+def parse8N():
+	return parseN("8AC", "http://clickagain.sakura.ne.jp/cgi-bin/sort11/data.cgi?level8=1&mix=1")
+
+def parse9N():
+	return parseN("9AC", "http://clickagain.sakura.ne.jp/cgi-bin/sort11/data.cgi?level9=1&mix=1")
+
+def parse10N():
+	return parseN("10AC", "http://clickagain.sakura.ne.jp/cgi-bin/sort11/data.cgi?level10=1&mix=1")
+
+def parse11N():
+	return parseN("11AC", "http://clickagain.sakura.ne.jp/cgi-bin/sort11/data.cgi?level11=1&mix=1")
+
+def parse12N():
+	return parseN("12AC", "http://clickagain.sakura.ne.jp/cgi-bin/sort11/data.cgi?level12=1&mix=1")
 
 def parse12_7():
 	# common
@@ -104,6 +126,40 @@ def parse(tableID, uri):
 		else:
 			diff = "SPA"
 		lv = tds[6].get_text()
+		group = getGroup(res, lv)
+		group[1].append( (title, diff) )
+
+	return res
+
+def parseN(tableID, uri):
+	# common
+	data = urllib.urlopen(uri)
+	soup = BeautifulSoup(data)
+
+	res = []	# [(group, [song name, ..]), ..]
+	table = soup.find('table', id=tableID)
+	trs = table.find_all('tr')
+	for tr in trs:
+		if (('class' in tr) and tr['class'][0] == u'top'):
+			continue
+
+		# 0:ver, 1:title, 5:normal, 6:hard, 7:op1P, 8:op2P, 9:desc
+		tds = tr.find_all('td')
+		if (len(tds) < 9):
+			break
+		title = processTitle(tds[1].get_text())
+		if (title == "title"):
+			continue
+		diff = tds[1]['style']
+		if (diff.find("red") >= 0):
+			diff = "SPA"
+		elif (diff.find("orange") >= 0):
+			diff = "SPH"
+		elif (diff.find("#0066FF") >= 0):
+			diff = "SPN"
+		else:
+			diff = "SPA"
+		lv = tds[5].get_text()
 		group = getGroup(res, lv)
 		group[1].append( (title, diff) )
 

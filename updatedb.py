@@ -3,6 +3,7 @@
 import db
 import parser_clickagain, parser_zasa, parser_iidxme, parser_custom
 import textdistance
+import datetime
 
 def update_iidxme():
 	def update(data):
@@ -48,6 +49,7 @@ def updateDB(data, tablename, tabletitle, copyright, type, level):
 		table.type = type
 		table.level = level
 		table.copyright = copyright
+		table.time = datetime.datetime.today()
 
 	# process items
 	for group in data:
@@ -83,40 +85,85 @@ def update_SP():
 	print 'parsing 2ch'
 	updateDB(parser_custom.parse12(), "SP12_2ch", 
 		u"Beatmania IIDX SP lv.12 Hard Guage Rank",
-		u"copyright",
+		u"all data from 2ch (dcinside XERT*)",
 		"SP", 12)
 	print 'parsing clickagain'
 	updateDB(parser_clickagain.parse12_7(), "SP12_7", 
 		u"Beatmania IIDX SP lv.12 7記 Hard Guage Rank",
-		u"copyright", 
+		u"all data from clickagain.sakura.ne.jp", 
 		"SP", 12)
 	updateDB(parser_clickagain.parse12(), "SP12", 
 		u"Beatmania IIDX SP lv.12 Hard Guage Rank",
-		u"copyright", 
+		u"all data from clickagain.sakura.ne.jp", 
 		"SP", 12)
 	updateDB(parser_clickagain.parse11(), "SP11", 
 		u"Beatmania IIDX SP lv.11 Hard Guage Rank",
-		u"copyright", 
+		u"all data from clickagain.sakura.ne.jp", 
 		"SP", 11)
 	updateDB(parser_clickagain.parse10(), "SP10", 
 		u"Beatmania IIDX SP lv.10 Hard Guage Rank",
-		u"copyright", 
+		u"all data from clickagain.sakura.ne.jp", 
 		"SP", 10)
+	updateDB(parser_clickagain.parse9(), "SP9", 
+		u"Beatmania IIDX SP lv.9 Hard Guage Rank",
+		u"all data from clickagain.sakura.ne.jp", 
+		"SP", 9)
+	updateDB(parser_clickagain.parse8(), "SP8", 
+		u"Beatmania IIDX SP lv.8 Hard Guage Rank",
+		u"all data from clickagain.sakura.ne.jp", 
+		"SP", 8)
+	# groove
+	updateDB(parser_clickagain.parse12N(), "SP12N", 
+		u"Beatmania IIDX SP lv.12 Normal Guage Rank",
+		u"all data from clickagain.sakura.ne.jp", 
+		"SP", 12)
+	updateDB(parser_clickagain.parse11N(), "SP11N", 
+		u"Beatmania IIDX SP lv.11 Normal Guage Rank",
+		u"all data from clickagain.sakura.ne.jp", 
+		"SP", 11)
+	updateDB(parser_clickagain.parse10N(), "SP10N", 
+		u"Beatmania IIDX SP lv.10 Normal Guage Rank",
+		u"all data from clickagain.sakura.ne.jp", 
+		"SP", 10)
+	updateDB(parser_clickagain.parse9N(), "SP9N", 
+		u"Beatmania IIDX SP lv.9 Normal Guage Rank",
+		u"all data from clickagain.sakura.ne.jp", 
+		"SP", 9)
+	updateDB(parser_clickagain.parse8N(), "SP8N", 
+		u"Beatmania IIDX SP lv.8 Normal Guage Rank",
+		u"all data from clickagain.sakura.ne.jp", 
+		"SP", 8)
 
 def update_DP():
 	print 'parsing zasa'
 	updateDB(parser_zasa.parse12(), "DP12", 
 		u"Beatmania IIDX DP lv.12 Rank", 
-		u"copyright", 
+		u"all data from SNJ@KMZS", 
 		"DP", 12)
 	updateDB(parser_zasa.parse11(), "DP11", 
 		u"Beatmania IIDX DP lv.11 Rank", 
-		u"copyright", 
+		u"all data from SNJ@KMZS", 
 		"DP", 11)
 	updateDB(parser_zasa.parse10(), "DP10", 
 		u"Beatmania IIDX DP lv.10 Rank", 
-		u"copyright", 
+		u"all data from SNJ@KMZS", 
 		"DP", 10)
+	updateDB(parser_zasa.parse9(), "DP9", 
+		u"Beatmania IIDX DP lv.9 Rank", 
+		u"all data from SNJ@KMZS", 
+		"DP", 9)
+	updateDB(parser_zasa.parse8(), "DP8", 
+		u"Beatmania IIDX DP lv.8 Rank", 
+		u"all data from SNJ@KMZS", 
+		"DP", 8)
+	updateDB(parser_zasa.parse7(), "DP7", 
+		u"Beatmania IIDX DP lv.7 Rank", 
+		u"all data from SNJ@KMZS", 
+		"DP", 7)
+	updateDB(parser_zasa.parse6(), "DP6", 
+		u"Beatmania IIDX DP lv.6 Rank", 
+		u"all data from SNJ@KMZS", 
+		"DP", 6)
 
 #
 # suggest similar song object from name/diff
@@ -217,11 +264,11 @@ def main():
 	global db_session
 	db_session = db.init_db()
 
-	#update_iidxme()
+	update_iidxme()
 
-	#update_SP()
+	update_SP()
 
-	#update_DP()
+	update_DP()
 
 	update_relation()
 

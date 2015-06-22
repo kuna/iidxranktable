@@ -61,7 +61,7 @@ def render_songlist(data, userjson):
 		.replace('SP', '<span style="color:red;">SP</span>')\
 		.replace('DP', '<span style="color:#0099FF;">DP</span>')\
 		.replace('Hard', '<span style="color:red;">Hard</span>')\
-		.replace('Groove', '<span style="color:#0099FF;">Groove</span>')
+		.replace('Normal', '<span style="color:#0099FF;">Normal</span>')
 
 	option = {
 		'title': data.tabletitle,

@@ -18,6 +18,18 @@ def getGroup(arr, g):
 # ==================================================================
 #
 
+def parse6():
+	return parse("6", "6")
+
+def parse7():
+	return parse("7", "7")
+
+def parse8():
+	return parse("8", "8")
+
+def parse9():
+	return parse("9", "9")
+
 def parse10():
 	return parse("10", "10")
 

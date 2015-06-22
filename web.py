@@ -13,37 +13,82 @@ app = Flask(__name__)
 
 #####################################################
 
-@app.route('/iidx/sp/<user>/12.7')
+@app.route('/iidx/<user>/sp/12.7')
 def iidxsp127(user):
 	return rankpage.render_table("SP12_7", user)
 
-@app.route('/iidx/sp/<user>/12')
+@app.route('/iidx/<user>/sp/12')
 def iidxsp12(user):
 	return rankpage.render_table("SP12_2ch", user)
 
-@app.route('/iidx/sp/<user>/11')
+@app.route('/iidx/<user>/sp/11')
 def iidxsp11(user):
 	return rankpage.render_table("SP11", user)
 
-@app.route('/iidx/sp/<user>/10')
+@app.route('/iidx/<user>/sp/10')
 def iidxsp10(user):
 	return rankpage.render_table("SP10", user)
 
+@app.route('/iidx/<user>/sp/9')
+def iidxsp9(user):
+	return rankpage.render_table("SP9", user)
 
-@app.route('/iidx/dp/<user>/12')
+@app.route('/iidx/<user>/sp/8')
+def iidxsp8(user):
+	return rankpage.render_table("SP8", user)
+
+@app.route('/iidx/<user>/sp/12N')
+def iidxsp12N(user):
+	return rankpage.render_table("SP12N", user)
+
+@app.route('/iidx/<user>/sp/11N')
+def iidxsp11N(user):
+	return rankpage.render_table("SP11N", user)
+
+@app.route('/iidx/<user>/sp/10N')
+def iidxsp10N(user):
+	return rankpage.render_table("SP10N", user)
+
+@app.route('/iidx/<user>/sp/9N')
+def iidxsp9N(user):
+	return rankpage.render_table("SP9N", user)
+
+@app.route('/iidx/<user>/sp/8N')
+def iidxsp8N(user):
+	return rankpage.render_table("SP8N", user)
+
+
+@app.route('/iidx/<user>/dp/12')
 def iidxdp12(user):
 	return rankpage.render_table("DP12", user)
 
-@app.route('/iidx/dp/<user>/11')
+@app.route('/iidx/<user>/dp/11')
 def iidxdp11(user):
 	return rankpage.render_table("DP11", user)
 
-@app.route('/iidx/dp/<user>/10')
+@app.route('/iidx/<user>/dp/10')
 def iidxdp10(user):
 	return rankpage.render_table("DP10", user)
 
+@app.route('/iidx/<user>/dp/9')
+def iidxdp9(user):
+	return rankpage.render_table("DP9", user)
+
+@app.route('/iidx/<user>/dp/8')
+def iidxdp8(user):
+	return rankpage.render_table("DP8", user)
+
+@app.route('/iidx/<user>/dp/7')
+def iidxdp7(user):
+	return rankpage.render_table("DP7", user)
+
+@app.route('/iidx/<user>/dp/6')
+def iidxdp6(user):
+	return rankpage.render_table("DP6", user)
+
 #####################################################
 
+@app.route('/iidx/<user>/')
 @app.route('/iidx/<user>')
 def userpage(user):
 	return render_template('index.html', username=user)

@@ -93,7 +93,7 @@ body { font-family: 'M+ 1c medium', 'Malgun Gothic', NanumBarunGothicOTF,"Helvet
 #user .spdan, #user .dpdan { background-color: #eee; opacity:0.5; }
 #user .spdan { border-top-right-radius:0; border-bottom-right-radius:0; }
 #user .dpdan { border-top-left-radius:0; border-bottom-left-radius:0; }
-.sp.spdan, .dp.dpdan { font-weight: bold; opacity:1 !important; }
+.SP.spdan, .DP.dpdan { font-weight: bold; opacity:1 !important; }
 .dan2,
 .dan3,
 .dan4,
