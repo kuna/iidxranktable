@@ -121,10 +121,11 @@ def update_DP():
 #
 # suggest similar song object from name/diff
 #
-def smart_suggestion(name, diff):
+def smart_suggestion(name, diff, level):
 	import sys
 	# first get all song data
-	songs = db.Song.query.filter_by(songtype=diff)
+	songs = db.Song.query.filter_by(songtype=diff)\
+		.filter(db.Song.songlevel == level)
 
 	# make new array for suggestion
 	title_arr = []
@@ -193,7 +194,7 @@ def update_relation():
 			songs = db.Song.query.filter_by(songtitle=item.songtitle, songtype=item.songtype)
 			if songs.count() <= 0:
 				# do smart suggestion
-				song = smart_suggestion(item.songtitle, item.songtype)
+				song = smart_suggestion(item.songtitle, item.songtype, item.category.ranktable.level)
 				if (song != None):
 					item.song_id = song.id
 				db_session.commit()
