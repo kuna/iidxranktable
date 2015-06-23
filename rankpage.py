@@ -83,7 +83,7 @@ def addMetadata(musicdata, data):
 	# - add 'rate', 'rank' to each song
 	#
 	for music in musicdata:
-		# make diff(DPA) string upper
+		# make diff(DP + A) string upper
 		music['data']['diff'] = music['data']['diff'][-1:].upper()
 
 		# add clear metadata (number to readable string)
@@ -114,16 +114,19 @@ def addMetadata(musicdata, data):
 				'categoryclear': 7 }	# default setting
 		r.append(r_)
 		return r_
-	def getCategoryName(songid):
+	def getCategoryName(songid, diff):
 		for category in data.category:
 			for item in category.rankitem:
 				# ASSERT! some deleted song may have no 'song relation item'
-				if (item.song and item.song.songid == int(songid)):
+				# ASSERT! item's difficulty(type) must considered)
+				if (item.song \
+					and item.song.songid == int(songid)\
+					and item.song.songtype == diff):
 					return category.categoryname
 		return None		# cannot find category
 
 	for music in musicdata:
-		category = getCategoryName(music['data']['id'])
+		category = getCategoryName(music['data']['id'], data.type + music['data']['diff'])
 		if (category == None):
 			getCategory("-")['songs'].append(music)
 		else:
