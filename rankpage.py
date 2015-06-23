@@ -169,7 +169,8 @@ def addMetadata(musicdata, data):
 				u'4기',
 				u'3기',
 				u'2기',
-				u'1기')
+				u'1기',
+				u'10+')
 			if (x == '-'):
 				return 999
 			elif (x in order_arr):

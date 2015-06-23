@@ -11,16 +11,17 @@ def parse_users():
 	def parse_users_page(num, arr):
 		def getUsers(soup, arr):
 			names = soup.find_all(class_="djname")
+			iidxids = soup.find_all(class_="iidxid")
 			i = 0
-			for name in names:
+			for (name, iidxid) in (names, iidxids):
 				if (i>0):
-					arr.append(name.get_text())
+					iidxmeid = name.find('a').get_text().replace("/", "")
+					arr.append( (name.get_text(), iidxmeid, iidxid.get_text()) )
 				i+= 1
 
 		data = urllib.urlopen("http://iidx.me/?page=%d" % num)
 		soup = BeautifulSoup(data.read())
 		getUsers(soup, arr)
-
 
 	def getPageCount():
 		data = urllib.urlopen("http://iidx.me")
@@ -39,10 +40,10 @@ def parse_users():
 # parse_user: return user info
 # (djname, iidxid, ...)
 #
-def parse_user(username):
-	parsedata = jsondata.loadJSONurl("http://json.iidx.me/delmitz/sp/level/" + str(level))
+def parse_user(username, mode, level):
+	parsedata = jsondata.loadJSONurl("http://json.iidx.me/%s/%s/%d/" % (username, mode, level))
 
-	return parsedata['userdata']
+	return parsedata
 
 #
 # parse_songs: return songs in level

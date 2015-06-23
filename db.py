@@ -75,15 +75,17 @@ class Song(Base):
 	songlevel = Column('songlevel', Integer)
 	songnotes = Column('songnotes', Integer)
 
+	# for calculating MCMC
+	calclevel = Column(Float)
+	calcweight = Column(Float)
+
 class PlayRecord(Base):
 	__tablename__ = 'playrecord'
 	id = Column(Integer, primary_key=True, index=True)
 	player_id = Column(Integer, ForeignKey('player.id'))
 	song_id = Column(Integer, ForeignKey('song.id'))
 
-	playtype = Column('playtype', String(8))	# SPN/SPH/SPA ...
 	playscore = Column('playscore', Integer)
-	playrate = Column('playrate', Float)
 	playclear = Column('playclear', Integer)
 	playmiss = Column('playmiss', Integer)
 
@@ -94,12 +96,14 @@ class Player(Base):
 	playrecord = relationship('PlayRecord', backref='player', lazy='select')
 
 	iidxid = Column('iidxid', String(12))
+	iidxmeid = Column('iidxmeid', String(12))
+	iidxnick = Column('iidxnick', String(12))
 	sppoint = Column('sppoint', Integer)
 	dppoint = Column('dppoint', Integer)
 	spclass = Column('spclass', Integer)
 	dpclass = Column('dpclass', Integer)
-	splevel = Column('splevel', Integer)	# need to calculate
-	dplevel = Column('dplevel', Integer)	# need to calculate
+	splevel = Column('splevel', Float)	# need to calculate
+	dplevel = Column('dplevel', Float)	# need to calculate
 
 	@property
 	def is_expired(self):
