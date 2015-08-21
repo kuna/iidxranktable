@@ -166,8 +166,8 @@ $(window).load(function () {
 			{% for data in datas %}
 			<div class="row">
 				<div class="cell rowname">
-					<span class="name">{{ data.category }}</span>
-					<span class="lamp_category {{ data.categoryclearstring }}"></span>
+					<!-- <span class="name">{{ data.category }}</span> -->
+					<span class="lamp_group {{ data.categoryclearstring }}">{{ data.category }}</span>
 				</div>
 				<div class="cell">
 					<ul class="songlist">

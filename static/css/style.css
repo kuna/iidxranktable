@@ -61,6 +61,17 @@ body { font-family: 'M+ 1c medium', 'Malgun Gothic', NanumBarunGothicOTF,"Helvet
 .lamp_category.EX-HARD_CLEAR { background-position: 0 -144px; }
 .lamp_category.FULL_COMBO { background-position: 0 -174px; }
 
+/* category(group) clear lamp */
+.lamp_group { border-radius:.25em; padding: .2em .6em .3em; display:inline; font-size:13px; }
+.lamp_group.NO_PLAY {  }
+.lamp_group.FAILED { background-color:#999; color:#fff; }
+.lamp_group.ASSIST_CLEAR { background-color:#97b; color:#fff; }
+.lamp_group.EASY_CLEAR { background-color:#693; color:#fff; }
+.lamp_group.CLEAR { background-color:#369; color:#fff }
+.lamp_group.HARD_CLEAR { background-color:#c66; color:#fff; }
+.lamp_group.EX-HARD_CLEAR { background-color:#cc6; color:#fff; }
+.lamp_group.FULL_COMBO { background-color:#986; color:#fff; }
+
 /* rank show */
 .rank { position: absolute; width:16px; height:10px; top:7px; right:8px; 
 	display: none; background: url('../img/rank.png') no-repeat; }
