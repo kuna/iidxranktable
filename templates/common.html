@@ -4,7 +4,8 @@
 		<title>{% block title %}iidx.me table rank{% endblock %}</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1" />
-		<!-- TODO: add more metadata -->
+        <meta name="description" content="Beatmania IIDX SP/DP 서열표 검색 사이트입니다. 配列表を検索ができます。">
+        <meta name="author" content="@lazykuna">
 
 		<link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
 		<link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/common.css') }}">
@@ -15,6 +16,6 @@
 	</head>
 	<body>
 		{% block body %}{% endblock %}
-		<div id="footer">by @lazykuna<br>iidx.me is copyrighted by kuromitz<br>beatmania IIDX is copyrighted by KONAMI<br><br>{% block etc %}{% endblock %}</div>
+		<div id="footer">by @lazykuna<br>iidx.me is powered by kuromitz<br>beatmania IIDX is copyrighted by KONAMI<br><br>{% block etc %}{% endblock %}</div>
 	</body>
 </html>
