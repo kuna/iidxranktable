@@ -7,9 +7,13 @@ jsonData = {}
 textData = {}
 
 def loadJSONurl(url):
-	res = urllib.urlopen(url)
-	data = json.loads(res.read())
-	return data
+	try:
+		res = urllib.urlopen(url)
+		data = json.loads(res.read())
+		return data
+	except Exception, e:
+		print('Error in json.loadJSONurl: ' + str(e))
+		return None
 
 def getiidxinfo(user, type, lv):
 	url = ('http://json.iidx.me/%s/%s/level/%d/' % (user, type, lv))

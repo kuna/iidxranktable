@@ -13,6 +13,10 @@ class Song(models.Model):
 	songlevel = models.IntegerField(default=0)
 	songnotes = models.IntegerField(default=0)
 
+	# TODO: add iidx song series & english name
+	#series = models.IntegerField(default=0)
+	#songtitle_eng = models.CharField(max_length=100)
+
 	# for calculating MCMC ..?
 	calclevel = models.FloatField(default=0)
 	calcweight = models.FloatField(default=0)

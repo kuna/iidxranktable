@@ -70,7 +70,7 @@ body { font-family: 'M+ 1c medium', 'Malgun Gothic', NanumBarunGothicOTF,"Helvet
 .lamp_group.CLEAR { background-color:#369; color:#fff }
 .lamp_group.HARD_CLEAR { background-color:#c66; color:#fff; }
 .lamp_group.EX-HARD_CLEAR { background-color:#cc6; color:#fff; }
-.lamp_group.FULL_COMBO { background-color:#986; color:#fff; }
+.lamp_group.FULL_COMBO { background-color:#0cc; color:#fff; }
 
 /* rank show */
 .rank { position: absolute; width:16px; height:10px; top:7px; right:8px; 
