@@ -22,5 +22,8 @@ def test():
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^test/', views.test)
+    url(r'^test/', views.test),
+	url(r'^iidx/$', views.mainpage),
+	url(r'^iidx/(?P<username>\w+)/$', views.userpage),
+	url(r'^iidx/(?P<username>\w+)/(?P<diff>\w+)/(?P<level>\w+)/$', views.rankpage),
 ]

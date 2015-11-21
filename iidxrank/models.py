@@ -2,10 +2,9 @@
 # http://www.b-list.org/weblog/2007/sep/22/standalone-django-scripts/
 
 from datetime import datetime
-import os
 from django.db import models	# whether to use django?
 from django.db.models import CASCADE
-
+from django.utils.timezone import now
 
 class Song(models.Model):
 	songid = models.IntegerField(default=0)
@@ -56,7 +55,7 @@ class PlayRecord(models.Model):
 
 
 class RankTable(models.Model):
-	time = models.DateTimeField(auto_now=True)		# db updated time
+	time = models.DateTimeField(default=now)		# db updated time
 	tablename = models.CharField(max_length=100)
 	tabletitle = models.CharField(max_length=100)
 	level = models.IntegerField(default=0)
@@ -119,6 +118,7 @@ class RankItem(models.Model):
 
 # newly added comment system
 class Comment(models.Model):
+	time = models.DateTimeField(default=now)		# db updated time
 	rankitem = models.ForeignKey(RankItem, on_delete=CASCADE)
 	text = models.CharField(max_length=1000)
 	score = models.IntegerField(default=0)	# 99: just a comment
@@ -130,12 +130,19 @@ class Comment(models.Model):
 class Board(models.Model):
 	title = models.CharField(max_length=100)
 
+	def __unicode__(self):
+		return self.title
+
 class BoardComment(models.Model):
+	time = models.DateTimeField(default=now)		# db updated time
 	board = models.ForeignKey(Board, on_delete=CASCADE)
 	text = models.CharField(max_length=1000)
 	writer = models.CharField(max_length=100)
 	ip = models.CharField(max_length=100)
 	attr = models.IntegerField(default=0)
+
+	def get_boardtitle(self):
+		return self.board.title
 
 class BannedUser(models.Model):
 	ip = models.CharField(max_length=100)

@@ -1,9 +1,19 @@
 # https://docs.djangoproject.com/en/1.9/intro/tutorial02/
 
 from django.contrib import admin
+from django import forms
 import models
 
 # form
+class BoardCommentForm(forms.ModelForm):
+	class Meta:
+		model = models.BoardComment
+		fields = '__all__'
+		widgets = {
+			'text': forms.Textarea(attrs={'cols': 80, 'rows': 20}),
+		}
+
+# admin
 class RankTableAdmin(admin.ModelAdmin):
 	list_display = ('tabletitle', 'tablename', 'time')
 class RankCategoryAdmin(admin.ModelAdmin):
@@ -17,9 +27,17 @@ class PlayerAdmin(admin.ModelAdmin):
 class SongAdmin(admin.ModelAdmin):
 	list_display = ('songtitle', 'songtype', 'songlevel')
 
+class BoardAdmin(admin.ModelAdmin):
+	list_display = ('title',)
+class BoardCommentAdmin(admin.ModelAdmin):
+	list_display = ('writer', 'ip', 'get_boardtitle', 'text')
+	form = BoardCommentForm
+
 # register
 admin.site.register(models.RankTable, RankTableAdmin)
 admin.site.register(models.RankCategory, RankCategoryAdmin)
 admin.site.register(models.RankItem, RankItemAdmin)
 admin.site.register(models.Player, PlayerAdmin)
 admin.site.register(models.Song, SongAdmin)
+admin.site.register(models.Board, BoardAdmin)
+admin.site.register(models.BoardComment, BoardCommentAdmin)
