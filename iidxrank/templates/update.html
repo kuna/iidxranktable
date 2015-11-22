@@ -1,0 +1,60 @@
+<html>
+<head>
+	<title>insane.pe.kr DB updater</title>
+	<style>
+		.msg { clear:both; }
+	</style>
+	{% load staticfiles %}
+	<script language="javascript" src="{% static 'js/jquery-2.1.3.min.js' %}"></script>
+	<script language="javascript">
+		// CSRF token
+		csrftoken = "{{ csrf_token }}";
+
+		function processAjax(o) {
+			ret = JSON.parse(o);
+			if (ret.status != "success") {
+				alert(ret.status);
+				return;
+			}
+			if (ret.message) {
+				$("#messages").append($("<div class=\"msg\">" + ret.message + "</div>"));
+			}
+		}
+
+		// poll message every 500ms
+		setInterval(function() {
+			$.ajax({
+				dataType: "json",
+				url: "status",
+				data: { "csrfmiddlewaretoken": csrftoken },
+				success: processAjax
+			});
+		}, 500);
+
+		// init commander (sendmessage)
+		$(function() {
+			$("#sendmessage").keyup(function (e) {
+				if (e.keyCode == 13) {
+					$.ajax({
+						dataType:"json",
+						url: "send",
+						data: { "csrfmiddlewaretoken": csrftoken,
+							"message": $("#sendmessage").val()
+						},
+						success: processAjax
+					});
+					$("#sendmessage").val("");
+				}
+			});
+		});
+	</script>
+</head>
+<body>
+	<h3>This function is only for administrator.</h3>
+	<a href="songlist">update songlist</a><br>
+	<a href="dp12">update dp12</a><br>
+	<hr>
+	<div id="messages"></div>
+	<div id="controller"><input id="sendmessage" type="text"></div>
+</body>
+</html>

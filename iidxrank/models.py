@@ -12,6 +12,7 @@ class Song(models.Model):
 	songtitle = models.CharField(max_length=100)
 	songlevel = models.IntegerField(default=0)
 	songnotes = models.IntegerField(default=0)
+	version = models.IntegerField(default=0)
 
 	# TODO: add iidx song series & english name
 	#series = models.IntegerField(default=0)

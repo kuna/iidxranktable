@@ -16,15 +16,20 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 import views
-
-def test():
-    return 'test'
+import views_update
 
 urlpatterns = [
+# preoccupied urls
+	url(r'^admin/update/$', views_update.index),
+	url(r'^admin/update/?(P<update>\w+)/$', views_update.startUpdate),
+	url(r'^admin/update/status/$', views_update.recentStatus),
+	url(r'^admin/update/send/$', views_update.sendMessage),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^test/', views.test),
-	url(r'^iidx/$', views.mainpage),
+    url(r'^test/$', views.test),
 	url(r'^iidx/imgtl/$', views.imgtl),
+
+# common urls
+	url(r'^iidx/$', views.mainpage),
 	url(r'^iidx/(?P<username>\w+)/$', views.userpage),
 	url(r'^iidx/(?P<username>\w+)/(?P<diff>\w+)/(?P<level>\w+)/$', views.rankpage),
 ]

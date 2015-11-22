@@ -38,6 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'iidxrank',
+	'ws4redis',	# websocket
 )
 
 MIDDLEWARE_CLASSES = (
@@ -64,6 +65,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+				'ws4redis.context_processors.default',	# websocket
             ],
         },
     },
@@ -107,6 +109,11 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# redis Websocket part
+
+WEBSOCKET_URL = '/ws/'
+WS4REDIS_EXPIRE = 7200	# reconnection delay
+WS4REDIS_PREFIX = 'ws'	# for convinence in redis
 
 # custom setting
 

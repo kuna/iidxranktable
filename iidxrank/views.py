@@ -7,9 +7,7 @@ import models
 import settings
 
 import iidx
-import jsondata
-import song
-import db
+from update import jsondata
 
 import base64
 
@@ -43,6 +41,10 @@ def rankpage(request, username, diff, level):
 	return render(request, 'rankview.html', {'score': songdata, 'user': userinfo, 'pageinfo': pageinfo})
 	#return HttpResponse('rankpage - %s, %s, %s' % (username, diff, level))
 
+def db_update(request):
+	if not request.user.is_superuser:
+		return HttpResponseNotFound('<h1>Forbidden</h1>')
+	return HttpResponse("up-date page.")
 
 def compile_data(ranktable, player):
 	# create score data

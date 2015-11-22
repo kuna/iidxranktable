@@ -1,23 +1,27 @@
 #-*- coding: utf-8 -*-
 
-import db
 import parser_clickagain, parser_zasa, parser_iidxme, parser_custom
 import textdistance
 import datetime
 
 def update_iidxme():
+	global models
 	def update(data):
+		songs = models.Song.objects.all()
 		added_data = 0
 		for song in data:
-			if not db.Song.query.filter_by(songid=song['id'], songtype=song['diff']).count():
-				song = db.Song(songtitle=song['title'], 
+			if not models.Song.objects.filter(songid=song['id'], songtype=song['diff']).count():
+				if song['notes'] == None:
+					song['notes'] = 0
+				models.Song.objects.create(
+					songtitle=song['title'], 
 					songtype=song['diff'],
 					songid=song['id'],
 					songlevel=song['level'],
-					songnotes=song['notes'])
-				db_session.add(song)
+					songnotes=song['notes'],
+					version=song['version'],
+				)
 				added_data = added_data+1
-		db_session.commit()
 		print "added %d datas" % added_data
 
 	for lvl in range(6, 13):
@@ -30,55 +34,51 @@ def update_iidxme():
 		data = parser_iidxme.parse_songs(lvl, "dp")
 		update(data)
 
-def updateDB(data, tablename, tabletitle, copyright, type, level):
+# update or create rank table
+def updateDB(data, tablename, tabletitle):
+	global models
 	added_data = 0
 
 	# get table first
-	table = db.RankTable.query.filter_by(tablename=tablename)
+	table = models.RankTable.objects.filter(tablename=tablename)
 	if (not table.count()):
-		table = db.RankTable(tablename=tablename,
+		models.RankTable.objects.create(tablename=tablename,
 			tabletitle=tabletitle,
-			copyright = copyright,
-			type=type,
-			level=level)
-		db_session.add(table)
+			copyright = '',
+			type='',
+			level=0)
 	else:
-		table = table.one()
+		table = table.first()
 		# update table info
 		table.tabletitle = tabletitle
-		table.type = type
-		table.level = level
-		table.copyright = copyright
-		table.time = datetime.datetime.today()
+		table.save()
 
-	# process items
+	# process rankitems/rankcategories
 	for group in data:
 		# before adding items, get category first
-		category = db.RankCategory.query.filter_by(table_id=table.id, categoryname=group[0])
+		category = models.RankCategory.objects.filter(ranktable=table, categoryname=group[0])
 		if (not category.count()):
-			category = db.RankCategory(table_id=table.id, categoryname=group[0])
-			# append category to group
-			table.category.append(category)
-			db_session.add(category)
+			category = models.RankCategory(table=ranktable, categoryname=group[0])
+			category.save()
 		else:
-			category = category.one()
+			category = category.first()
 
 		# make rank item
 		# if already exists then update category only
 		for item in group[1]:
-			rankitem = db.RankItem.query.filter_by(category_id=category.id, songtitle=item[0], songtype=item[1])
+			song_tag = item[0] + "," + item[1]
+			rankitem = models.RankItem.objects.filter(rankcategory=category, info=song_tag)
 			if not rankitem.count():
-				rankitem = db.RankItem(songtitle=item[0], 
-					songtype=item[1],
-					category_id=category.id)
+				song = smart_suggestion(name, diff, level)
+				rankitem = models.RankItem(info=song_tag,
+					rankcategory=category,
+					song= song)
 				# append item to category
-				category.rankitem.append(rankitem)
-				db_session.add(rankitem)
-				added_data = added_data+1
+				rankitem.save()
 			else:
-				rankitem[0].category_id = category.id
+				rankitem.first().category = category
+				rankitem.save()
 
-	db_session.commit()
 	print "added %d datas" % added_data
 
 def update_SP():
@@ -170,9 +170,9 @@ def update_DP():
 #
 def smart_suggestion(name, diff, level):
 	import sys
+	global models
 	# first get all song data
-	songs = db.Song.query.filter_by(songtype=diff)\
-		.filter(db.Song.songlevel == level)
+	songs = models.Song.objects.filter(songtype=diff, songlevel=level).all()
 
 	# make new array for suggestion
 	title_arr = []
@@ -209,16 +209,16 @@ def smart_suggestion(name, diff, level):
 			if (code > len(suggestions)):
 				print 'out of suggestions'
 				continue
-			return db.Song.query.filter_by(songtype=diff, songtitle=suggestions[code-1][0]).one()
+			return models.Song.objects.filter(songtype=diff, songtitle=suggestions[code-1][0]).first()
 		elif (code < 0):
 			# search song which that code exists
-			songs = db.Song.query.filter_by(songtype=diff, songid=-code)
+			songs = models.Song.objects.filter(songtype=diff, songid=-code)
 			# if not then loop again
 			if not songs.count():
 				print 'no song of such code exists'
 				continue
 			else:
-				song = songs.one()
+				song = songs.first()
 				print 'you selected song [%s]. if okay then [y]' % song.songtitle
 				okay = raw_input("> ")
 				if (okay == "y"):
@@ -229,30 +229,60 @@ def smart_suggestion(name, diff, level):
 
 #
 # make relation with song
+# it's currently depreciated ...
 #
 def update_relation():
 	print 'making relation with song table ...'
 	# scan rankitem one by one
 	updated_cnt = 0
-	for item in db.RankItem.query.all():
+	for item in models.RankItem.query.all():
 		if (item.song_id == None):
 			# if song_id not set, scan it
 			print 'current: %s' % item.songtitle
-			songs = db.Song.query.filter_by(songtitle=item.songtitle, songtype=item.songtype)
+			songs = models.Song.objects.filter(songtitle=item.songtitle, songtype=item.songtype)
 			if songs.count() <= 0:
 				# do smart suggestion
 				song = smart_suggestion(item.songtitle, item.songtype, item.category.ranktable.level)
 				if (song != None):
 					item.song_id = song.id
-				db_session.commit()
+				song.save()
 			else:
-				song = songs.one()
+				song = songs.first()
 				#song.rankitem.append(item)
 				item.song_id = song.id
 		updated_cnt += 1
 
 	print "%d items updated." % updated_cnt
-	db_session.commit()
+
+
+# message part
+outputmsgs = []
+inputmsgs = []
+
+def output(message):
+	global outputmsgs
+	outputmsgs.append(message)
+
+def getRecentMsgs():
+	global outputmsgs
+	return outputmsgs
+
+def sendMessage(message):
+	global inputmsgs
+	inputmsgs.append(message)
+
+def pollMessage():
+	import time
+	global inputmsgs
+	while (len(inputmsgs <= 0)):
+		time.sleep(0.1)
+	return inputmsgs.pop(0)
+
+
+
+def setModel(_models):
+	global models
+	models = _models
 
 
 def main():
@@ -260,20 +290,13 @@ def main():
 	# you should execute it through IDLE because of unicode
 	#
 
-	print 'opening DB ...'
-	global db_session
-	db_session = db.init_db()
-
 	update_iidxme()
 
-	update_SP()
+	#update_SP()
 
 	update_DP()
 
-	update_relation()
-
-	print 'finished. closing DB ...'
-	db_session.remove()
+	#update_relation()
 
 if __name__ == '__main__':
 	main()
