@@ -106,3 +106,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# custom setting
+
+# for imgtl image upload service
+imgtlkey = 'bd897b3c9c8bb5b7c3721ba8a80f9624'

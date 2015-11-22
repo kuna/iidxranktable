@@ -9,6 +9,9 @@
 <script type="text/javascript" src="{% static 'js/html2canvas.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/ranklist.js' %}"></script>
 <script language="javascript">
+// django csrf token
+window.csrftoken="{{ csrf_token }}";
+
 var png_base64 = "";
 var ftitle = "{{ pageinfo.title }} - DJ {{ user.name }}"
 var fname = ftitle + ".png";
@@ -82,9 +85,13 @@ $(document).ready(function () {
 		var b = png_base64.substring(22);
 		$("#send").button('loading');
 		$.ajax({
-			url: "/imgtl",
+			url: "/iidx/imgtl/",
 			type: "POST",
-			data: { name: fname.replace( /[^\x00-\x80]/g,'_'), base64: b },
+			data: { 
+				'name': fname.replace( /[^\x00-\x80]/g,'_'),
+				'base64': b,
+				'csrfmiddlewaretoken': csrftoken
+			},
 			success: function (o) {
 				ret = JSON.parse(o);
 				if (ret.error) {

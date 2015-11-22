@@ -1,13 +1,17 @@
 #-*- coding: utf-8 -*-
 from django.http import HttpResponse, HttpResponseNotFound
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 import models
+import settings
 
 import iidx
 import jsondata
 import song
 import db
 
+import base64
 
 def test(request):
     return HttpResponse('test')
@@ -219,5 +223,21 @@ def addMetadata(musicdata, data):
 	return sorted(categories, cmp=sort_func)
 
 
-# TODO: imgtl url
+# iidx/imgtl/
+@csrf_exempt
+def imgtl(request):
+	if request.method != "POST":
+		raise PermissionDenied
+
+	filename = request.POST['name']
+	pngdata = base64.decodestring(request.POST['base64'])
+	print "got imgtl request: %s (%d byte)" % (request.POST['name'], len(pngdata))
+
+	import requests
+	import urllib2
+	header = {'X-IMGTL-TOKEN': settings.imgtlkey}
+	r = requests.post('https://api.img.tl/upload', data={'desc': '', 'filename': filename}, \
+		files={'file': (filename, pngdata, 'application/octet-stream')}, headers=header)
+	return HttpResponse(r.text)
+
 # TODO: board url
