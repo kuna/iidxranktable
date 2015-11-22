@@ -35,18 +35,19 @@ def update_iidxme():
 		update(data)
 
 # update or create rank table
-def updateDB(data, tablename, tabletitle):
+def updateDB(data, tablename, tabletitle, level):
 	global models
 	added_data = 0
 
 	# get table first
 	table = models.RankTable.objects.filter(tablename=tablename)
 	if (not table.count()):
-		models.RankTable.objects.create(tablename=tablename,
+		table = RankTable.objects.create(tablename=tablename,
 			tabletitle=tabletitle,
 			copyright = '',
 			type='',
 			level=0)
+		table.save()
 	else:
 		table = table.first()
 		# update table info
@@ -58,7 +59,7 @@ def updateDB(data, tablename, tabletitle):
 		# before adding items, get category first
 		category = models.RankCategory.objects.filter(ranktable=table, categoryname=group[0])
 		if (not category.count()):
-			category = models.RankCategory(table=ranktable, categoryname=group[0])
+			category = models.RankCategory(ranktable=table, categoryname=group[0])
 			category.save()
 		else:
 			category = category.first()
@@ -69,14 +70,22 @@ def updateDB(data, tablename, tabletitle):
 			song_tag = item[0] + "," + item[1]
 			rankitem = models.RankItem.objects.filter(rankcategory=category, info=song_tag)
 			if not rankitem.count():
-				song = smart_suggestion(name, diff, level)
+				# search song automatically from DB
+				song = models.Song.objects.filter(songtitle=item[0], songtype=item[1], songlevel=level)
+				if (not song.count()):
+					song = smart_suggestion(item[0], item[1], level)	# name, diff, level
+					if (song == None):
+						continue	# ignore
+				else:
+					song = song.first()
 				rankitem = models.RankItem(info=song_tag,
 					rankcategory=category,
 					song= song)
 				# append item to category
 				rankitem.save()
 			else:
-				rankitem.first().category = category
+				rankitem = rankitem.first()
+				rankitem.category = category
 				rankitem.save()
 
 	print "added %d datas" % added_data
@@ -84,86 +93,48 @@ def updateDB(data, tablename, tabletitle):
 def update_SP():
 	print 'parsing 2ch'
 	updateDB(parser_custom.parse12(), "SP12_2ch", 
-		u"Beatmania IIDX SP lv.12 Hard Guage Rank",
-		u"all data from 2ch (dcinside XERT*)",
-		"SP", 12)
+		u"Beatmania IIDX SP lv.12 Hard Guage Rank", 12)
 	print 'parsing clickagain'
 	updateDB(parser_clickagain.parse12_7(), "SP12_7", 
-		u"Beatmania IIDX SP lv.12 7記 Hard Guage Rank",
-		u"all data from clickagain.sakura.ne.jp", 
-		"SP", 12)
+		u"Beatmania IIDX SP lv.12 7記 Hard Guage Rank", 12)
 	updateDB(parser_clickagain.parse12(), "SP12", 
-		u"Beatmania IIDX SP lv.12 Hard Guage Rank",
-		u"all data from clickagain.sakura.ne.jp", 
-		"SP", 12)
+		u"Beatmania IIDX SP lv.12 Hard Guage Rank", 12)
 	updateDB(parser_clickagain.parse11(), "SP11", 
-		u"Beatmania IIDX SP lv.11 Hard Guage Rank",
-		u"all data from clickagain.sakura.ne.jp", 
-		"SP", 11)
+		u"Beatmania IIDX SP lv.11 Hard Guage Rank", 11)
 	updateDB(parser_clickagain.parse10(), "SP10", 
-		u"Beatmania IIDX SP lv.10 Hard Guage Rank",
-		u"all data from clickagain.sakura.ne.jp", 
-		"SP", 10)
+		u"Beatmania IIDX SP lv.10 Hard Guage Rank", 10)
 	updateDB(parser_clickagain.parse9(), "SP9", 
-		u"Beatmania IIDX SP lv.9 Hard Guage Rank",
-		u"all data from clickagain.sakura.ne.jp", 
-		"SP", 9)
+		u"Beatmania IIDX SP lv.9 Hard Guage Rank", 9)
 	updateDB(parser_clickagain.parse8(), "SP8", 
-		u"Beatmania IIDX SP lv.8 Hard Guage Rank",
-		u"all data from clickagain.sakura.ne.jp", 
-		"SP", 8)
+		u"Beatmania IIDX SP lv.8 Hard Guage Rank", 8)
 	# groove
 	updateDB(parser_clickagain.parse12N(), "SP12N", 
-		u"Beatmania IIDX SP lv.12 Normal Guage Rank",
-		u"all data from clickagain.sakura.ne.jp", 
-		"SP", 12)
+		u"Beatmania IIDX SP lv.12 Normal Guage Rank", 12)
 	updateDB(parser_clickagain.parse11N(), "SP11N", 
-		u"Beatmania IIDX SP lv.11 Normal Guage Rank",
-		u"all data from clickagain.sakura.ne.jp", 
-		"SP", 11)
+		u"Beatmania IIDX SP lv.11 Normal Guage Rank", 11)
 	updateDB(parser_clickagain.parse10N(), "SP10N", 
-		u"Beatmania IIDX SP lv.10 Normal Guage Rank",
-		u"all data from clickagain.sakura.ne.jp", 
-		"SP", 10)
+		u"Beatmania IIDX SP lv.10 Normal Guage Rank", 10)
 	updateDB(parser_clickagain.parse9N(), "SP9N", 
-		u"Beatmania IIDX SP lv.9 Normal Guage Rank",
-		u"all data from clickagain.sakura.ne.jp", 
-		"SP", 9)
+		u"Beatmania IIDX SP lv.9 Normal Guage Rank", 9)
 	updateDB(parser_clickagain.parse8N(), "SP8N", 
-		u"Beatmania IIDX SP lv.8 Normal Guage Rank",
-		u"all data from clickagain.sakura.ne.jp", 
-		"SP", 8)
+		u"Beatmania IIDX SP lv.8 Normal Guage Rank", 8)
 
 def update_DP():
 	print 'parsing zasa'
 	updateDB(parser_zasa.parse12(), "DP12", 
-		u"Beatmania IIDX DP lv.12 Rank", 
-		u"all data from SNJ@KMZS", 
-		"DP", 12)
+		u"Beatmania IIDX DP lv.12 Rank", 12)
 	updateDB(parser_zasa.parse11(), "DP11", 
-		u"Beatmania IIDX DP lv.11 Rank", 
-		u"all data from SNJ@KMZS", 
-		"DP", 11)
+		u"Beatmania IIDX DP lv.11 Rank", 11) 
 	updateDB(parser_zasa.parse10(), "DP10", 
-		u"Beatmania IIDX DP lv.10 Rank", 
-		u"all data from SNJ@KMZS", 
-		"DP", 10)
+		u"Beatmania IIDX DP lv.10 Rank", 10) 
 	updateDB(parser_zasa.parse9(), "DP9", 
-		u"Beatmania IIDX DP lv.9 Rank", 
-		u"all data from SNJ@KMZS", 
-		"DP", 9)
+		u"Beatmania IIDX DP lv.9 Rank", 9) 
 	updateDB(parser_zasa.parse8(), "DP8", 
-		u"Beatmania IIDX DP lv.8 Rank", 
-		u"all data from SNJ@KMZS", 
-		"DP", 8)
+		u"Beatmania IIDX DP lv.8 Rank", 8) 
 	updateDB(parser_zasa.parse7(), "DP7", 
-		u"Beatmania IIDX DP lv.7 Rank", 
-		u"all data from SNJ@KMZS", 
-		"DP", 7)
+		u"Beatmania IIDX DP lv.7 Rank", 7) 
 	updateDB(parser_zasa.parse6(), "DP6", 
-		u"Beatmania IIDX DP lv.6 Rank", 
-		u"all data from SNJ@KMZS", 
-		"DP", 6)
+		u"Beatmania IIDX DP lv.6 Rank", 6)
 
 #
 # suggest similar song object from name/diff
@@ -188,7 +159,7 @@ def smart_suggestion(name, diff, level):
 	#	sug_songs.append()
 
 	while (1):
-		print "cannot find matching one, but some suggestion was found"
+		print("cannot find matching one(%s / %s / %d), but some suggestion was found" % (name, diff, level))
 		idx = 1
 		print "0. (deleted)"
 		for sug_title in suggestions:
@@ -243,8 +214,9 @@ def update_relation():
 			if songs.count() <= 0:
 				# do smart suggestion
 				song = smart_suggestion(item.songtitle, item.songtype, item.category.ranktable.level)
-				if (song != None):
-					item.song_id = song.id
+				if song == None:
+					continue
+				item.song_id = song.id
 				song.save()
 			else:
 				song = songs.first()

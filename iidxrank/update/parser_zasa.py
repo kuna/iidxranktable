@@ -68,10 +68,10 @@ def parse(diff):
 			diff = "DP" + sp['class'][0].upper()
 			if (diff == "DPL"):
 				diff = "DPA"
+				title += " (L)"
 			group = getGroup(res, group_title)
 			group[1].append( (title, diff) )
 
 	return res
 
 
-print parse12()
