@@ -1,40 +1,51 @@
 {% extends "index.html" %}
 {% block head %}
 <style type="text/css">
-.admin { font-weight:bold; }
+.writer { font-weight:bold; }
+.admin { color:#933; }
 form .row { clear:both; }
 form .label { width:120px; }
+
+#writeform { background-color:#f0f0f0; }
 
 .clear { clear:both; }
 .clear input { height:23px; }
 .clear .left { float:left; }
 .clear .right {float:right; width:150px; }
 .clear .date { font-size:9pt; color:#666; }
+.clear .score { margin-left:5px; }
+.clear .ip { color:#999; font-size:9pt; }
 .clear .score1 { color:#699; }
 .clear .score-1 { color:#966; }
+
+#message { position:absolute; display:block; right:0px; top:0px; height:auto; width:auto; background-color:#cc6; color:#fff; font-size:12px; padding: 7px; }
 </style>
+<script language="javascript">
+setTimeout(function() {
+	$("#message").fadeOut(2000);
+}, 5000);
+</script>
 {% endblock %}
 
 {% block body %}
-<!-- message -->
-<div class="message">{{ board.message }}</div>
-<!-- message end -->
+{% if board.message %}
+<div id="message">{{ board.message }}</div>
+{% endif %}
 
 <!-- song comment board body -->
 <div class="panel panel-default">
 	<div class="panel-heading">{{ board.songinfo.songtitle }} (☆{{ board.songinfo.songlevel }} / {{ board.songinfo.songtype }})</div>
 	<div class="list-group">
 	<!-- new comment -->
-		<div class="list-group-item">
+		<div class="list-group-item" id="writeform">
 			<form role="form" class="form-horizontal" action="./" method="post">
 				{% csrf_token %}
 				<input type="hidden" name="mode" value="add">
-				<input type="hidden" name="id" value="{{ comment.id }}"></p>
 
 				<div class="form-group">
 					<label for="writer" class="col-xs-4 control-label">name</label>
 					<div class="col-xs-8">
-					<input type="text" id="writer" name="writer" class="form-control input-sm" value="">
+					<input type="text" id="writer" name="writer" class="form-control input-sm" value="{{ board.writer }}">
 					</div>
 				</div>
 				<div class="form-group">
@@ -60,7 +71,7 @@ form .label { width:120px; }
 				</div>
 				<div class="form-group">
 					<div class="col-xs-12">
-					<input class="form-control" type="submit" value="OK">
+					<input class="form-control btn-default" type="submit" value="OK">
 					</div>
 				</div>
 			</form>
@@ -72,15 +83,19 @@ form .label { width:120px; }
 		<div class="list-group-item">
 			<div class="clear">
 				<div class="left">
-					{% if comment.attr == 2 %}
-					<span class="writer admin">{{ comment.writer }}</span>
-					{% else %}
-					<span class="writer">{{ comment.writer }}</span>
-					{% endif %}
+					<span class="writer{% if board.admin %} admin{% endif %}">{{ comment.writer }}</span>
 					<span class="date">[{{ comment.time|date:"y-m-d H:i:s" }}]</span>
-					{% if comment.score < 99 %}
-					<span class="score score{{ comment.score }}">{{ comment.score }}</span>
+					<span class="ip">{{ comment.ip_public }}</span>
+					{% if comment.score == 99 %}
+					<span class="score glyphicon glyphicon-comment">
+					{% elif comment.score > 0 %}
+					<span class="score glyphicon glyphicon-arrow-up">
+					{% elif comment.score < 0 %}
+					<span class="score glyphicon glyphicon-arrow-down">
+					{% elif comment.score == 0 %}
+					<span class="score glyphicon glyphicon-ok-circle">
 					{% endif %}
+					</span>
 				</div>
 				<div class="right">
 					<form action="./" method="post">

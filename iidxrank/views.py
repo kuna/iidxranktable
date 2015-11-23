@@ -1,6 +1,7 @@
 #-*- coding: utf-8 -*-
-from django.http import HttpResponse, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.core.exceptions import PermissionDenied
+from django.core.urlresolvers import reverse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 import models
@@ -64,19 +65,19 @@ def songcomment(request, ranktablename, songid, difftype):
 	if (ranktable == None or song == None):
 		return HttpResponseNotFound("invalid id")
 
-	message = ""
+	# check admin
+	attr = 0
+	if (request.user.is_superuser):
+		attr = 2
+	# return message (mostly error)
+
 	if (request.method == "POST"):
-		# check admin
-		attr = 0
-		if (request.user.is_superuser):
-			attr = 2
+		message = ""
 		ip = get_client_ip(request)
 		password = request.POST["password"]
 		# if no password, then make ip as password
 		if (password == ""):
 			password = ip
-
-		print request.POST["mode"]
 
 		if (request.POST["mode"] == "delete"):
 			# delete comment
@@ -113,7 +114,16 @@ def songcomment(request, ranktablename, songid, difftype):
 					attr = attr,
 					password = password,
 				)
+				# remember writer session
+				request.session['writer'] = writer
 				message = u"코멘트를 등록하였습니다."
+
+		# add message to session
+		request.session['message'] = message
+
+		# after POST request, redirect to same view
+		# (prevent sending same request)
+		return HttpResponseRedirect(reverse("songcomment", args=[ranktablename, songid, difftype]))
 
 	# fetch all comments & fill rank info
 	comments = models.SongComment.objects.filter(ranktable=ranktable, song=song)
@@ -121,8 +131,13 @@ def songcomment(request, ranktablename, songid, difftype):
 	boardinfo = {
 		'songinfo': song,
 		'rankinfo': rankitem,
-		'message': message,
+		'message': request.session.get('message', ''),
+		'admin': attr == 2,
+		'writer': request.session.get('writer', ''),
 	}
+	# clear message
+	request.session['message'] = ''
+
 	return render(request, 'songcomment.html', {'comments': comments, 'board': boardinfo})
 
 def board(request, boardid):

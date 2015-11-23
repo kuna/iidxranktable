@@ -49,3 +49,4 @@ private.py
 env.py
 !testunit.py
 *.swp
+settings.py

@@ -135,6 +135,9 @@ class SongComment(models.Model):
 	attr = models.IntegerField(default=0)	# 0: normal, 1: hide, 2: admin
 	password = models.CharField(max_length=100)
 
+	def ip_public(self):
+		return '.'.join(self.ip.split('.')[:2])
+
 # this board will be used as guestboard/notice
 class Board(models.Model):
 	title = models.CharField(max_length=100)
