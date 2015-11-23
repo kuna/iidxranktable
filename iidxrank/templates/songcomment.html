@@ -32,9 +32,35 @@ setTimeout(function() {
 <div id="message">{{ board.message }}</div>
 {% endif %}
 
+{% if board.admin %}
+<!-- song difficulty change function -->
+<!-- NOTE: this function is only allowed to admin -->
+<form role="form" action="/iidx/update/rank/" method="POST">
+	{% csrf_token %}
+	<div class="form-group">
+		<div class="form-group">
+		{% for cate in board.ranktable.rankcategory_set.all %}
+			<label>
+				<input type="hidden" name="rankitem_id" value="{{ board.rankinfo.id }}">
+				<input type="hidden" name="song_id" value="{{ board.songinfo.id }}">
+				<input type="radio" name="category_id" value="{{ cate.id }}"
+				{% if board.rankinfo and cate.id == board.rankinfo.rankcategory.id %}
+				checked
+				{% endif %}
+				>
+				{{ cate.categoryname }}
+			</label>
+		{% endfor %}
+		</div>
+		<input type="submit" value="change">
+	</div>
+</form>
+<!-- song difficulty change end -->
+{% endif %}
+
 <!-- song comment board body -->
 <div class="panel panel-default">
-	<div class="panel-heading">{{ board.songinfo.songtitle }} (☆{{ board.songinfo.songlevel }} / {{ board.songinfo.songtype }})</div>
+	<div class="panel-heading">{{ board.songinfo.songtitle }} (☆{{ board.songinfo.songlevel }} / {{ board.songinfo.songtype }}{% if board.rankinfo %} / {{ board.rankinfo.rankcategory.categoryname }}{% endif %})</div>
 	<div class="list-group">
 	<!-- new comment -->
 		<div class="list-group-item" id="writeform">

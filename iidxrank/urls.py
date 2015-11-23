@@ -20,12 +20,12 @@ import views_update
 
 urlpatterns = [
 # preoccupied urls
-	url(r'^admin/update/$', views_update.index),
-	url(r'^admin/update/?(P<update>\w+)/$', views_update.startUpdate),
-	url(r'^admin/update/status/$', views_update.recentStatus),
-	url(r'^admin/update/send/$', views_update.sendMessage),
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^test/$', views.test),
+	url(r'^iidx/update/$', views_update.index),
+	url(r'^iidx/update/?(P<update>\w+)/$', views_update.startUpdate),
+	url(r'^iidx/update/status/$', views_update.recentStatus),
+	url(r'^iidx/update/send/$', views_update.sendMessage),
+	url(r'^iidx/update/rank/$', views_update.rankupdate),
+    url(r'^iidx/admin/', include(admin.site.urls)),
 	url(r'^iidx/imgtl/$', views.imgtl),
 	url(r'^iidx/songcomment/(?P<ranktablename>\w+)/(?P<songid>[0-9]+)/(?P<difftype>\w+)/$', views.songcomment, name="songcomment"),
 	url(r'^iidx/comment/(?P<boardid>[0-9])/$', views.board),

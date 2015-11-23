@@ -131,6 +131,7 @@ def songcomment(request, ranktablename, songid, difftype):
 	boardinfo = {
 		'songinfo': song,
 		'rankinfo': rankitem,
+		'ranktable': ranktable,
 		'message': request.session.get('message', ''),
 		'admin': attr == 2,
 		'writer': request.session.get('writer', ''),
@@ -138,7 +139,7 @@ def songcomment(request, ranktablename, songid, difftype):
 	# clear message
 	request.session['message'] = ''
 
-	return render(request, 'songcomment.html', {'comments': comments, 'board': boardinfo})
+	return render(request, 'songcomment.html', {'comments': comments.order_by('-time'), 'board': boardinfo})
 
 def board(request, boardid):
 	# TODO
