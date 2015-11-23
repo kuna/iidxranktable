@@ -70,7 +70,8 @@ def songcomment_all(request, page):
 
 	return render_to_response('songcomment_all.html', {"comments": songcomments})
 
-def songcomment(request, ranktablename, songid, difftype, page):
+# /iidx/songcomment/<ranktablename>/<songid>/<difftype>/
+def songcomment(request, ranktablename, songid, difftype):
 	# check is valid url
 	ranktable = models.RankTable.objects.filter(tablename=ranktablename).first()
 	song = models.Song.objects.filter(songid=songid, songtype=difftype).first()
@@ -135,7 +136,7 @@ def songcomment(request, ranktablename, songid, difftype, page):
 
 		# after POST request, redirect to same view
 		# (prevent sending same request)
-		return HttpResponseRedirect(reverse("songcomment", args=[ranktablename, songid, difftype, page]))
+		return HttpResponseRedirect(reverse("songcomment", args=[ranktablename, songid, difftype]))
 
 	# fetch all comments & fill rank info
 	comments = models.SongComment.objects.filter(ranktable=ranktable, song=song)
@@ -153,13 +154,17 @@ def songcomment(request, ranktablename, songid, difftype, page):
 
 	return render(request, 'songcomment.html', {'comments': comments.order_by('-time'), 'board': boardinfo})
 
+# /iidx/board/<boardid>/<boardpage>
 def board(request, boardid):
 	# TODO
 	return render(request, 'board.html', {'comments': comments, 'board': boardinfo})
 
-def selectmusic(request, mode):
-	# TODO
-	return None
+# /iidx/selectmusic
+def selectmusic(request):
+	# all the other things will done in json & html
+	return render_to_response('selectmusic.html')
+
+#######################
 
 def compile_data(ranktable, player):
 	# create score data

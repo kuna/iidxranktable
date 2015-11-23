@@ -180,7 +180,7 @@ $(window).load(function () {
 				<div class="cell">
 					<ul class="songlist">
 						{% for song in category.songs %}
-						<a href="/iidx/songcomment/{{ pageinfo.tablename }}/{{ song.data.id }}/{{ song.data.diff_detail }}/0/"
+						<a href="/iidx/songcomment/{{ pageinfo.tablename }}/{{ song.data.id }}/{{ song.data.diff_detail }}/"
 							onclick="window.open(this.href, 'newwindow', 'width=600, height=600'); return false;"
 							target="_blank">
 							<li class="diff{{ song.data.diff }}" 

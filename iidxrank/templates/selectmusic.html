@@ -1,0 +1,205 @@
+{% extends "index.html" %}
+{% block head %}
+<meta name="viewport" content="width=600px, user-scalable=yes">
+
+<style type="text/css">
+body {
+	background-color:#0a365d;
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #0a365d), color-stop(100%, #030f1b));
+	background-image: -webkit-linear-gradient(#0a365d, #030f1b);
+	background-image: linear-gradient(#0a365d, #030f1b);
+	background-attachment: fixed;
+}
+
+#animated_background { position:fixed; top:0; left:0; }
+
+#header {
+	position:fixed;
+	top:10px; left:10px;
+	padding:10px; background-color:rgba(255, 255, 255, 0.5);
+	border-radius:5px;
+	z-index: 999;
+}
+
+#lists {
+	position: absolute;
+	top:0; right:0;
+	width: 480px;
+}
+
+@font-face {
+	    font-family: 'M+ 1c medium';
+		src: url('../fonts/mplus-1c-medium-sub.eot');
+		src: url('../fonts/mplus-1c-medium-sub.eot?#iefix') format('embedded-opentype'),
+		url('../fonts/mplus-1c-medium-sub.woff') format('woff'),
+		url('../fonts/mplus-1c-medium-sub.ttf') format('truetype');
+}
+
+#lists li {
+	border-radius: 5px 0 0 5px; 
+	border-top: 1px solid #333; border-bottom:1px solid #333; 
+	margin-bottom:3px;
+	background-color: rgba(0,0,0,0.3);
+	height: 40px;
+	color: #fff;
+	list-style: none;
+	padding: 7px 0 10px 20px;
+	font-family: 'M+ 1c medium', 'Malgun Gothic';
+	font-size: 18px;
+	font-weight: bold;
+	text-shadow: 0 0 4px #000;
+	cursor: default;
+	overflow:hidden;
+}
+#lists li:hover {
+	background-color: rgba(0, 0, 0, 0.5);
+}
+#lists li .level {
+	margin: -8px 8px 0 -20px;
+	border-left: 5px solid rgba(0, 0, 0, 0.3);
+	border-right: 1px solid rgba(0, 0, 0, 0.2);
+	height:40px;
+	width: 40px;
+	display:block;
+	float: left;
+	padding: 8px 0;
+	text-align: center;
+	border-radius: 5px 0 0 5px;
+}
+#lists li .levelA { color:#faa; }
+#lists li .levelH { color:#ffa; }
+#lists li .levelN { color:#aaf; }
+#lists li .category { 
+	position: absolute; left:-160px; width:180px;
+	text-align:right; 
+	font-weight:normal;
+	color: rgba(255, 255, 255, 0.5);
+}
+</style>
+
+{% load staticfiles %}
+<script src="{% static 'js/background.canvas.js' %}"></script>
+<script type="text/javascript">
+current_mode = "spn";
+
+function loadList(url) {
+	$.ajax({
+		url: url,
+		data: { 'csrftoken': "{{ csrf_token }}" },
+		success: function (o) {
+			if (o.status == "success") {
+				$("#song_lists").empty();
+				for (var i in o.songs) {
+					var tag = "<li>"
+					tag += "<span class='level level" + o.songs[i].songdiff + "'>" + o.songs[i].songlevel +"</span>";
+					tag += "<span class='title'>" + o.songs[i].songtitle +"</span>";
+					tag += "<span class='category'>" + o.songs[i].categories.toString() +"</span>";
+					tag += "</li>";
+					$("#song_lists").append($(tag));
+				}
+				$('body').scrollTop($('#song_lists').offset().top);
+			}
+		}
+	});
+}
+
+function addSeries(series) {
+	li_obj = $('<li>Beatmania ' + series + '</li>');
+	li_obj.attr('data', series);
+	li_obj.click(function (e) {
+		loadList("/iidx/json/selectmusic/" + current_mode + "/series/" + series);
+	});
+	$("#category_lists").append(li_obj);
+}
+
+function addLevel(level) {
+	li_obj = $('<li>Level ' + level + '</li>');
+	li_obj.attr('data', level);
+	li_obj.click(function (e) {
+		loadList("/iidx/json/selectmusic/" + current_mode.substring(0, 2) + "/level/" + level);
+	});
+	$("#category_lists").append(li_obj);
+}
+
+$(function() {
+	addSeries('1');
+	addSeries('ss');
+	addSeries('2');
+	addSeries('3');
+	addSeries('4');
+	addSeries('5');
+	addSeries('6');
+	addSeries('7');
+	addSeries('8');
+	addSeries('9');
+	addSeries('10');
+	addSeries('11');
+	addSeries('12');
+	addSeries('13');
+	addSeries('14');
+	addSeries('15');
+	addSeries('16');
+	addSeries('17');
+	addSeries('18');
+	addSeries('19');
+	addSeries('20');
+	addSeries('21');
+	addSeries('22');
+	addSeries('23');
+	addLevel('6');
+	addLevel('7');
+	addLevel('8');
+	addLevel('9');
+	addLevel('10');
+	addLevel('11');
+	addLevel('12');
+});
+
+function changeDiff(obj) {
+	obj = $(obj);
+	$("#header button").removeClass("btn-primary");
+	$("#header button").addClass("btn-default");
+	obj.removeClass("btn-default");
+	obj.addClass("btn-primary");
+	current_mode = obj.text();
+}
+
+/*
+we'd better to cancel animated background due to mobile ...
+
+$(function() {
+	width =  $(window).innerWidth();
+	height =  $(window).innerHeight();
+	$("#animated_background").attr('width', $(window).innerWidth());
+	$("#animated_background").attr('height', $(window).innerHeight());
+	con = $("#animated_background")[0].getContext('2d');
+
+	draw_init(100, con, width, height);
+	setInterval(draw_circle,80);
+});
+
+$(window).resize(function() {
+	$("#animated_background").attr('width', $(window).innerWidth());
+	$("#animated_background").attr('height', $(window).innerHeight());
+});
+*/
+</script>
+
+{% endblock %}
+{% block body %}
+<canvas id="animated_background"></canvas>
+<div id="header">
+	<button id="spn_mode" class="btn btn-primary" onclick="changeDiff(this)">SPN</button>
+	<button id="sph_mode" class="btn btn-default" onclick="changeDiff(this)">SPH</button>
+	<button id="spa_mode" class="btn btn-default" onclick="changeDiff(this)">SPA</button>
+	<button id="dpn_mode" class="btn btn-default" onclick="changeDiff(this)">DPN</button>
+	<button id="dph_mode" class="btn btn-default" onclick="changeDiff(this)">DPH</button>
+	<button id="dpa_mode" class="btn btn-default" onclick="changeDiff(this)">DPA</button>
+</div>
+<div id="lists">
+	<ul id="category_lists">
+	</ul>
+	<ul id="song_lists">
+	</ul>
+</div>
+{% endblock %}
