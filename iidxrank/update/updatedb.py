@@ -84,6 +84,17 @@ def updateDB(data, tablename, tabletitle, level):
 						continue	# ignore
 				else:
 					song = song.first()
+				# check once more, if same song is already exists in ranktable
+				# if it does, then cancel add new one
+				rankitem_query = models.RankItem(rankcategory__ranktable=table, song=song)
+				if (rankitem_query.count()):
+					print 'same song already exists in rank table!'
+					print 'just modifying tag...'
+					rankitem = rankitem_query.first()
+					rankitem.info = song_tag
+					rankitem.save()
+					continue
+
 				rankitem = models.RankItem(info=song_tag,
 					rankcategory=category,
 					song= song)
