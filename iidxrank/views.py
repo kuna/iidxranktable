@@ -14,6 +14,16 @@ import base64
 def test(request):
     return HttpResponse('test')
 
+def get_client_ip(request):
+	x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+	if x_forwarded_for:
+		ip = x_forwarded_for.split(',')[0]
+	else:
+		ip = request.META.get('REMOTE_ADDR')
+	return ip
+
+####
+
 def mainpage(request):
 	notices = models.Board.objects.filter(title='notice').first().boardcomment_set
 	return render(request, 'notice.html', {'notices': notices.order_by('-time')})
@@ -41,10 +51,83 @@ def rankpage(request, username, diff, level):
 	return render(request, 'rankview.html', {'score': songdata, 'user': userinfo, 'pageinfo': pageinfo})
 	#return HttpResponse('rankpage - %s, %s, %s' % (username, diff, level))
 
+# TODO not implemented, you should run update in shell directly.
 def db_update(request):
 	if not request.user.is_superuser:
 		return HttpResponseNotFound('<h1>Forbidden</h1>')
 	return HttpResponse("up-date page.")
+
+def songcomment(request, ranktablename, songid, difftype):
+	# check is valid url
+	ranktable = models.RankTable.objects.filter(tablename=ranktablename).first()
+	song = models.Song.objects.filter(songid=songid, songtype=difftype).first()
+	if (ranktable == None or song == None):
+		return HttpResponseNotFound("invalid id")
+
+	message = ""
+	if (request.method == "POST"):
+		# check admin
+		attr = 0
+		if (request.user.is_superuser):
+			attr = 2
+		ip = get_client_ip(request)
+		password = request.POST["password"]
+		# if no password, then make ip as password
+		if (password == ""):
+			password = ip
+
+		print request.POST["mode"]
+
+		if (request.POST["mode"] == "delete"):
+			# delete comment
+			comment_id = request.POST["id"]
+			if (attr == 2):
+				# admin can delete any comment
+				comment = models.SongComment.objects.filter(id=comment_id).first()
+			else:
+				comment = models.SongComment.objects.filter(id=comment_id, password=password).first()
+
+			if (not comment):
+				message = "Wrong password"
+			else:
+				comment.delete()
+				message = "Removed Comment"
+		elif (request.POST["mode"] == "add"):
+			# check argument is valid
+			text = request.POST["text"]
+			writer = request.POST["writer"]
+			if (len(text) <= 5 or len(writer) <= 0):
+				message = u"코멘트나 이름이 너무 짧습니다."
+			if (models.SongComment.objects.filter(ranktable=ranktable, song=song, text=text, writer=writer).count()):
+				message = u"동일한 내용의 코멘트가 존재합니다."
+
+			if (message == ""):
+				# add comment
+				models.SongComment.objects.create(
+					ranktable = ranktable,
+					song= song,
+					text = text,
+					score = request.POST["score"],
+					writer = writer,
+					ip = ip,
+					attr = attr,
+					password = password,
+				)
+				message = u"코멘트를 등록하였습니다."
+
+	# fetch all comments & fill rank info
+	comments = models.SongComment.objects.filter(ranktable=ranktable, song=song)
+	rankitem = models.RankItem.objects.filter(rankcategory__ranktable=ranktable, song=song).first()
+	boardinfo = {
+		'songinfo': song,
+		'rankinfo': rankitem,
+		'message': message,
+	}
+	return render(request, 'songcomment.html', {'comments': comments, 'board': boardinfo})
+
+def board(request, boardid):
+	# TODO
+	return render(request, 'board.html', {'comments': comments, 'board': boardinfo})
 
 def compile_data(ranktable, player):
 	# create score data
@@ -87,6 +170,7 @@ def compile_data(ranktable, player):
 			.replace('DP', '<span style="color:#0099FF;">DP</span>')\
 			.replace('Hard', '<span style="color:red;">Hard</span>')\
 			.replace('Normal', '<span style="color:#0099FF;">Normal</span>'),
+		'tablename': ranktable.tablename,
 		'type': ranktable.type,
 		'clearinfo': clearcount,
 		'copyright': ranktable.copyright,
@@ -113,6 +197,7 @@ def addMetadata(musicdata, data):
 	#
 	for music in musicdata:
 		# make diff(DP + A) string upper
+		music['data']['diff_detail'] = music['data']['diff']
 		music['data']['diff'] = music['data']['diff'][-1:].upper()
 
 		# add clear metadata (number to readable string)

@@ -10,7 +10,8 @@ def update_iidxme():
 		songs = models.Song.objects.all()
 		added_data = 0
 		for song in data:
-			if not models.Song.objects.filter(songid=song['id'], songtype=song['diff']).count():
+			song_query = models.Song.objects.filter(songid=song['id'], songtype=song['diff'])
+			if not song_query.count():
 				if song['notes'] == None:
 					song['notes'] = 0
 				models.Song.objects.create(
@@ -22,6 +23,11 @@ def update_iidxme():
 					version=song['version'],
 				)
 				added_data = added_data+1
+			else:
+				# just make update you want
+				song_obj = song_query.first()
+				song_obj.version = song['version']
+				song_obj.save()
 		print "added %d datas" % added_data
 
 	for lvl in range(6, 13):

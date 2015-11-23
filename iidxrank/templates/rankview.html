@@ -180,12 +180,16 @@ $(window).load(function () {
 				<div class="cell">
 					<ul class="songlist">
 						{% for song in category.songs %}
-						<li class="diff{{ song.data.diff }}" 
-							data-clear="{{ song.clear }}" data-rate="{{ song.rate }}">
-							<span class="name">{{ song.data.title }}</span>
-							<div class="lamp_clear {{ song.clearstring }}"></div>
-							<div class="rank {{ song.rank }}"></div>
-						</li>
+						<a href="/iidx/songcomment/{{ pageinfo.tablename }}/{{ song.data.id }}/{{ song.data.diff_detail }}/"
+							onclick="window.open('/iidx/songcomment/{{ pageinfo.tablename }}/{{ song.data.id }}/{{ song.data.diff_detail }}/', 'newwindow', 'width=600, height=600'); return false;"
+							target="_blank">
+							<li class="diff{{ song.data.diff }}" 
+								data-clear="{{ song.clear }}" data-rate="{{ song.rate }}">
+								<span class="name">{{ song.data.title }}</span>
+								<div class="lamp_clear {{ song.clearstring }}"></div>
+								<div class="rank {{ song.rank }}"></div>
+							</li>
+						</a>
 						{% endfor %}
 					</ul>
 				</div>

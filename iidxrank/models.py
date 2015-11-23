@@ -12,7 +12,7 @@ class Song(models.Model):
 	songtitle = models.CharField(max_length=100)
 	songlevel = models.IntegerField(default=0)
 	songnotes = models.IntegerField(default=0)
-	version = models.IntegerField(default=0)
+	version = models.CharField(max_length=20)
 
 	# TODO: add iidx song series & english name
 	#series = models.IntegerField(default=0)
@@ -122,18 +122,23 @@ class RankItem(models.Model):
 
 
 # newly added comment system
-class Comment(models.Model):
+class SongComment(models.Model):
 	time = models.DateTimeField(default=now)		# db updated time
-	rankitem = models.ForeignKey(RankItem, on_delete=CASCADE)
+	# we'd better to identify song with: ranktable, song
+	ranktable = models.ForeignKey(RankTable, on_delete=CASCADE)
+	song = models.ForeignKey(Song, null=True, blank=True)
+
 	text = models.CharField(max_length=1000)
 	score = models.IntegerField(default=0)	# 99: just a comment
 	writer = models.CharField(max_length=100)
 	ip = models.CharField(max_length=100)
 	attr = models.IntegerField(default=0)	# 0: normal, 1: hide, 2: admin
+	password = models.CharField(max_length=100)
 
 # this board will be used as guestboard/notice
 class Board(models.Model):
 	title = models.CharField(max_length=100)
+	permission = models.IntegerField(default=0)		# 2: board only for admin
 
 	def __unicode__(self):
 		return self.title
@@ -145,6 +150,7 @@ class BoardComment(models.Model):
 	writer = models.CharField(max_length=100)
 	ip = models.CharField(max_length=100)
 	attr = models.IntegerField(default=0)
+	password = models.CharField(max_length=100)
 
 	def get_boardtitle(self):
 		return self.board.title

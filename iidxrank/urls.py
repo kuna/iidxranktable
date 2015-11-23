@@ -27,6 +27,8 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^test/$', views.test),
 	url(r'^iidx/imgtl/$', views.imgtl),
+	url(r'^iidx/songcomment/(?P<ranktablename>\w+)/(?P<songid>[0-9]+)/(?P<difftype>\w+)/$', views.songcomment),
+	url(r'^iidx/comment/(?P<boardid>[0-9])/$', views.board),
 
 # common urls
 	url(r'^iidx/$', views.mainpage),

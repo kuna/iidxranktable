@@ -1,0 +1,108 @@
+{% extends "index.html" %}
+{% block head %}
+<style type="text/css">
+.admin { font-weight:bold; }
+form .row { clear:both; }
+form .label { width:120px; }
+
+.clear { clear:both; }
+.clear input { height:23px; }
+.clear .left { float:left; }
+.clear .right {float:right; width:150px; }
+.clear .date { font-size:9pt; color:#666; }
+.clear .score1 { color:#699; }
+.clear .score-1 { color:#966; }
+</style>
+{% endblock %}
+
+{% block body %}
+<!-- message -->
+<div class="message">{{ board.message }}</div>
+<!-- message end -->
+
+<!-- song comment board body -->
+<div class="panel panel-default">
+	<div class="panel-heading">{{ board.songinfo.songtitle }} (☆{{ board.songinfo.songlevel }} / {{ board.songinfo.songtype }})</div>
+	<div class="list-group">
+	<!-- new comment -->
+		<div class="list-group-item">
+			<form role="form" class="form-horizontal" action="./" method="post">
+				{% csrf_token %}
+				<input type="hidden" name="mode" value="add">
+				<input type="hidden" name="id" value="{{ comment.id }}"></p>
+
+				<div class="form-group">
+					<label for="writer" class="col-xs-4 control-label">name</label>
+					<div class="col-xs-8">
+					<input type="text" id="writer" name="writer" class="form-control input-sm" value="">
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="password" class="col-xs-4 control-label">password (비우면 ip로 인증됩니다)</label>
+					<div class="col-xs-8">
+					<input type="password" id="password" name="password" class="form-control input-sm" value="">
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label class="col-xs-4 control-label">난이도 제안</label>
+					<div class="radio col-xs-8">
+						<label><input type="radio" name="score" value="99" checked> [관련없음]</label>
+						<label><input type="radio" name="score" value="0"> [=]</label>
+						<label><input type="radio" name="score" value="1"> [+]</label>
+						<label><input type="radio" name="score" value="-1"> [-]</label>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-xs-12">
+					<textarea class="form-control" name="text" placeholder="댓글을 입력하세요" rows=4 cols=50></textarea>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-xs-12">
+					<input class="form-control" type="submit" value="OK">
+					</div>
+				</div>
+			</form>
+		</div>
+	<!-- new comment ends here -->
+
+	<!-- comments -->
+		{% for comment in comments %}
+		<div class="list-group-item">
+			<div class="clear">
+				<div class="left">
+					{% if comment.attr == 2 %}
+					<span class="writer admin">{{ comment.writer }}</span>
+					{% else %}
+					<span class="writer">{{ comment.writer }}</span>
+					{% endif %}
+					<span class="date">[{{ comment.time|date:"y-m-d H:i:s" }}]</span>
+					{% if comment.score < 99 %}
+					<span class="score score{{ comment.score }}">{{ comment.score }}</span>
+					{% endif %}
+				</div>
+				<div class="right">
+					<form action="./" method="post">
+						{% csrf_token %}
+						<input id="mode" type="hidden" name="mode" value="delete">
+						<input id="id" type="hidden" name="id" value="{{ comment.id }}">
+						<div class="input-group">
+							<input id="password" type="password" name="password" value="" class="form-control">
+							<span class="input-group-btn">
+								<input type="submit" value="삭제" class="btn btn-default">
+							</span>
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="clear">
+				<span class="text">{{ comment.text }}</span>
+			</div>
+		</div>
+		{% endfor %}
+	<!-- end comments -->
+	</div>
+</div>
+<!-- board body ends -->
+{% endblock %}
