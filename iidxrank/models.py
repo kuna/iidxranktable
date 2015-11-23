@@ -137,6 +137,10 @@ class SongComment(models.Model):
 
 	def ip_public(self):
 		return '.'.join(self.ip.split('.')[:2])
+	def get_songinfo(self):
+		return '%s / %s / %d' % (self.song.songtitle, self.song.songtype, self.song.songlevel)
+	def get_ranktableinfo(self):
+		return self.ranktable.tabletitle
 
 # this board will be used as guestboard/notice
 class Board(models.Model):
@@ -161,12 +165,5 @@ class BoardComment(models.Model):
 class BannedUser(models.Model):
 	ip = models.CharField(max_length=100)
 
-# depreciated (SQLAlchemy part)
-def init_db():
-	#if (not os.path.exists("data.db")):
-	#	open("data.db", "a").close()	# create empty file
-	#engine = create_engine('sqlite:///data.db', convert_unicode=True)
-	db_session = scoped_session(sessionmaker(bind=engine))
-	Base.query = db_session.query_property()
-	Base.metadata.create_all(bind=engine)
-	return db_session
+	def __unicode__(self):
+		return self.ip

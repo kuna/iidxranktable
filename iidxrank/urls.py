@@ -27,8 +27,10 @@ urlpatterns = [
 	url(r'^iidx/update/rank/$', views_update.rankupdate),
     url(r'^iidx/admin/', include(admin.site.urls)),
 	url(r'^iidx/imgtl/$', views.imgtl),
-	url(r'^iidx/songcomment/(?P<ranktablename>\w+)/(?P<songid>[0-9]+)/(?P<difftype>\w+)/$', views.songcomment, name="songcomment"),
+	url(r'^iidx/songcomment/all/(?P<page>[0-9]+)/$', views.songcomment_all),
+	url(r'^iidx/songcomment/(?P<ranktablename>\w+)/(?P<songid>[0-9]+)/(?P<difftype>\w+)/(?P<page>[0-9]+)/$', views.songcomment, name="songcomment"),
 	url(r'^iidx/comment/(?P<boardid>[0-9])/$', views.board),
+	url(r'^iidx/selectmusic/(?P<mode>\w+)/$', views.selectmusic),
 
 # common urls
 	url(r'^iidx/$', views.mainpage),

@@ -32,6 +32,8 @@ class BoardAdmin(admin.ModelAdmin):
 class BoardCommentAdmin(admin.ModelAdmin):
 	list_display = ('writer', 'ip', 'get_boardtitle', 'text')
 	form = BoardCommentForm
+class SongCommentAdmin(admin.ModelAdmin):
+	list_display = ('writer', 'ip', 'get_songinfo', 'get_ranktableinfo',  'text')
 
 # register
 admin.site.register(models.RankTable, RankTableAdmin)
@@ -41,3 +43,5 @@ admin.site.register(models.Player, PlayerAdmin)
 admin.site.register(models.Song, SongAdmin)
 admin.site.register(models.Board, BoardAdmin)
 admin.site.register(models.BoardComment, BoardCommentAdmin)
+admin.site.register(models.SongComment, SongCommentAdmin)
+admin.site.register(models.BannedUser)

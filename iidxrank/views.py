@@ -2,8 +2,9 @@
 from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.shortcuts import render
+from django.shortcuts import render, render_to_response
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
+from django.core.paginator import Paginator
 import models
 import settings
 
@@ -58,7 +59,18 @@ def db_update(request):
 		return HttpResponseNotFound('<h1>Forbidden</h1>')
 	return HttpResponse("up-date page.")
 
-def songcomment(request, ranktablename, songid, difftype):
+def songcomment_all(request, page):
+	songcomment_list = models.SongComment.objects.order_by('-time').all()
+	paginator = Paginator(songcomment_list, 10)
+	
+	try:
+		songcomments = paginator.page(page)
+	except:
+		return HttpResponseNotFound("invalid page")
+
+	return render_to_response('songcomment_all.html', {"comments": songcomments})
+
+def songcomment(request, ranktablename, songid, difftype, page):
 	# check is valid url
 	ranktable = models.RankTable.objects.filter(tablename=ranktablename).first()
 	song = models.Song.objects.filter(songid=songid, songtype=difftype).first()
@@ -99,8 +111,8 @@ def songcomment(request, ranktablename, songid, difftype):
 			writer = request.POST["writer"]
 			if (len(text) <= 5 or len(writer) <= 0):
 				message = u"코멘트나 이름이 너무 짧습니다."
-			if (models.SongComment.objects.filter(ranktable=ranktable, song=song, text=text, writer=writer).count()):
-				message = u"동일한 내용의 코멘트가 존재합니다."
+			if (models.BannedUser.objects.filter(ip=ip).count()):
+				message = u"차단당한 유저입니다."
 
 			if (message == ""):
 				# add comment
@@ -123,7 +135,7 @@ def songcomment(request, ranktablename, songid, difftype):
 
 		# after POST request, redirect to same view
 		# (prevent sending same request)
-		return HttpResponseRedirect(reverse("songcomment", args=[ranktablename, songid, difftype]))
+		return HttpResponseRedirect(reverse("songcomment", args=[ranktablename, songid, difftype, page]))
 
 	# fetch all comments & fill rank info
 	comments = models.SongComment.objects.filter(ranktable=ranktable, song=song)
@@ -144,6 +156,10 @@ def songcomment(request, ranktablename, songid, difftype):
 def board(request, boardid):
 	# TODO
 	return render(request, 'board.html', {'comments': comments, 'board': boardinfo})
+
+def selectmusic(request, mode):
+	# TODO
+	return None
 
 def compile_data(ranktable, player):
 	# create score data

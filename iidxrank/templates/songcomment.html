@@ -19,6 +19,10 @@ form .label { width:120px; }
 .clear .score-1 { color:#966; }
 
 #message { position:absolute; display:block; right:0px; top:0px; height:auto; width:auto; background-color:#cc6; color:#fff; font-size:12px; padding: 7px; }
+
+.SPA, .DPA { text-shadow:0px 0px 3px #f66; }
+.SPH, .DPH { text-shadow: 0px 0px 3px #ff6; }
+.SPN, .DPN { text-shadow: 0px 0px 3px #66f; }
 </style>
 <script language="javascript">
 setTimeout(function() {
@@ -60,7 +64,7 @@ setTimeout(function() {
 
 <!-- song comment board body -->
 <div class="panel panel-default">
-	<div class="panel-heading">{{ board.songinfo.songtitle }} (☆{{ board.songinfo.songlevel }} / {{ board.songinfo.songtype }}{% if board.rankinfo %} / {{ board.rankinfo.rankcategory.categoryname }}{% endif %})</div>
+	<div class="panel-heading {{ board.songinfo.songtype }}">{{ board.songinfo.songtitle }} (☆{{ board.songinfo.songlevel }} / {{ board.songinfo.songtype }}{% if board.rankinfo %} / {{ board.rankinfo.rankcategory.categoryname }}{% endif %})</div>
 	<div class="list-group">
 	<!-- new comment -->
 		<div class="list-group-item" id="writeform">
@@ -109,7 +113,7 @@ setTimeout(function() {
 		<div class="list-group-item">
 			<div class="clear">
 				<div class="left">
-					<span class="writer{% if board.admin %} admin{% endif %}">{{ comment.writer }}</span>
+					<span class="writer{% if comment.attr == 2 %} admin{% endif %}">{{ comment.writer }}</span>
 					<span class="date">[{{ comment.time|date:"y-m-d H:i:s" }}]</span>
 					<span class="ip">{{ comment.ip_public }}</span>
 					{% if comment.score == 99 %}
