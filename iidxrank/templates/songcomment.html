@@ -39,7 +39,7 @@ setTimeout(function() {
 {% if board.admin %}
 <!-- song difficulty change function -->
 <!-- NOTE: this function is only allowed to admin -->
-<form role="form" action="/iidx/update/rank/" method="POST">
+<form role="form" action="/iidx/update/rank/" method="POST" onsubmit="return confirm('continue?');">
 	{% csrf_token %}
 	<div class="form-group">
 		<div class="form-group">
@@ -56,7 +56,8 @@ setTimeout(function() {
 			</label>
 		{% endfor %}
 		</div>
-		<input type="submit" value="change">
+		<input type="submit" name="action" value="change">
+		<input type="submit" name="action" value="delete">
 	</div>
 </form>
 <!-- song difficulty change end -->

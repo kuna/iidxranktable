@@ -30,21 +30,30 @@ def rankupdate(request):
 	category_id = request.POST["category_id"]
 	song_id = request.POST["song_id"]
 	rankitem_id = request.POST["rankitem_id"]
+	action = request.POST["action"]
 	rankcategory = models.RankCategory.objects.get(pk=category_id)
 	song = models.Song.objects.get(pk=song_id)
 
-	if (not rankitem_id):
-		models.RankItem.objects.create(
-			rankcategory = rankcategory,
-			song = song,
-			info = ''
-			)
-	else:
-		rankitem = models.RankItem.objects.get(pk=rankitem_id)
-		rankitem.rankcategory = rankcategory
-		rankitem.song = song
-		rankitem.save()
-	return JsonResponse({'status': 'success', 'song': song.songtitle, 'rankcategory': rankcategory.categoryname})
+	# change(add) category
+	# or delete rankitem
+	if (action == "change"):
+		if (not rankitem_id):
+			models.RankItem.objects.create(
+				rankcategory = rankcategory,
+				song = song,
+				info = ''
+				)
+		else:
+			rankitem = models.RankItem.objects.get(pk=rankitem_id)
+			rankitem.rankcategory = rankcategory
+			rankitem.song = song
+			rankitem.save()
+	elif (action == "delete"):
+		if (rankitem_id):
+			rankitem = models.RankItem.objects.get(pk=rankitem_id)
+			rankitem.delete();
+
+	return JsonResponse({'status': 'success', 'action': action, 'song': song.songtitle, 'rankcategory': rankcategory.categoryname})
 
 # returns JSON
 def startUpdate(request, update):

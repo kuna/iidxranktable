@@ -44,13 +44,6 @@ class Player(models.Model):
 	def __unicode__(self):
 		return self.iidxnick + "/" + str(self.spclass) + "/" + str(self.dpclass)
 
-	@property
-	def is_expired(self):
-		# 1 month = need to refresh data
-		if self.expire_time:
-			return (datetime.now() - self.time).total_seconds() >= 24*3600*30
-		return False
-
 class PlayRecord(models.Model):
 	player = models.ForeignKey(Player, on_delete=CASCADE)
 	song = models.ForeignKey(Song, on_delete=CASCADE)
@@ -67,22 +60,6 @@ class RankTable(models.Model):
 	type = models.CharField(max_length=100)
 	copyright = models.CharField(max_length=100)
 
-	@property
-	def songs(self):
-		song_obj = []
-		for category in self.category:
-			song_obj = song_obj + category.songs
-		return song_obj
-
-	@property
-	def unknownsongs(self):
-		return Song.query\
-			.filter(Song.songlevel == self.level)\
-			.filter(Song.songtype.like(self.type + "%"))\
-			.except_(Song.query.join(RankItem).join(RankCategory)\
-				.filter(RankCategory.ranktable == self))\
-			.all()
-
 	def __unicode__(self):
 		return self.tabletitle
 
@@ -92,15 +69,6 @@ class RankCategory(models.Model):
 
 	def get_tabletitle(obj):
 		return obj.ranktable.tabletitle
-
-	@property
-	def songs(self):
-		song_obj = []
-		for rankitem in self.rankitem:
-			x = rankitem.song
-			if (x != None):
-				song_obj.append(x)
-		return song_obj
 
 	def __unicode__(self):
 		return self.get_tabletitle() + "/" + self.categoryname
@@ -115,8 +83,8 @@ class RankItem(models.Model):
 		return obj.song.songtitle
 	def get_songlevel(obj):
 		return obj.song.songlevel
-	def get_songtype(obj):
-		return obj.song.songtype
+	def get_ranktablename(obj):
+		return obj.rankcategory.ranktable.tablename
 	def get_categoryname(obj):
 		return obj.rankcategory.categoryname
 
@@ -141,6 +109,14 @@ class SongComment(models.Model):
 		return '%s / %s / %d' % (self.song.songtitle, self.song.songtype, self.song.songlevel)
 	def get_ranktableinfo(self):
 		return self.ranktable.tabletitle
+	def get_rankitem(self):
+		return RankItem.objects.filter(rankcategory__ranktable=self.ranktable, song=self.song).first()
+	def get_rankcategory(self):
+		rankitem = self.get_rankitem()
+		if (rankitem):
+			return rankitem.rankcategory
+		else:
+			return None
 
 # this board will be used as guestboard/notice
 class Board(models.Model):

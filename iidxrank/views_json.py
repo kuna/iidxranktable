@@ -18,9 +18,9 @@ def createSonginfoFromModel(songs):
 	return song_array
 
 def json_level(request, type, level):
-	songs = models.Song.objects.filter(songtype__icontains=type, songlevel=level).all()
+	songs = models.Song.objects.filter(songtype__icontains=type, songlevel=level).order_by('songtitle').all()
 	return JsonResponse({'status':'success', 'songs': createSonginfoFromModel(songs)})
 
 def json_series(request, type, series):
-	songs = models.Song.objects.filter(songtype=type, version=series).all()
+	songs = models.Song.objects.filter(songtype=type, version=series).order_by('songtitle').all()
 	return JsonResponse({'status':'success', 'songs': createSonginfoFromModel(songs)})

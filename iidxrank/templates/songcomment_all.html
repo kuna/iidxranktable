@@ -8,14 +8,14 @@ form .label { width:120px; }
 
 #writeform { background-color:#f0f0f0; }
 
-.clear .title { clear:both; font-weight:bold; margin-bottom:5px; border-bottom:1px solid #ccc; padding-bottom:5px; }
 .clear { clear:both; }
-.clear input { height:23px; }
-.clear .left { float:left; }
-.clear .right {float:right; width:150px; text-align: right; }
-.clear .date { font-size:9pt; color:#666; }
-.clear .score { margin-left:5px; }
-.clear .ip { color:#999; font-size:9pt; }
+.comment .title { clear:both; font-weight:bold; margin-bottom:5px; border-bottom:1px solid #ccc; padding-bottom:5px; }
+.comment .ranktabletitle { font-weight:normal; font-style:italic; color:#666; }
+.comment .left { float:left; }
+.comment .right {float:right; width:150px; text-align: right; }
+.comment .date { font-size:9pt; color:#666; }
+.comment .score { margin-left:5px; }
+.comment .ip { color:#999; font-size:9pt; }
 
 .footer { font-size:9pt; overflow:hidden; color:#666; height:45px; }
 .footer .prev { float:left; padding:0 10px; width:100px; height:10px; text-align:left; }
@@ -37,9 +37,9 @@ form .label { width:120px; }
 	<!-- comments -->
 		{% for comment in comments %}
 		<div class="list-group-item">
-			<div class="clear">
+			<div class="comment clear">
 				<div class="title {{ comment.song.songtype }}">
-					{{ comment.song.songtitle }} (☆{{ comment.song.songlevel }} / {{ comment.song.songtype }}) / {{ comment.ranktable.tabletitle }}
+					{{ comment.song.songtitle }} (☆{{ comment.song.songlevel }} / {{ comment.song.songtype }} / {{ comment.get_rankcategory.categoryname }}) <span class="ranktabletitle">{{ comment.ranktable.tabletitle }}</span>
 				</div>
 				<div class="left">
 					<span class="writer{% if comment.attr == 2 %} admin{% endif %}">{{ comment.writer }}</span>
@@ -57,7 +57,7 @@ form .label { width:120px; }
 					</span>
 				</div>
 				<div class="right">
-					<a href="/iidx/songcomment/{{ comment.ranktable.tablename }}/{{ comment.song.songid }}/{{ comment.song.songtype }}/0/" target="_blank" onclick="window.open(this.href, 'newwindow', 'width=600,height=600'); return false;">
+					<a href="/iidx/songcomment/{{ comment.ranktable.tablename }}/{{ comment.song.songid }}/{{ comment.song.songtype }}/" target="_blank" onclick="window.open(this.href, 'newwindow', 'width=600,height=600'); return false;">
 						<span class="glyphicon glyphicon-link"></span>
 					</a>
 				</div>
