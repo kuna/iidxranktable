@@ -207,7 +207,7 @@ def addMetadata(musicdata, data, song_query):
 				return order_arr.index(x)
 			else:
 				try:
-					return 100-int(float(x)*10)
+					return 100-int(float(x.replace("N", ""))*10)
 				except:
 					return 100
 		# make score
