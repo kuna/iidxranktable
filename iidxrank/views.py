@@ -62,9 +62,9 @@ def db_update(request):
 		return HttpResponseNotFound('<h1>Forbidden</h1>')
 	return HttpResponse("up-date page.")
 
-def songcomment_all(request, page):
+def songcomment_all(request, page=1):
 	songcomment_list = models.SongComment.objects.order_by('-time').all()
-	paginator = Paginator(songcomment_list, 10)
+	paginator = Paginator(songcomment_list, 100)
 	
 	try:
 		songcomments = paginator.page(page)

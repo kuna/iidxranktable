@@ -1,0 +1,117 @@
+{% extends "index.html" %}
+{% block head %}
+{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/board.css' %}">
+{% endblock %}
+
+{% block body %}
+{% if status.message %}
+<div id="message">{{ status.message }}</div>
+{% endif %}
+
+<!-- song comment board body -->
+<div id="container">
+	<div id="menu">
+		<a href="../../../"><button class="btn btn-default">return</button></a>
+	</div>
+
+	<div class="panel panel-default">
+		<div class="panel-heading">{{ board.title }}</div>
+		<div class="list-group">
+			{% if status.iswritable %}
+			<!-- new comment -->
+			<div class="list-group-item" id="writeform">
+				<form role="form" class="form-horizontal" action="./" method="post">
+					{% csrf_token %}
+					<input type="hidden" name="mode" value="add">
+
+					<div class="form-group">
+						<label for="writer" class="col-xs-4 control-label">name</label>
+						<div class="col-xs-8">
+						<input type="text" id="writer" name="writer" class="form-control input-sm" value="{{ status.writer }}">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="password" class="col-xs-4 control-label">password (비우면 ip로 인증됩니다)</label>
+						<div class="col-xs-8">
+						<input type="password" id="password" name="password" class="form-control input-sm" value="">
+						</div>
+					</div>
+
+					<div class="form-group">
+						<div class="col-xs-12">
+						<textarea class="form-control" name="text" placeholder="댓글을 입력하세요" rows=4 cols=50></textarea>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-xs-12">
+						<input class="form-control btn-default" type="submit" value="OK">
+						</div>
+					</div>
+				</form>
+			</div>
+			<!-- new comment ends here -->
+			{% endif %}
+
+		<!-- comments -->
+			{% for comment in comments %}
+			<div class="list-group-item">
+				<div class="comment">
+					<div class="clear info">
+						<div class="left">
+							<span class="writer{% if comment.attr == 2 %} admin{% endif %}">{{ comment.writer }}</span>
+							<div class="detail">
+								<span class="date">[{{ comment.time|date:"y-m-d H:i:s" }}]</span>
+								<span class="ip">{{ comment.ip_public }}</span>
+							</div>
+						</div>
+						<div class="right">
+							{% if status.iswritable %}
+							<form action="./" method="post">
+								{% csrf_token %}
+								<input id="mode" type="hidden" name="mode" value="delete">
+								<input id="id" type="hidden" name="id" value="{{ comment.id }}">
+								<div class="input-group">
+										<input id="password" type="password" name="password" value="" class="form-control">
+									<span class="input-group-btn">
+										<input type="submit" value="X" class="btn btn-danger">
+									</span>
+								</div>
+							</form>
+							{% endif %}
+						</div>
+					</div>
+					<div class="clear">
+						<span class="text">{{ comment.text }}</span>
+					</div>
+				</div>
+			</div>
+			{% endfor %}
+		<!-- end comments -->
+		</div>
+	</div>
+	<!-- board body ends -->
+
+
+	<!-- pagination -->
+	<div class="footer">
+		<div class="prev">
+		{% if comments.has_previous %}
+			<a href="../{{ comments.previous_page_number }}/">
+			<span class="glyphicon glyphicon-chevron-left"></span>
+			</a>
+		{% endif %}
+		</div>
+		<div class="next">
+		{% if comments.has_next %}
+			<a href="../{{ comments.next_page_number }}/">
+			<span class="glyphicon glyphicon-chevron-right"></span>
+			</a>
+		{% endif %}
+		</div>
+		<div class="center">
+			Page {{ comments.number }} of {{ comments.paginator.num_pages }}
+		</div>
+	</div>
+</div>
+{% endblock %}

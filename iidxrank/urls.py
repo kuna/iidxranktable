@@ -16,7 +16,7 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic import RedirectView
-import views
+import views, views_board
 import views_update
 import views_json
 
@@ -32,10 +32,12 @@ urlpatterns = [
 	url(r'^iidx/update/send/$', views_update.sendMessage),
 	url(r'^iidx/update/rank/$', views_update.rankupdate),
 
-# comment
+# comment, board
+	url(r'^iidx/songcomment/all/$', views.songcomment_all),
 	url(r'^iidx/songcomment/all/(?P<page>[0-9]+)/$', views.songcomment_all),
-	url(r'^iidx/songcomment/(?P<ranktablename>\w+)/(?P<songid>[0-9]+)/$', views.songcomment, name="songcomment"),
-	url(r'^iidx/comment/(?P<boardid>[0-9])/$', views.board),
+	url(r'^iidx/songcomment/(?P<ranktablename>\w+)/(?P<songid>[0-9]+)/$', views_board.songcomment, name="songcomment"),
+	url(r'^iidx/comment/(?P<boardid>[0-9]+)/$', views_board.board),
+	url(r'^iidx/comment/(?P<boardid>[0-9]+)/(?P<boardpage>[0-9]+)/$', views_board.board),
 
 # select music
 	url(r'^iidx/selectmusic/$', views.selectmusic),

@@ -29,6 +29,7 @@ body { font-family: 'M+ 1c medium', 'Malgun Gothic', NanumBarunGothicOTF,"Helvet
 .songlist li { float:left; display:block; padding:2px 0; width:20%; height: 25px; 
 		border-right:1px solid #ccc; border-bottom: 1px solid #ccc; 
 		overflow: hidden; position: relative; word-break: break-all; }
+.songlist li:hover { background:#fff;  }
 .songlist .name { padding:0 8px; /*letter-spacing: -0.5px*/ }
 .rowname { font-weight: bold; text-align: center; }
 
