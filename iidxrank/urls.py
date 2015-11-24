@@ -36,8 +36,8 @@ urlpatterns = [
 	url(r'^iidx/songcomment/all/$', views.songcomment_all),
 	url(r'^iidx/songcomment/all/(?P<page>[0-9]+)/$', views.songcomment_all),
 	url(r'^iidx/songcomment/(?P<ranktablename>\w+)/(?P<songid>[0-9]+)/$', views_board.songcomment, name="songcomment"),
-	url(r'^iidx/comment/(?P<boardid>[0-9]+)/$', views_board.board),
-	url(r'^iidx/comment/(?P<boardid>[0-9]+)/(?P<boardpage>[0-9]+)/$', views_board.board),
+	url(r'^iidx/board/(?P<boardid>[0-9]+)/$', views_board.board),
+	url(r'^iidx/board/(?P<boardid>[0-9]+)/(?P<boardpage>[0-9]+)/$', views_board.board, name="board"),
 
 # select music
 	url(r'^iidx/selectmusic/$', views.selectmusic),

@@ -109,6 +109,9 @@ def board(request, boardid, boardpage=1):
 
 	# check admin
 	is_admin = request.user.is_superuser
+	attr = 0
+	if (is_admin):
+		attr = 2
 
 	# TODO make this tidy
 	if (request.method == "POST"):
