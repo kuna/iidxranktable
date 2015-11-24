@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.views.generic import RedirectView
 import views
 import views_update
 import views_json
@@ -33,7 +34,7 @@ urlpatterns = [
 
 # comment
 	url(r'^iidx/songcomment/all/(?P<page>[0-9]+)/$', views.songcomment_all),
-	url(r'^iidx/songcomment/(?P<ranktablename>\w+)/(?P<songid>[0-9]+)/(?P<difftype>\w+)/$', views.songcomment, name="songcomment"),
+	url(r'^iidx/songcomment/(?P<ranktablename>\w+)/(?P<songid>[0-9]+)/$', views.songcomment, name="songcomment"),
 	url(r'^iidx/comment/(?P<boardid>[0-9])/$', views.board),
 
 # select music
@@ -43,6 +44,7 @@ urlpatterns = [
 
 # common urls (mainpage, userpage, rankpage)
 	url(r'^iidx/$', views.mainpage),
+	url(r'^iidx/!/$', RedirectView.as_view(url='/iidx/')),
 	url(r'^iidx/(?P<username>\w+)/$', views.userpage),
-	url(r'^iidx/(?P<username>\w+)/(?P<diff>\w+)/(?P<level>\w+)/$', views.rankpage),
+	url(r'^iidx/(?P<username>.+)/(?P<diff>\w+)/(?P<level>\w+)/$', views.rankpage, name="rankpage"),
 ]

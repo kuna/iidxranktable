@@ -1,14 +1,3 @@
-/*
-font from
-http://mplus.font-face.jp/#/
-*/
-@font-face {
-    font-family: 'M+ 1c medium';
-    src: url('../fonts/mplus-1c-medium-sub.eot');
-    src: url('../fonts/mplus-1c-medium-sub.eot?#iefix') format('embedded-opentype'),
-    url('../fonts/mplus-1c-medium-sub.woff') format('woff'),
-    url('../fonts/mplus-1c-medium-sub.ttf') format('truetype');
-}
 
 
 * { padding:0; margin:0; }

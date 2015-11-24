@@ -1,1 +1,28 @@
+/*
+font from
+http://mplus.font-face.jp/#/
+*/
+@font-face {
+    font-family: 'M+ 1c medium';
+    src: url('../fonts/mplus-1c-medium-sub.eot');
+    src: url('../fonts/mplus-1c-medium-sub.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/mplus-1c-medium-sub.woff') format('woff'),
+    url('../fonts/mplus-1c-medium-sub.ttf') format('truetype');
+}
+
+
+.clear { clear:both; }
 #footer { font-size:11px; color:#ccc; text-align: center; width:100%; margin-top:0px; cursor:default; }
+#message { position:fixed; display:block; right:0px; top:0px; height:auto; width:auto; background-color:#cc6; color:#fff; font-size:12px; padding: 7px; }
+
+
+/* about difficulty color */
+.SPA, .DPA { color:#b33; }
+.SPH, .DPH { color:#bb3; }
+.SPN, .DPN { color:#36b; }
+.SPA_l, .DPA_l { color:#FAA; }
+.SPH_l, .DPH_l { color:#FFA; }
+.SPN_l, .DPN_l { color:#AAF; }
+.SPA_s, .DPA_s { text-shadow:0px 0px 3px #f66; }
+.SPH_s, .DPH_s { text-shadow: 0px 0px 3px #ff6; }
+.SPN_s, .DPN_s { text-shadow: 0px 0px 3px #66f; }

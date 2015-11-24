@@ -34,23 +34,25 @@ $(document).ready(function () {
 		}
 	});
 
-	if ("{{ username }}".length > 0) {
-		addSPbutton("SP12.7", "/iidx/{{ username }}/sp/12_7");
-		addSPbutton("SP12 (2ch)", "/iidx/{{ username }}/sp/12");
-		addSPbutton("SP11", "/iidx/{{ username }}/sp/11");
-		addSPbutton("SP10", "/iidx/{{ username }}/sp/10");
-		addSPbutton("SP9", "/iidx/{{ username }}/sp/9");
-		addSPbutton("SP8", "/iidx/{{ username }}/sp/8");
+	var username = "{{ username }}";
+	if (username.length == 0)
+		username = "!";
 
-		addSPbutton("SP12N", "/iidx/{{ username }}/sp/12N");
-		addSPbutton("SP11N", "/iidx/{{ username }}/sp/11N");
+	addSPbutton("SP12.7", "/iidx/" + username + "/sp/12_7");
+	addSPbutton("SP12 (2ch)", "/iidx/" + username + "/sp/12");
+	addSPbutton("SP11", "/iidx/" + username + "/sp/11");
+	addSPbutton("SP10", "/iidx/" + username + "/sp/10");
+	addSPbutton("SP9", "/iidx/" + username + "/sp/9");
+	addSPbutton("SP8", "/iidx/" + username + "/sp/8");
 
-		addDPbutton("DP12", "/iidx/{{ username }}/dp/12");
-		addDPbutton("DP11", "/iidx/{{ username }}/dp/11");
-		addDPbutton("DP10", "/iidx/{{ username }}/dp/10");
-		addDPbutton("DP9", "/iidx/{{ username }}/dp/9");
-		addDPbutton("DP8", "/iidx/{{ username }}/dp/8");
-	}
+	addSPbutton("SP12N", "/iidx/" + username + "/sp/12N");
+	addSPbutton("SP11N", "/iidx/" + username + "/sp/11N");
+
+	addDPbutton("DP12", "/iidx/" + username + "/dp/12");
+	addDPbutton("DP11", "/iidx/" + username + "/dp/11");
+	addDPbutton("DP10", "/iidx/" + username + "/dp/10");
+	addDPbutton("DP9", "/iidx/" + username + "/dp/9");
+	addDPbutton("DP8", "/iidx/" + username + "/dp/8");
 });
 </script>
 
@@ -80,6 +82,10 @@ h4.level:hover span { display:inline; }
 		<span class="input-group-addon" id="goto">iidx.me ID</span>
 	</div>
 
+	{% block notice %}
+		
+	{% endblock %}
+
 	<div class="row center" id="spcontainer">
 	</div>
 
@@ -91,8 +97,5 @@ h4.level:hover span { display:inline; }
 		<a href="/iidx/selectmusic/"><button type="button" class="btn btn-warning">Select Music</button></a>
 	</div>
 
-	{% block notice %}
-		
-	{% endblock %}
 </div>
 {% endblock %}

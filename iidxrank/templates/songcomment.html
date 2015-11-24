@@ -1,34 +1,7 @@
 {% extends "index.html" %}
 {% block head %}
-<style type="text/css">
-.writer { font-weight:bold; }
-.admin { color:#933; }
-form .row { clear:both; }
-form .label { width:120px; }
-
-#writeform { background-color:#f0f0f0; }
-
-.clear { clear:both; }
-.clear input { height:23px; }
-.clear .left { float:left; }
-.clear .right {float:right; width:150px; }
-.clear .date { font-size:9pt; color:#666; }
-.clear .score { margin-left:5px; }
-.clear .ip { color:#999; font-size:9pt; }
-.clear .score1 { color:#699; }
-.clear .score-1 { color:#966; }
-
-#message { position:absolute; display:block; right:0px; top:0px; height:auto; width:auto; background-color:#cc6; color:#fff; font-size:12px; padding: 7px; }
-
-.SPA, .DPA { text-shadow:0px 0px 3px #f66; }
-.SPH, .DPH { text-shadow: 0px 0px 3px #ff6; }
-.SPN, .DPN { text-shadow: 0px 0px 3px #66f; }
-</style>
-<script language="javascript">
-setTimeout(function() {
-	$("#message").fadeOut(2000);
-}, 5000);
-</script>
+{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/board.css' %}">
 {% endblock %}
 
 {% block body %}
@@ -42,7 +15,6 @@ setTimeout(function() {
 <form role="form" action="/iidx/update/rank/" method="POST" onsubmit="return confirm('continue?');">
 	{% csrf_token %}
 	<div class="form-group">
-		<div class="form-group">
 		{% for cate in board.ranktable.rankcategory_set.all %}
 			<label>
 				<input type="hidden" name="rankitem_id" value="{{ board.rankinfo.id }}">
@@ -65,9 +37,9 @@ setTimeout(function() {
 
 <!-- song comment board body -->
 <div class="panel panel-default">
-	<div class="panel-heading {{ board.songinfo.songtype }}">{{ board.songinfo.songtitle }} (☆{{ board.songinfo.songlevel }} / {{ board.songinfo.songtype }}{% if board.rankinfo %} / {{ board.rankinfo.rankcategory.categoryname }}{% endif %})</div>
+	<div class="panel-heading {{ board.songinfo.songtype }}_s">{{ board.songinfo.songtitle }} (☆{{ board.songinfo.songlevel }} / {{ board.songinfo.songtype }}{% if board.rankinfo %} / {{ board.rankinfo.rankcategory.categoryname }}{% endif %})</div>
 	<div class="list-group">
-	<!-- new comment -->
+		<!-- new comment -->
 		<div class="list-group-item" id="writeform">
 			<form role="form" class="form-horizontal" action="./" method="post">
 				{% csrf_token %}
@@ -108,43 +80,47 @@ setTimeout(function() {
 				</div>
 			</form>
 		</div>
-	<!-- new comment ends here -->
+		<!-- new comment ends here -->
 
 	<!-- comments -->
 		{% for comment in comments %}
 		<div class="list-group-item">
-			<div class="clear">
-				<div class="left">
-					<span class="writer{% if comment.attr == 2 %} admin{% endif %}">{{ comment.writer }}</span>
-					<span class="date">[{{ comment.time|date:"y-m-d H:i:s" }}]</span>
-					<span class="ip">{{ comment.ip_public }}</span>
-					{% if comment.score == 99 %}
-					<span class="score glyphicon glyphicon-comment">
-					{% elif comment.score > 0 %}
-					<span class="score glyphicon glyphicon-arrow-up">
-					{% elif comment.score < 0 %}
-					<span class="score glyphicon glyphicon-arrow-down">
-					{% elif comment.score == 0 %}
-					<span class="score glyphicon glyphicon-ok-circle">
-					{% endif %}
-					</span>
-				</div>
-				<div class="right">
-					<form action="./" method="post">
-						{% csrf_token %}
-						<input id="mode" type="hidden" name="mode" value="delete">
-						<input id="id" type="hidden" name="id" value="{{ comment.id }}">
-						<div class="input-group">
-							<input id="password" type="password" name="password" value="" class="form-control">
-							<span class="input-group-btn">
-								<input type="submit" value="삭제" class="btn btn-default">
+			<div class="comment">
+				<div class="clear info">
+					<div class="left">
+						<span class="writer{% if comment.attr == 2 %} admin{% endif %}">{{ comment.writer }}</span>
+						<div class="detail">
+							<span class="date">[{{ comment.time|date:"y-m-d H:i:s" }}]</span>
+							<span class="ip">{{ comment.ip_public }}</span>
+							{% if comment.score == 99 %}
+							<span class="score glyphicon glyphicon-comment">
+							{% elif comment.score > 0 %}
+							<span class="score glyphicon glyphicon-arrow-up">
+							{% elif comment.score < 0 %}
+							<span class="score glyphicon glyphicon-arrow-down">
+							{% elif comment.score == 0 %}
+							<span class="score glyphicon glyphicon-ok-circle">
+							{% endif %}
 							</span>
 						</div>
-					</form>
+					</div>
+					<div class="right">
+						<form action="./" method="post">
+							{% csrf_token %}
+							<input id="mode" type="hidden" name="mode" value="delete">
+							<input id="id" type="hidden" name="id" value="{{ comment.id }}">
+							<div class="input-group">
+								<input id="password" type="password" name="password" value="" class="form-control">
+								<span class="input-group-btn">
+									<input type="submit" value="X" class="btn btn-danger">
+								</span>
+							</div>
+						</form>
+					</div>
 				</div>
-			</div>
-			<div class="clear">
-				<span class="text">{{ comment.text }}</span>
+				<div class="clear">
+					<span class="text">{{ comment.text }}</span>
+				</div>
 			</div>
 		</div>
 		{% endfor %}

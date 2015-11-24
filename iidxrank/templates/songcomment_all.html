@@ -1,95 +1,81 @@
 {% extends "index.html" %}
 {% block head %}
-<style type="text/css">
-.writer { font-weight:bold; }
-.admin { color:#933; }
-form .row { clear:both; }
-form .label { width:120px; }
-
-#writeform { background-color:#f0f0f0; }
-
-.clear { clear:both; }
-.comment .title { clear:both; font-weight:bold; margin-bottom:5px; border-bottom:1px solid #ccc; padding-bottom:5px; }
-.comment .ranktabletitle { font-weight:normal; font-style:italic; color:#666; }
-.comment .left { float:left; }
-.comment .right {float:right; width:150px; text-align: right; }
-.comment .date { font-size:9pt; color:#666; }
-.comment .score { margin-left:5px; }
-.comment .ip { color:#999; font-size:9pt; }
-
-.footer { font-size:9pt; overflow:hidden; color:#666; height:45px; }
-.footer .prev { float:left; padding:0 10px; width:100px; height:10px; text-align:left; }
-.footer .next { float:right; padding:0 10px; width:100px; height:10px; text-align:right; }
-.footer .center { float:left; width:100%; margin-top:-10px; text-align:center; }
-
-.SPA, .DPA { color:#900; }
-.SPH, .DPH { color:#990; }
-.SPN, .DPN { color:#039; }
-</style>
+{% load staticfiles %}
+<script type="text/javascript" src="{% static 'js/common.js' %}"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'css/board.css' %}">
 {% endblock %}
 
 {% block body %}
-
-<!-- song comment board body -->
-<div class="panel panel-default">
-	<div class="panel-heading">Recent Comments</div>
-
-	<!-- comments -->
-		{% for comment in comments %}
-		<div class="list-group-item">
-			<div class="comment clear">
-				<div class="title {{ comment.song.songtype }}">
-					{{ comment.song.songtitle }} (☆{{ comment.song.songlevel }} / {{ comment.song.songtype }} / {{ comment.get_rankcategory.categoryname }}) <span class="ranktabletitle">{{ comment.ranktable.tabletitle }}</span>
-				</div>
-				<div class="left">
-					<span class="writer{% if comment.attr == 2 %} admin{% endif %}">{{ comment.writer }}</span>
-					<span class="date">[{{ comment.time|date:"y-m-d H:i:s" }}]</span>
-					<span class="ip">{{ comment.ip_public }}</span>
-					{% if comment.score == 99 %}
-					<span class="score glyphicon glyphicon-comment">
-					{% elif comment.score > 0 %}
-					<span class="score glyphicon glyphicon-arrow-up">
-					{% elif comment.score < 0 %}
-					<span class="score glyphicon glyphicon-arrow-down">
-					{% elif comment.score == 0 %}
-					<span class="score glyphicon glyphicon-ok-circle">
-					{% endif %}
-					</span>
-				</div>
-				<div class="right">
-					<a href="/iidx/songcomment/{{ comment.ranktable.tablename }}/{{ comment.song.songid }}/{{ comment.song.songtype }}/" target="_blank" onclick="window.open(this.href, 'newwindow', 'width=600,height=600'); return false;">
-						<span class="glyphicon glyphicon-link"></span>
-					</a>
-				</div>
-			</div>
-			<div class="clear">
-				<span class="text">{{ comment.text }}</span>
-			</div>
-		</div>
-		{% endfor %}
-	<!-- end comments -->
+<div id="container">
+	<div id="menu">
+		<a href="../../../"><button class="btn btn-default">return</button></a>
 	</div>
 
-	<!-- pagination -->
-	<div class="footer">
-		<div class="prev">
-		{% if comments.has_previous %}
-			<a href="../{{ comments.previous_page_number }}/">
-			<span class="glyphicon glyphicon-chevron-left"></span>
-			</a>
-		{% endif %}
+	<!-- song comment board body -->
+	<div class="panel panel-default">
+		<div class="panel-heading">Recent Comments</div>
+
+		<!-- comments -->
+			{% for comment in comments %}
+			<div class="list-group-item">
+				<div class="comment">
+					<div class="clear info">					
+						<div class="title {{ comment.song.songtype }}">
+							{{ comment.song.songtitle }} (☆{{ comment.song.songlevel }} / {{ comment.song.songtype }} / {{ comment.get_rankcategory.categoryname }}) <span class="ranktabletitle">{{ comment.ranktable.tabletitle }}</span>
+						</div>
+						<div class="left">
+							<span class="writer{% if comment.attr == 2 %} admin{% endif %}">{{ comment.writer }}</span>
+							<div class="detail">
+								<span class="date">[{{ comment.time|date:"y-m-d H:i:s" }}]</span>
+								<span class="ip">{{ comment.ip_public }}</span>
+								{% if comment.score == 99 %}
+								<span class="score glyphicon glyphicon-comment">
+								{% elif comment.score > 0 %}
+								<span class="score glyphicon glyphicon-arrow-up">
+								{% elif comment.score < 0 %}
+								<span class="score glyphicon glyphicon-arrow-down">
+								{% elif comment.score == 0 %}
+								<span class="score glyphicon glyphicon-ok-circle">
+								{% endif %}
+								</span>
+							</div>
+						</div>
+						<div class="right">
+							<a href="/iidx/songcomment/{{ comment.ranktable.tablename }}/{{ comment.song.id }}/" target="_blank" onclick="return openComment(this.href);">
+								<span class="glyphicon glyphicon-link"></span>
+							</a>
+						</div>
+					</div>
+					<div class="clear">
+						<span class="text">{{ comment.text }}</span>
+					</div>
+				</div>
+			</div>
+			{% endfor %}
+		<!-- end comments -->
 		</div>
-		<div class="next">
-		{% if comments.has_next %}
-			<a href="../{{ comments.next_page_number }}/">
-			<span class="glyphicon glyphicon-chevron-right"></span>
-			</a>
-		{% endif %}
-		</div>
-		<div class="center">
-			Page {{ comments.number }} of {{ comments.paginator.num_pages }}
+
+		<!-- pagination -->
+		<div class="footer">
+			<div class="prev">
+			{% if comments.has_previous %}
+				<a href="../{{ comments.previous_page_number }}/">
+				<span class="glyphicon glyphicon-chevron-left"></span>
+				</a>
+			{% endif %}
+			</div>
+			<div class="next">
+			{% if comments.has_next %}
+				<a href="../{{ comments.next_page_number }}/">
+				<span class="glyphicon glyphicon-chevron-right"></span>
+				</a>
+			{% endif %}
+			</div>
+			<div class="center">
+				Page {{ comments.number }} of {{ comments.paginator.num_pages }}
+			</div>
 		</div>
 	</div>
+	<!-- board body ends -->
 </div>
-<!-- board body ends -->
 {% endblock %}

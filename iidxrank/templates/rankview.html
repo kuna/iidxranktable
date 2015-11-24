@@ -8,6 +8,7 @@
 <link rel=stylesheet type=text/css id="rankpage_style" href="{% static 'css/rankpage_default.css' %}">
 <script type="text/javascript" src="{% static 'js/html2canvas.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/ranklist.js' %}"></script>
+
 <script language="javascript">
 // django csrf token
 window.csrftoken="{{ csrf_token }}";
@@ -180,8 +181,8 @@ $(window).load(function () {
 				<div class="cell">
 					<ul class="songlist">
 						{% for song in category.songs %}
-						<a href="/iidx/songcomment/{{ pageinfo.tablename }}/{{ song.data.id }}/{{ song.data.diff_detail }}/"
-							onclick="window.open(this.href, 'newwindow', 'width=600, height=600'); return false;"
+						<a href="/iidx/songcomment/{{ pageinfo.tablename }}/{{ song.pkid }}/"
+							onclick="return openComment(this.href);"
 							target="_blank">
 							<li class="diff{{ song.data.diff }}" 
 								data-clear="{{ song.clear }}" data-rate="{{ song.rate }}">
