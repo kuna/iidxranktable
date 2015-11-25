@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=1120, user-scalable=1">
 
 <link rel=stylesheet type=text/css href="{% static 'css/rankpage_common.css' %}">
-<link rel=stylesheet type=text/css id="rankpage_style" href="{% static 'css/rankpage_default.css' %}">
+<link rel=stylesheet type=text/css id="rankpage_style" href="{% static 'css/rankpage_light2.css' %}">
 <script type="text/javascript" src="{% static 'js/html2canvas.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/ranklist.js' %}"></script>
 
@@ -17,6 +17,7 @@ var png_base64 = "";
 var ftitle = "{{ pageinfo.title }} - DJ {{ user.name }}"
 var fname = ftitle + ".png";
 var rankpage_style_arr = [
+"{% static 'css/rankpage_light2.css' %}",
 "{% static 'css/rankpage_default.css' %}",
 "{% static 'css/rankpage_light.css' %}",
 ];
