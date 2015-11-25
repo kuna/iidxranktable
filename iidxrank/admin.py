@@ -17,7 +17,7 @@ class BoardCommentForm(forms.ModelForm):
 class RankTableAdmin(admin.ModelAdmin):
 	list_display = ('tabletitle', 'tablename', 'time')
 class RankCategoryAdmin(admin.ModelAdmin):
-	list_display = ('categoryname', 'get_tabletitle')
+	list_display = ('categoryname', 'get_tabletitle', 'get_sortindex')
 	search_fields = ['ranktable__tabletitle']
 class RankItemAdmin(admin.ModelAdmin):
 	list_display = ('get_categoryname', 'get_songtitle', 'get_ranktablename', 'info')

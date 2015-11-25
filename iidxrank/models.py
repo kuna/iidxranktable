@@ -66,7 +66,17 @@ class RankTable(models.Model):
 class RankCategory(models.Model):
 	ranktable = models.ForeignKey(RankTable, on_delete=models.CASCADE)
 	categoryname = models.CharField(max_length=20)
+	sortindex = models.FloatField(default=None, null=True, blank=True)
 
+	def get_sortindex(self):
+		if (self.sortindex):
+			return self.sortindex
+		else:
+			import re
+			decimal = re.sub(r'[^0-9.]+', '', self.categoryname)
+			if (decimal == ""):
+				decimal = "0"
+			return float(decimal)
 	def get_tabletitle(obj):
 		return obj.ranktable.tabletitle
 

@@ -130,34 +130,40 @@ def addMetadata(musicdata, data, song_query):
 		items = []
 		for item in category.rankitem_set.all():
 			items.append(item)
-		categories_prefetch.append({'categoryname': category.categoryname, 'items': items})
-	def getCategory(categoryname):
+		categories_prefetch.append({
+			'category': category, 
+			'items': items,
+		})
+	def getCategory(categoryname, sortindex=None):
 		for category in categories:
 			if (category['category'] == categoryname):
 				return category
 		# if category is not exist, then make new one
+		if (not sortindex):
+			sortindex = 0
 		category = { 'category': categoryname, 
 				'songs': [],
+				'sortindex': sortindex,
 				'categoryclearstring': u'FULL_COMBO',
 				'categoryclear': 7 }	# default setting
 		categories.append(category)
 		return category
-	def getCategoryName(songpkid):
+	def getCategoryDB(songpkid):
 		for category in categories_prefetch:
 			for item in category['items']:
 				# ASSERT! some deleted song may have no 'song relation item'
 				# ASSERT! item's difficulty(type) must considered)
 				if (item.song \
 					and item.song.id == int(songpkid)):
-					return category['categoryname']
+					return category['category']
 		return None		# cannot find category
 
 	for music in musicdata:
-		category = getCategoryName(music['pkid'])
+		category = getCategoryDB(music['pkid'])
 		if (category == None):
 			getCategory("-")['songs'].append(music)
 		else:
-			getCategory(category)['songs'].append(music)
+			getCategory(category.categoryname, category.get_sortindex())['songs'].append(music)
 
 	#
 	# category lamp process
@@ -168,50 +174,11 @@ def addMetadata(musicdata, data, song_query):
 				catearray['categoryclear'] = song['clear']
 				catearray['categoryclearstring'] = song['clearstring']
 
-	# process category sorting
+	# process category sorting (big value is first one)
 	def sort_func(x, y):
 		def getValue(_x):
-			x = _x['category']
-			order_arr = (
-				u'Leggendaria',
-				u'처리력 S+',
-				u'개인차 S+',
-				u'처리력 S',
-				u'개인차 S',
-				u'처리력 A+',
-				u'개인차 A+',
-				u'처리력 A',
-				u'개인차 A',
-				u'처리력 B+',
-				u'개인차 B+',
-				u'처리력 B',
-				u'개인차 B',
-				u'처리력 C',
-				u'개인차 C',
-				u'처리력 D',
-				u'개인차 D',
-				u'처리력 E',
-				u'개인차 E',
-				u'처리력 F',
-				u'7기',
-				u'6기',
-				u'5기',
-				u'4기',
-				u'3기',
-				u'2기',
-				u'1기',
-				u'10+')
-			if (x == '-'):
-				return 999
-			elif (x in order_arr):
-				return order_arr.index(x)
-			else:
-				try:
-					return 100-int(float(x.replace("N", ""))*10)
-				except:
-					return 100
-		# make score
+			return _x['sortindex']
 		# bigger: later
-		return getValue(x) - getValue(y)
+		return int((getValue(y) - getValue(x))*1000)
 	return sorted(categories, cmp=sort_func)
 
