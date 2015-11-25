@@ -24,8 +24,10 @@ class RankItemAdmin(admin.ModelAdmin):
 	search_fields = ['song__songtitle', 'rankcategory__categoryname', 'rankcategory__ranktable__tablename']
 class PlayerAdmin(admin.ModelAdmin):
 	list_display = ('iidxmeid', 'iidxid', 'splevel', 'dplevel', 'spclass', 'dpclass', 'time')
+	search_fields = ['iidxid', 'iidxmeid']
 class SongAdmin(admin.ModelAdmin):
 	list_display = ('songtitle', 'songtype', 'songlevel')
+	search_fields = ['songtitle', 'songtype']
 
 class BoardAdmin(admin.ModelAdmin):
 	list_display = ('title',)
