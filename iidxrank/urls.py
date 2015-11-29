@@ -24,6 +24,7 @@ urlpatterns = [
 # utilities (admin, imgtl ...)
     url(r'^iidx/admin/', include(admin.site.urls)),
 	url(r'^iidx/imgtl/$', views.imgtl),
+	url(r'^iidx/qpro/(?P<iidxid>[0-9]+)/$', views.qpro),
 
 # update (NOT WORKING NOW)
 	url(r'^iidx/update/$', views_update.index),

@@ -10,8 +10,14 @@ import settings
 
 from update import jsondata
 import rankpage as rp
+import iidx
 
 import base64
+
+def checkValidPlayer(player):
+	return not (player == None or 
+		'userdata' not in player or 
+		player['status'] != 'success')
 
 ####
 
@@ -20,8 +26,35 @@ def mainpage(request):
 	return render(request, 'notice.html', {'notices': notices.order_by('-time')})
 
 def userpage(request, username):
+	if (username == "!"):
+		# make dummy data
+		player = {
+			'userdata': {
+				'djname': 'NONAME',
+				'iidxid': '0',
+				'spclass': 0,
+				'dpclass': 0,
+			}
+		}
+	else:
+		# check recent json to get player info
+		userjson_url = "http://json.iidx.me/%s/recent/" % username
+		player = jsondata.loadJSONurl(userjson_url)
+		if (not checkValidPlayer(player)):
+			return HttpResponseNotFound('<h1>Invalid User, or Cannot connect to json.iidx.me</h1>')
+	
+	playerinfo = {
+		'userid': username,
+		'username': player['userdata']['djname'],
+		'iidxid': player['userdata']['iidxid'].replace('-', ''),
+		'spclass': iidx.getdanstring(player['userdata']['spclass']),
+		'dpclass': iidx.getdanstring(player['userdata']['dpclass']),
+		'spclass_est': 0,	# TODO: estimated level
+		'dpclass_est': 0,	# TODO: estimated level
+	}
+
 	# TODO: apart userpage from index. change index to search.
-	return render(request, 'index.html', {'username': username})
+	return render(request, 'index.html', {'player': playerinfo})
 
 def rankpage(request, username, diff, level):
 	# check is argument valid
@@ -37,7 +70,7 @@ def rankpage(request, username, diff, level):
 	else:
 		userjson_url = "http://json.iidx.me/%s/%s/level/%d/" % (username, ranktable.type.lower(), ranktable.level)
 		player = jsondata.loadJSONurl(userjson_url)
-		if (player == None or 'userdata' not in player or player['status'] != 'success'):
+		if (not checkValidPlayer(player)):
 			return HttpResponseNotFound('<h1>Invalid User, or Cannot connect to json.iidx.me</h1>')
 	
 	# compile user data to render score
@@ -62,94 +95,6 @@ def songcomment_all(request, page=1):
 
 	return render_to_response('songcomment_all.html', {"comments": songcomments})
 
-# /iidx/songcomment/<ranktablename>/<songid(pk)>/
-def songcomment(request, ranktablename, songid):
-	# check is valid url
-	ranktable = models.RankTable.objects.filter(tablename=ranktablename).first()
-	song = models.Song.objects.filter(id=songid).first()
-	if (ranktable == None or song == None):
-		return HttpResponseNotFound("invalid id")
-
-	# check admin
-	attr = 0
-	if (request.user.is_superuser):
-		attr = 2
-	# return message (mostly error)
-
-	if (request.method == "POST"):
-		message = ""
-		ip = get_client_ip(request)
-		password = request.POST["password"]
-		# if no password, then make ip as password
-		if (password == ""):
-			password = ip
-
-		if (request.POST["mode"] == "delete"):
-			# delete comment
-			comment_id = request.POST["id"]
-			if (attr == 2):
-				# admin can delete any comment
-				comment = models.SongComment.objects.filter(id=comment_id).first()
-			else:
-				comment = models.SongComment.objects.filter(id=comment_id, password=password).first()
-
-			if (not comment):
-				message = "Wrong password"
-			else:
-				comment.delete()
-				message = "Removed Comment"
-		elif (request.POST["mode"] == "add"):
-			# check argument is valid
-			text = request.POST["text"]
-			writer = request.POST["writer"]
-			if (len(text) <= 5 or len(writer) <= 0):
-				message = u"코멘트나 이름이 너무 짧습니다."
-			if (models.BannedUser.objects.filter(ip=ip).count()):
-				message = u"차단당한 유저입니다."
-
-			if (message == ""):
-				# add comment
-				models.SongComment.objects.create(
-					ranktable = ranktable,
-					song= song,
-					text = text,
-					score = request.POST["score"],
-					writer = writer,
-					ip = ip,
-					attr = attr,
-					password = password,
-				)
-				# remember writer session
-				request.session['writer'] = writer
-				message = u"코멘트를 등록하였습니다."
-
-		# add message to session
-		request.session['message'] = message
-
-		# after POST request, redirect to same view
-		# (prevent sending same request)
-		return HttpResponseRedirect(reverse("songcomment", args=[ranktablename, songid]))
-
-	# fetch all comments & fill rank info
-	comments = models.SongComment.objects.filter(ranktable=ranktable, song=song)
-	rankitem = models.RankItem.objects.filter(rankcategory__ranktable=ranktable, song=song).first()
-	boardinfo = {
-		'songinfo': song,
-		'rankinfo': rankitem,
-		'ranktable': ranktable,
-		'message': request.session.get('message', ''),
-		'admin': attr == 2,
-		'writer': request.session.get('writer', ''),
-	}
-	# clear message
-	request.session['message'] = ''
-
-	return render(request, 'songcomment.html', {'comments': comments.order_by('-time'), 'board': boardinfo})
-
-# /iidx/board/<boardid>/<boardpage>
-def board(request, boardid):
-	# TODO
-	return render(request, 'board.html', {'comments': comments, 'board': boardinfo})
 
 # /iidx/selectmusic
 def selectmusic(request):
@@ -174,4 +119,14 @@ def imgtl(request):
 		files={'file': (filename, pngdata, 'application/octet-stream')}, headers=header)
 	return HttpResponse(r.text)
 
-# TODO: board url
+# iidx/qpro/<iidxid>/
+@csrf_exempt
+def qpro(request, iidxid):
+	import urllib2
+	qpro_url = 'http://iidx.me/userdata/copula/%s/qpro.png' % iidxid
+	resp = urllib2.urlopen(qpro_url)
+	if resp.info().maintype == "image":
+		return HttpResponse(resp.read(), content_type="image/png")
+	else:
+		# cannot found
+		return HttpResponse('')

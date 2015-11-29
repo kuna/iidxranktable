@@ -11,6 +11,7 @@ def compile_data(ranktable, player, song_query):
 		player['userdata']['djname'] = 'NONAME'
 		player['userdata']['spclass'] = 0
 		player['userdata']['dpclass'] = 0
+		player['userdata']['iidxid'] = '0'
 
 	# create score data
 	# [(category, [(songname, score, clear ...)])]
@@ -59,7 +60,8 @@ def compile_data(ranktable, player, song_query):
 		'date': ranktable.time,
 	}
 	userinfo = {'name': name, 'spdan': iidx.getdanstring(spdan),
-		'spdannum':spdan, 'dpdan': iidx.getdanstring(dpdan), 'dpdannum': dpdan}
+		'spdannum':spdan, 'dpdan': iidx.getdanstring(dpdan), 'dpdannum': dpdan,
+		'iidxid': player['userdata']['iidxid'].replace('-', '')}
 	return userinfo, score, pageinfo
 
 #	return render('rankview.html', {

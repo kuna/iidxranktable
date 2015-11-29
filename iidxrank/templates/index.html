@@ -34,7 +34,7 @@ $(document).ready(function () {
 		}
 	});
 
-	var username = "{{ username }}";
+	var username = "{{ player.userid }}";
 	if (username.length == 0)
 		username = "!";
 
@@ -71,15 +71,16 @@ h4.level:hover span { display:inline; }
 {% endblock %}
 {% block body %}
 <div id="container">
-	{% if username %}
+	{% if player %}
 	<div class="row">
-		<h4 class="djname">iidx.me/{{ username }}</h4>
-		<h4 class="level"><span class="label label-default">COMING SOON</span>★?? / ★??</h4>
+		<div class="userimage" style="text-align:center;"><img src="/iidx/qpro/{{ player.iidxid }}"></div>
+		<h4 class="djname">DJ {{ player.username }}</h4>
+		<h4 class="level"><span class="label label-default">COMING SOON</span>★{{ player.spclass}} / ★{{ player.dpclass }}</h4>
 	</div>
 	{% endif %}
 
 	<div class="row input-group">
-		<input type="text" class="form-control" value="{{ username }}" aria-describedby="basic-addon2" id="username">
+		<input type="text" class="form-control" value="{{ player.userid }}" aria-describedby="basic-addon2" id="username">
 		<span class="input-group-addon" id="goto">iidx.me ID</span>
 	</div>
 
