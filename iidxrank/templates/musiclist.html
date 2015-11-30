@@ -67,6 +67,9 @@ body {
 	font-weight:normal;
 	color: rgba(255, 255, 255, 0.5);
 }
+#lists li:hover .category { 
+	color: #fff;
+}
 </style>
 
 {% load staticfiles %}
@@ -84,8 +87,8 @@ function loadList(url) {
 				for (var i in o.songs) {
 					var tag = "<li>"
 					tag += "<span class='level level" + o.songs[i].songdiff + "'>" + o.songs[i].songlevel +"</span>";
-					tag += "<span class='title'>" + o.songs[i].songtitle +"</span>";
 					tag += "<span class='category'>" + o.songs[i].categories.toString() +"</span>";
+					tag += "<span class='title'>" + o.songs[i].songtitle +"</span>";
 					tag += "</li>";
 					$("#song_lists").append($(tag));
 				}
@@ -99,7 +102,7 @@ function addSeries(series) {
 	li_obj = $('<li>Beatmania ' + series + '</li>');
 	li_obj.attr('data', series);
 	li_obj.click(function (e) {
-		loadList("/iidx/json/selectmusic/" + current_mode + "/series/" + series);
+		loadList("/iidx/json/musiclist/" + current_mode + "/series/" + series);
 	});
 	$("#category_lists").append(li_obj);
 }
@@ -108,7 +111,7 @@ function addLevel(level) {
 	li_obj = $('<li>Level ' + level + '</li>');
 	li_obj.attr('data', level);
 	li_obj.click(function (e) {
-		loadList("/iidx/json/selectmusic/" + current_mode.substring(0, 2) + "/level/" + level);
+		loadList("/iidx/json/musiclist/" + current_mode.substring(0, 2) + "/level/" + level);
 	});
 	$("#category_lists").append(li_obj);
 }

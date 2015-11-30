@@ -41,9 +41,9 @@ urlpatterns = [
 	url(r'^iidx/board/(?P<boardid>[0-9]+)/(?P<boardpage>[0-9]+)/$', views_board.board, name="board"),
 
 # select music
-	url(r'^iidx/selectmusic/$', views.selectmusic),
-	url(r'^iidx/json/selectmusic/(?P<type>\w+)/level/(?P<level>[0-9]+)/$', views_json.json_level),
-	url(r'^iidx/json/selectmusic/(?P<type>\w+)/series/(?P<series>\w+)/$', views_json.json_series),
+	url(r'^iidx/musiclist/$', views.musiclist),
+	url(r'^iidx/json/musiclist/(?P<type>\w+)/level/(?P<level>[0-9]+)/$', views_json.json_level),
+	url(r'^iidx/json/musiclist/(?P<type>\w+)/series/(?P<series>\w+)/$', views_json.json_series),
 
 # common urls (mainpage, userpage, rankpage)
 	url(r'^iidx/$', views.mainpage),

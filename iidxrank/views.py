@@ -96,10 +96,10 @@ def songcomment_all(request, page=1):
 	return render_to_response('songcomment_all.html', {"comments": songcomments})
 
 
-# /iidx/selectmusic
-def selectmusic(request):
+# /iidx/musiclist
+def musiclist(request):
 	# all the other things will done in json & html
-	return render_to_response('selectmusic.html')
+	return render_to_response('musiclist.html')
 
 
 # iidx/imgtl/
@@ -129,4 +129,7 @@ def qpro(request, iidxid):
 		return HttpResponse(resp.read(), content_type="image/png")
 	else:
 		# cannot found
-		return HttpResponse('')
+		f = open('iidxrank/static/qpro/blank.png', 'r')
+		img_blank = f.read()
+		f.close()
+		return HttpResponse(img_blank)
