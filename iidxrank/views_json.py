@@ -12,6 +12,7 @@ def createSonginfoFromModel(songs):
 		song_array.append({
 			'songtitle': song.songtitle,
 			'songdiff': song.songtype[-1:],
+			'songtype': song.songtype,
 			'songlevel': song.songlevel,
 			'categories': cates,
 		})

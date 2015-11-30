@@ -66,16 +66,32 @@ body {
 	text-align:right; 
 	font-weight:normal;
 	color: rgba(255, 255, 255, 0.5);
+	cursor: hand;
 }
 #lists li:hover .category { 
 	color: #fff;
+}
+
+#iframe_container {
+	position:fixed;
+	top: 120px;
+	left: 10px;
+	width: 600px;
+	height: 600px;
+	padding: 10px;
+	background-color: rgba(0, 0, 0, 0.5);
+	border-radius: 5px;
 }
 </style>
 
 {% load staticfiles %}
 <script src="{% static 'js/background.canvas.js' %}"></script>
+<script src="{% static 'js/textage.js' %}"></script>
 <script type="text/javascript">
 current_mode = "spn";
+current_action = "None";
+mobile_size = 1440;		// under width 780, iframe won't show
+mobile_mode = false;
 
 function loadList(url) {
 	$.ajax({
@@ -84,8 +100,9 @@ function loadList(url) {
 		success: function (o) {
 			if (o.status == "success") {
 				$("#song_lists").empty();
+				songs = o.songs;	// store in global variable
 				for (var i in o.songs) {
-					var tag = "<li>"
+					var tag = "<li onclick='onClickSong(" + i + ")'>"
 					tag += "<span class='level level" + o.songs[i].songdiff + "'>" + o.songs[i].songlevel +"</span>";
 					tag += "<span class='category'>" + o.songs[i].categories.toString() +"</span>";
 					tag += "<span class='title'>" + o.songs[i].songtitle +"</span>";
@@ -150,15 +167,61 @@ $(function() {
 
 function changeDiff(obj) {
 	obj = $(obj);
-	$("#header button").removeClass("btn-primary");
-	$("#header button").addClass("btn-default");
+	$("#header .diffmode button").removeClass("btn-primary");
+	$("#header .diffmode button").addClass("btn-default");
 	obj.removeClass("btn-default");
 	obj.addClass("btn-primary");
 	current_mode = obj.text();
 }
 
+function changeAction(obj) {
+	obj = $(obj);
+	$("#header .actionmode button").removeClass("btn-primary");
+	$("#header .actionmode button").addClass("btn-default");
+	obj.removeClass("btn-default");
+	obj.addClass("btn-primary");
+	current_action = obj.text();		// store current status in global var
+	if (current_action == "None") {
+		$("#iframe_container").hide();
+	} else if (!mobile_mode) {
+		$("#iframe_container").show();
+	}
+}
+
+function onClickSong(idx) {
+	title = songs[idx].songtitle;
+	type = songs[idx].songtype;
+	if (current_action == "Youtube") {
+		setFrameSrc('http://www.youtube.com/embed?listType=search&list=beatmania ' + type + ' ' + title);
+	} else if (current_action == "Textage") {
+		setFrameSrc(getTextageLink(title));
+	}
+}
+
+/* iframe size & mode(hide or show) set */
+function setFrameSrc(url) {
+	if (mobile_mode) {
+		window.open(url, '_blank');
+	} else {
+		$("#iframe").attr('src', url);
+	}
+}
+
+/* iframe size */
+$(window).resize(function() {
+	mobile_mode = $(window).width()<mobile_size;
+	if (!mobile_mode && current_action!="None") {
+		$("#iframe_container").show();
+	} else {
+		$("#iframe_container").hide();
+	}
+	$("#iframe_container").width( $(window).width()-700 );
+	$("#iframe_container").height( $(window).height()-260 );
+});
+$(function() { $(window).resize(); });		// resize when onload
+
 /*
-we'd better to cancel animated background due to mobile ...
+we'd better to cancel animated background due to rendering performance of mobile ...
 
 $(function() {
 	width =  $(window).innerWidth();
@@ -182,17 +245,27 @@ $(window).resize(function() {
 {% block body %}
 <canvas id="animated_background"></canvas>
 <div id="header">
-	<button id="spn_mode" class="btn btn-primary" onclick="changeDiff(this)">SPN</button>
-	<button id="sph_mode" class="btn btn-default" onclick="changeDiff(this)">SPH</button>
-	<button id="spa_mode" class="btn btn-default" onclick="changeDiff(this)">SPA</button>
-	<button id="dpn_mode" class="btn btn-default" onclick="changeDiff(this)">DPN</button>
-	<button id="dph_mode" class="btn btn-default" onclick="changeDiff(this)">DPH</button>
-	<button id="dpa_mode" class="btn btn-default" onclick="changeDiff(this)">DPA</button>
+	<div class="clear diffmode">
+		<button id="spn_mode" class="btn btn-primary" onclick="changeDiff(this)">SPN</button>
+		<button id="sph_mode" class="btn btn-default" onclick="changeDiff(this)">SPH</button>
+		<button id="spa_mode" class="btn btn-default" onclick="changeDiff(this)">SPA</button>
+		<button id="dpn_mode" class="btn btn-default" onclick="changeDiff(this)">DPN</button>
+		<button id="dph_mode" class="btn btn-default" onclick="changeDiff(this)">DPH</button>
+		<button id="dpa_mode" class="btn btn-default" onclick="changeDiff(this)">DPA</button>
+	</div>
+	<div class="clear actionmode" style="margin-top: 10px;">
+		<button id="action_none" class="btn btn-primary" onclick="changeAction(this)">None</button>
+		<button id="action_youtube" class="btn btn-default" onclick="changeAction(this)">Youtube</button>
+		<button id="action_textage" class="btn btn-default" onclick="changeAction(this)">Textage</button>
+	</div>
 </div>
 <div id="lists">
 	<ul id="category_lists">
 	</ul>
 	<ul id="song_lists">
 	</ul>
+</div>
+<div id="iframe_container" style="display:none;">
+	<iframe id="iframe" width='100%' height='100%' allowfullscreen></iframe>
 </div>
 {% endblock %}

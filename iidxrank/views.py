@@ -4,6 +4,7 @@ from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, render_to_response
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
+from django.views.decorators.clickjacking import xframe_options_exempt
 from django.core.paginator import Paginator
 import models
 import settings
@@ -97,6 +98,7 @@ def songcomment_all(request, page=1):
 
 
 # /iidx/musiclist
+#@xframe_options_exempt
 def musiclist(request):
 	# all the other things will done in json & html
 	return render_to_response('musiclist.html')
