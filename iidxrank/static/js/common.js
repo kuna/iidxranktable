@@ -22,6 +22,9 @@ function loadJSON(json_url, processor, onload) {
 		for (var row in data['users']) {
 			processor(data['users'][row], row);
 		}
+		for (var row in data['recommends']) {
+			processor(data['recommends'][row], row);
+		}
 		if (onload) {
 			onload();
 		}

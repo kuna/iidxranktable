@@ -51,8 +51,9 @@ class Player(models.Model):
 		return self.iidxnick[:1] + "*"*(len(self.iidxnick)-2) + self.iidxnick[-1:]
 
 class PlayRecord(models.Model):
-	player = models.ForeignKey(Player, on_delete=CASCADE)
-	song = models.ForeignKey(Song, on_delete=CASCADE)
+	# MUST use db_index for performance
+	player = models.ForeignKey(Player, on_delete=CASCADE, db_index=True)
+	song = models.ForeignKey(Song, on_delete=CASCADE, db_index=True)
 	playscore = models.IntegerField(default=0, null=True)
 	playclear = models.IntegerField(default=0)
 	playmiss = models.IntegerField(default=0, null=True)

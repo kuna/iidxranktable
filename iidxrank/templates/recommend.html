@@ -6,39 +6,61 @@
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/s/dt/jq-2.1.4,dt-1.10.10/datatables.min.css"/>
 <script type="text/javascript" src="https://cdn.datatables.net/s/dt/jq-2.1.4,dt-1.10.10/datatables.min.js"></script>
 
+<style>
+.graph { height:20px; border: 1px solid #999; position:relative; border-radius: 2px; }
+.graph div { position:absolute; right:0; height:18px; }
+.graph .failed { background-color:#ccc; }
+.graph .easy { background-color:#cfc; }
+.graph .groove { background-color:#ccf; }
+.graph .hard { background-color:#fcc; }
+.graph .exhard { background-color:#ffc; }
+.graph .fc { background-color:#fcf; }
+</style>
+
 <script language="javascript">
-function loadSonglist(type, lvl) {
+function loadRecommend(user, type, level) {
+	if (!level)
+		level = -1;
+
+	function makeGraph(clears) {
+		max_width = 150;
+		source = "<div class='graph' style='width:" + (max_width+2) + "px;'>"
+		source += "<div class='failed' style='width:" + max_width + "px;'></div>"
+		source += "<div class='easy' style='width:" + max_width*clears[3]/100 + "px;'></div>"
+		source += "<div class='groove' style='width:" + max_width*clears[4]/100 + "px;'></div>"
+		source += "<div class='hard' style='width:" + max_width*clears[5]/100 + "px;'></div>"
+		source += "<div class='exhard' style='width:" + max_width*clears[6]/100 + "px;'></div>"
+		source += "<div class='fc' style='width:" + max_width*clears[7]/100 + "px;'></div>"
+		source += "</div>"
+		return source
+	}
+
 	var dataSet = []
 	function processor(row_json, idx) {
-		var recmd = "";
-		if (row_json.calcweight < 4) {			// don't recommend
-			recmd= "△"
-		} else if (row_json.calcweight > 16) {	// recommend
-			recmd= "⊙"
-		}
-
 		dataSet.push([
 			"★"+row_json.songlevel,
+			row_json.songtype,
 			row_json.songtitle,
-			row_json.calclevel,
-			recmd
+			row_json.target,
+			row_json.clear,
+			makeGraph(row_json.clears)
 		]);
 	}
 	function onload() {
 		$("#tabledata").empty();
 		$('#list').DataTable({
 			data: dataSet,
-			order: [[ 2, "desc" ]],
+			order: [[ 4, "desc" ]],
 			iDisplayLength: 50,
 			destroy: true
 		});
 	}
-	loadJSON("/iidx/json/musiclist/"+type+"/level/"+lvl, processor, onload);
+	loadJSON("/iidx/json/recommend/" + user + "/" + type + "/" + level, processor, onload);
 }
 
 $(function() {
-	$("#tabledata").html("<tr><td class='loading' colspan=5>Loading ...</td></tr>");
-	loadSonglist("SP", 12);
+	$("#tabledata").html("<tr><td class='loading' colspan=6>Loading ...</td></tr>");
+	loadRecommend("{{ username }}", "SP", 12);
 });
 </script>
 
@@ -52,12 +74,12 @@ $(function() {
 			<a href="../.."><button id="home" class="btn btn-default" style="float:left;">return</button></a>
 		</div>
 		<div class="clear">
-			<a href="#"><button class="btn btn-default" onclick='loadSonglist("SP", 12);'>SP12</button></a>
-			<a href="#"><button class="btn btn-default" onclick='loadSonglist("SP", 11);'>SP11</button></a>
-			<a href="#"><button class="btn btn-default" onclick='loadSonglist("SP", 10);'>SP10</button></a>
-			<a href="#"><button class="btn btn-default" onclick='loadSonglist("DP", 12);'>DP12</button></a>
-			<a href="#"><button class="btn btn-default" onclick='loadSonglist("DP", 11);'>DP11</button></a>
-			<a href="#"><button class="btn btn-default" onclick='loadSonglist("DP", 10);'>DP10</button></a>
+			<a href="#"><button class="btn btn-default" onclick='loadRecommend("{{ username }}", "SP", 12);'>SP12</button></a>
+			<a href="#"><button class="btn btn-default" onclick='loadRecommend("{{ username }}", "SP", 11);'>SP11</button></a>
+			<a href="#"><button class="btn btn-default" onclick='loadRecommend("{{ username }}", "SP", 10);'>SP10</button></a>
+			<a href="#"><button class="btn btn-default" onclick='loadRecommend("{{ username }}", "DP", 12);'>DP12</button></a>
+			<a href="#"><button class="btn btn-default" onclick='loadRecommend("{{ username }}", "DP", 11);'>DP11</button></a>
+			<a href="#"><button class="btn btn-default" onclick='loadRecommend("{{ username }}", "DP", 10);'>DP10</button></a>
 		</div>
 	</div>
 
@@ -66,14 +88,16 @@ $(function() {
 		<thead>
 			<tr>
 				<th class="small">★</th>
+				<th class="small">Type</th>
 				<th>Title</th>
-				<th>Estimated</th>
-				<th class="small">良</th>
+				<th>Target</th>
+				<th>Prob</th>
+				<th class="small">Graph</th>
 			</tr>
 		</thead>
 		<tbody id="tabledata">
 			<tr>
-				<td class="loading" colspan=5>
+				<td class="loading" colspan=6>
 					Loading ...
 				</td>
 			</tr>

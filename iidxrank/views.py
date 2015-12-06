@@ -104,8 +104,8 @@ def musiclist(request):
 	return render_to_response('musiclist.html')
 
 # /iidx/(username)/recommend/
-def recommend(request):
-	return render_to_response('recommend.html')
+def recommend(request, username):
+	return render_to_response('recommend.html', {"username": username})
 
 # /iidx/!/songrank/
 def songrank(request):

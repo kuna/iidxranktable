@@ -4,6 +4,7 @@ import parser_clickagain, parser_zasa, parser_iidxme, parser_custom
 import textdistance
 import datetime
 import db		# you might need sqlalchemy
+from django.db import transaction
 
 def update_iidxme():
 	global models
@@ -245,8 +246,10 @@ def update_relation():
 	print "%d items updated." % updated_cnt
 
 
-# import from database
+# import from sqlite3 database
 def importDB():
+	transaction.set_autocommit(False)
+
 	print 'opening DB ...'
 	# init db of sqlalchemy
 	db_session = db.init_db()
@@ -306,7 +309,7 @@ def importDB():
 			precord_obj.playmiss = precord.playmiss
 			precord_obj.playclear = precord.playclear
 			precord_obj.save()
-			
+
 	# copy song calclevel
 	# if unknown song found then ignore it
 	print '[3/3] song calclevel'
@@ -320,6 +323,11 @@ def importDB():
 		song_obj.calcweight = song.calcweight
 		song_obj.save()
 
+
+	# commit
+	print 'committing'
+	transaction.commit()
+	transaction.set_autocommit(True)
 
 	# close session
 	print 'DB migration finished'

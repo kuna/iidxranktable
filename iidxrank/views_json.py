@@ -3,6 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 import models
 import iidx
+import recommend
 
 def createSonginfoFromModel(songs):
 	song_array = []
@@ -21,6 +22,8 @@ def createSonginfoFromModel(songs):
 			'calcweight': round(song.calcweight, 2),
 		})
 	return song_array
+
+##############################################################
 
 def json_level(request, type, level):
 	songs = models.Song.objects.filter(songtype__istartswith=type, songlevel=level).order_by('songtitle').all()
@@ -45,3 +48,10 @@ def json_user(request):
 			'dprank': models.Player.objects.filter(dplevel__gt=user.dplevel).count()+1,
 		})
 	return JsonResponse({'status':'success', 'users': user_array})
+
+def json_recommend(request, username, type, level=-1):
+	player = models.Player.objects.filter(iidxmeid=username).first()
+	if (player == None):
+		return JsonResponse({'status': 'not existing user', 'recommends': []})
+	recommends = recommend.findRecommend_fast(player, type, level)
+	return JsonResponse({'status': 'success', 'recommends': recommends})

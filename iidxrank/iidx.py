@@ -19,6 +19,25 @@ def getclearstring(clear):
 		return u'FULL_COMBO'
 	return None
 
+def getclearstring_simple(clear):
+	if (clear == 0):
+		return u'NOPLAY'
+	elif (clear == 1):
+		return u'FAILED'
+	elif (clear == 2):
+		return u'ASSIST'
+	elif (clear == 3):
+		return u'EASY'
+	elif (clear == 4):
+		return u'GROOVE'
+	elif (clear == 5):
+		return u'HC'
+	elif (clear == 6):
+		return u'EXH'
+	elif (clear == 7):
+		return u'FC'
+	return None
+
 
 def getdanstring(dan):
 	if (dan == 1):

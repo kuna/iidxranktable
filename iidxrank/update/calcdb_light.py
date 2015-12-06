@@ -50,6 +50,8 @@ def initDB():
 		player.dplevel = player.dpclass
 
 
+# lr: learning rate (should be enough size)
+
 # value: playrecord's player's dan
 # weight: assist_clear: 1, easy_clear:2, groove_clear:1, hc=0.1, exh=0.05
 # * multiply (miss count-10)
@@ -70,22 +72,24 @@ def calculate_song():
 				val = precord.player.splevel
 			else:
 				val = precord.player.dplevel
-			w = 0
+			if (val <= 1):
+				continue	# won't calculate for no-dan
+			w = 0.5**val
 			if (precord.playclear == 2):	# assist
-				w = 1
+				w *= 2
 			elif (precord.playclear == 3):	# easy
-				w = 2
+				w *= 3
 			elif (precord.playclear == 4):	# groove
-				w = 1
+				w *= 2
 			elif (precord.playclear == 5):	# hard
-				w = 0.5
+				w *= 0.1
 			elif (precord.playclear == 6):	# exhard
-				w = 0.2
+				w *= 0.05
 			w_miss = 1
 			if (precord.playmiss):
-				w_miss = precord.playmiss - 20
-				if (w_miss < 0):
-					w_miss = 0
+				w_miss = precord.playmiss - 10
+				if (w_miss < 1):
+					w_miss = 1
 
 			w *= w_miss
 			f_weight += w
@@ -112,7 +116,7 @@ def calculate_player():
 		f_value_dp = 0
 		for precord in player.playrecord:
 			val = precord.song.calclevel
-			w = 3**precord.song.songlevel * 0.001
+			w = 3**precord.song.calclevel * 0.001
 			if (precord.playclear == 3):	# easy
 				w *= 1
 			elif (precord.playclear == 4):	# groove
@@ -139,7 +143,6 @@ def calculate_player():
 			player.dplevel = 0
 
 
-
 ###########################################
 #
 # main func
@@ -151,13 +154,16 @@ def main():
 	global db_session
 	db_session = db.init_db()
 
+	# if you want to iterate more, then ignore these lines
 	print 'initalize...'
 	initDB()
 
-	print 'calculating song diff...'
-	calculate_song()
-	print 'calculating players ...'
-	calculate_player()
+	# iterate 10 times
+	for i in range(1):
+		print 'calculating song diff...'
+		calculate_song()
+		print 'calculating players ...'
+		calculate_player()
 
 	print 'song'
 	showSongStat()
