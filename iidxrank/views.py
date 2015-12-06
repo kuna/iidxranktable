@@ -103,6 +103,18 @@ def musiclist(request):
 	# all the other things will done in json & html
 	return render_to_response('musiclist.html')
 
+# /iidx/(username)/recommend/
+def recommend(request):
+	return render_to_response('recommend.html')
+
+# /iidx/!/songrank/
+def songrank(request):
+	return render_to_response('songrank.html')
+
+# /iidx/!/userrank/
+def userrank(request):
+	return render_to_response('userrank.html')
+
 
 # iidx/imgtl/
 @csrf_exempt

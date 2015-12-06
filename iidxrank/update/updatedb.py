@@ -3,6 +3,7 @@
 import parser_clickagain, parser_zasa, parser_iidxme, parser_custom
 import textdistance
 import datetime
+import db		# you might need sqlalchemy
 
 def update_iidxme():
 	global models
@@ -242,6 +243,94 @@ def update_relation():
 		updated_cnt += 1
 
 	print "%d items updated." % updated_cnt
+
+
+# import from database
+def importDB():
+	print 'opening DB ...'
+	# init db of sqlalchemy
+	db_session = db.init_db()
+
+
+	# copy players first (or update player info)
+	print '[1/3] playerinfo'
+	players = db.Player.query.all()
+	for player in players:
+		print "%d/%d" % (player.id, len(players))
+		player_obj = models.Player.objects.filter(iidxid=player.iidxid).first()
+		if (player_obj == None):
+			models.Player.objects.create(
+				iidxid = player.iidxid,
+				iidxmeid = player.iidxmeid,
+				iidxnick = player.iidxnick,
+				sppoint = player.sppoint,
+				dppoint = player.dppoint,
+				spclass = player.spclass,
+				dpclass = player.dpclass,
+				splevel = player.splevel,
+				dplevel = player.dplevel
+				)
+		else:
+			player_obj.iidxnick = player.iidxnick
+			player_obj.sppoint = player.sppoint
+			player_obj.dppoint = player.dppoint
+			player_obj.spclass = player.spclass
+			player_obj.dpclass = player.dpclass
+			player_obj.splevel = player.splevel
+			player_obj.dplevel = player.dplevel
+			player_obj.save()	# date is automatically updated
+
+
+	# copy playerdata
+	# if unknown song found then ignore it
+	print '[2/3] playerdata'
+	precords = db.PlayRecord.query.all()
+	for precord in precords:
+		print "%d/%d" % (precord.id, len(precords))
+		player_obj = models.Player.objects.filter(iidxid=precord.player.iidxid).first()
+		song_obj = models.Song.objects.filter(songid=precord.song.songid, songtype=precord.song.songtype).first()
+		if (player_obj == None or song_obj == None):
+			print 'song_obj missing: %d songid' % precord.song.songid
+			continue
+		precord_obj = models.PlayRecord.objects.filter(player=player_obj, song=song_obj).first()
+		if (precord_obj == None):
+			models.PlayRecord.objects.create(
+				player = player_obj,
+				song = song_obj,
+				playscore = precord.playscore,
+				playmiss = precord.playmiss,
+				playclear = precord.playclear
+				)
+		else:
+			precord_obj.playscore = precord.playscore
+			precord_obj.playmiss = precord.playmiss
+			precord_obj.playclear = precord.playclear
+			precord_obj.save()
+			
+	# copy song calclevel
+	# if unknown song found then ignore it
+	print '[3/3] song calclevel'
+	songs = db.Song.query.all()
+	for song in songs:
+		song_obj = models.Song.objects.filter(songid=song.songid, songtype=song.songtype).first()
+		if (song_obj == None):
+			print 'song_obj missing: %d songid' % song.songid
+			continue
+		song_obj.calclevel = song.calclevel
+		song_obj.calcweight = song.calcweight
+		song_obj.save()
+
+
+	# close session
+	print 'DB migration finished'
+	db_session.remove()
+	# TODO: song recommendation service(test)
+	# - like stairway.ne.jp
+	# - show only clear percentage over 50% or, EXscore up
+	# TODO: song level show/sort(rank) service(test)
+	# - make page per level/type(SP/DP)
+	# TODO: make player rank service(test)
+	# - make page per type(SP/DP) & show ranking
 
 
 # message part

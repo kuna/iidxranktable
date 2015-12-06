@@ -12,3 +12,18 @@ function openComment(url) {
 setTimeout(function() {
 	$("#message").fadeOut(2000);
 }, 5000);
+
+/* load json */
+function loadJSON(json_url, processor, onload) {
+	$.getJSON(json_url, function(data) {
+		for (var row in data['songs']) {
+			processor(data['songs'][row], row);
+		}
+		for (var row in data['users']) {
+			processor(data['users'][row], row);
+		}
+		if (onload) {
+			onload();
+		}
+	});
+}

@@ -44,10 +44,14 @@ urlpatterns = [
 	url(r'^iidx/musiclist/$', views.musiclist),
 	url(r'^iidx/json/musiclist/(?P<type>\w+)/level/(?P<level>[0-9]+)/$', views_json.json_level),
 	url(r'^iidx/json/musiclist/(?P<type>\w+)/series/(?P<series>\w+)/$', views_json.json_series),
+	url(r'^iidx/json/userlist/$', views_json.json_user),
 
 # common urls (mainpage, userpage, rankpage)
 	url(r'^iidx/$', views.mainpage),
 	url(r'^iidx/!/$', RedirectView.as_view(url='/iidx/')),
+	url(r'^iidx/!/songrank/$', views.songrank),
+	url(r'^iidx/!/userrank/$', views.userrank),
+	url(r'^iidx/(?P<username>\w+)/recommend/$', views.recommend),
 	url(r'^iidx/(?P<username>\w+)/$', views.userpage),
-	url(r'^iidx/(?P<username>.+)/(?P<diff>\w+)/(?P<level>\w+)/$', views.rankpage, name="rankpage"),
+	url(r'^iidx/(?P<username>\w+)/(?P<diff>\w+)/(?P<level>\w+)/$', views.rankpage, name="rankpage"),
 ]

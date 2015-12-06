@@ -1,0 +1,87 @@
+{% extends "common.html" %}
+{% block head %}
+
+{% load staticfiles %}
+<!-- datatables -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/s/dt/jq-2.1.4,dt-1.10.10/datatables.min.css"/>
+<script type="text/javascript" src="https://cdn.datatables.net/s/dt/jq-2.1.4,dt-1.10.10/datatables.min.js"></script>
+
+<script language="javascript">
+function loadSonglist(type, lvl) {
+	var dataSet = []
+	function processor(row_json, idx) {
+		var recmd = "";
+		if (row_json.calcweight < 4) {			// don't recommend
+			recmd= "△"
+		} else if (row_json.calcweight > 16) {	// recommend
+			recmd= "⊙"
+		}
+
+		dataSet.push([
+			"★"+row_json.songlevel,
+			row_json.songtitle,
+			row_json.calclevel,
+			row_json.series,
+			recmd
+		]);
+	}
+	function onload() {
+		$("#tabledata").empty();
+		$('#list').DataTable({
+			data: dataSet,
+			order: [[ 2, "desc" ]],
+			iDisplayLength: 50,
+			destroy: true
+		});
+	}
+	loadJSON("/iidx/json/musiclist/"+type+"/level/"+lvl, processor, onload);
+}
+
+$(function() {
+	$("#tabledata").html("<tr><td class='loading' colspan=5>Loading ...</td></tr>");
+	loadSonglist("SP", 12);
+});
+</script>
+
+{% endblock %}
+{% block body %}
+
+<div id="container">
+	<div id="menu">
+		<!-- addon button -->
+		<div class="clear">
+			<a href="../.."><button id="home" class="btn btn-default" style="float:left;">return</button></a>
+		</div>
+		<div class="clear">
+			<a href="#"><button class="btn btn-default" onclick='loadSonglist("SP", 12);'>SP12</button></a>
+			<a href="#"><button class="btn btn-default" onclick='loadSonglist("SP", 11);'>SP11</button></a>
+			<a href="#"><button class="btn btn-default" onclick='loadSonglist("SP", 10);'>SP10</button></a>
+			<a href="#"><button class="btn btn-default" onclick='loadSonglist("DP", 12);'>DP12</button></a>
+			<a href="#"><button class="btn btn-default" onclick='loadSonglist("DP", 11);'>DP11</button></a>
+			<a href="#"><button class="btn btn-default" onclick='loadSonglist("DP", 10);'>DP10</button></a>
+		</div>
+	</div>
+
+
+	<table id="list" class="hover stripe">
+		<thead>
+			<tr>
+				<th class="small">★</th>
+				<th>Title</th>
+				<th>Estimated</th>
+				<th>Series</th>
+				<th class="small">良</th>
+			</tr>
+		</thead>
+		<tbody id="tabledata">
+			<tr>
+				<td class="loading" colspan=5>
+					Loading ...
+				</td>
+			</tr>
+		<tbody>
+	</table>
+</div>
+
+{% endblock %}
+{% block etc %}updated {{ pageinfo.date|date:"ymd" }} / <a href="#">what is this?</a>{% endblock %}

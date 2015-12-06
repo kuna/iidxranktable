@@ -1,0 +1,79 @@
+{% extends "common.html" %}
+{% block head %}
+
+{% load staticfiles %}
+<!-- datatables -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/s/dt/jq-2.1.4,dt-1.10.10/datatables.min.css"/>
+<script type="text/javascript" src="https://cdn.datatables.net/s/dt/jq-2.1.4,dt-1.10.10/datatables.min.js"></script>
+
+<script language="javascript">
+function loadUserlist() {
+	var dataSet = []
+	function processor(row_json, idx) {
+		dataSet.push([
+			row_json.sprank,
+			row_json.dprank,
+			row_json.iidxid,
+			row_json.iidxnick,
+			row_json.iidxmeid,
+			row_json.spdan,
+			row_json.dpdan,
+			row_json.splevel,
+			row_json.dplevel
+		]);
+	}
+	function onload() {
+		$("#tabledata").empty();
+		$('#list').DataTable({
+			data: dataSet,
+			order: [[ 0, "asc" ]],
+			iDisplayLength: 50,
+			destroy: true
+		});
+	}
+	loadJSON("/iidx/json/userlist/", processor, onload);
+}
+
+$(function() {
+	$("#tabledata").html("<tr><td class='loading' colspan=7>Loading ...</td></tr>");
+	loadUserlist();
+});
+</script>
+
+{% endblock %}
+{% block body %}
+
+<div id="container">
+	<div id="menu">
+		<!-- addon button -->
+		<div class="clear">
+			<a href="../.."><button id="home" class="btn btn-default" style="float:left;">return</button></a>
+		</div>
+	</div>
+
+	<table id="list" class="hover stripe">
+		<thead>
+			<tr>
+				<th class="small">SP順位</th>
+				<th class="small">DP順位</th>
+				<th>iidxid</th>
+				<th>iidxnick</th>
+				<th>iidxmeid</th>
+				<th class="small">SP段</th>
+				<th class="small">DP段</th>
+				<th class="small">SP Esti.</th>
+				<th class="small">DP Esti.</th>
+			</tr>
+		</thead>
+		<tbody id="tabledata">
+			<tr>
+				<td class="loading" colspan=7>
+					Loading ...
+				</td>
+			</tr>
+		<tbody>
+	</table>
+</div>
+
+{% endblock %}
+{% block etc %}updated {{ pageinfo.date|date:"ymd" }} / <a href="#">what is this?</a>{% endblock %}

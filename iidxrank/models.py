@@ -31,9 +31,9 @@ class Song(models.Model):
 class Player(models.Model):
 	time = models.DateTimeField(auto_now=True)
 
-	iidxid = models.CharField(max_length=12)
-	iidxmeid = models.CharField(max_length=12)
-	iidxnick = models.CharField(max_length=12)
+	iidxid = models.CharField(max_length=20)
+	iidxmeid = models.CharField(max_length=20)
+	iidxnick = models.CharField(max_length=20)
 	sppoint = models.IntegerField(default=0)
 	dppoint = models.IntegerField(default=0)
 	spclass = models.IntegerField(default=0)
@@ -44,12 +44,18 @@ class Player(models.Model):
 	def __unicode__(self):
 		return self.iidxnick + "/" + str(self.spclass) + "/" + str(self.dpclass)
 
+	def iidxmeid_private(self):
+		return self.iidxmeid[:1] + "*"*(len(self.iidxmeid)-2) + self.iidxmeid[-1:]
+
+	def iidxnick_private(self):
+		return self.iidxnick[:1] + "*"*(len(self.iidxnick)-2) + self.iidxnick[-1:]
+
 class PlayRecord(models.Model):
 	player = models.ForeignKey(Player, on_delete=CASCADE)
 	song = models.ForeignKey(Song, on_delete=CASCADE)
-	playscore = models.IntegerField(default=0)
+	playscore = models.IntegerField(default=0, null=True)
 	playclear = models.IntegerField(default=0)
-	playmiss = models.IntegerField(default=0)
+	playmiss = models.IntegerField(default=0, null=True)
 
 
 class RankTable(models.Model):
