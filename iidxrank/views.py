@@ -24,7 +24,7 @@ def checkValidPlayer(player):
 
 def mainpage(request):
 	notices = models.Board.objects.filter(title='notice').first().boardcomment_set
-	return render(request, 'notice.html', {'notices': notices.order_by('-time')})
+	return render_to_response('notice.html', {'notices': notices.order_by('-time')})
 
 def userpage(request, username="!"):
 	if (username == "!"):
@@ -68,7 +68,7 @@ def userpage(request, username="!"):
 	}
 
 	# TODO: apart userpage from index. change index to search.
-	return render(request, 'index.html', {'player': playerinfo})
+	return render_to_response('index.html', {'player': playerinfo})
 
 def rankpage(request, username="!", diff="SP", level=12):
 	# check is argument valid
@@ -90,7 +90,7 @@ def rankpage(request, username="!", diff="SP", level=12):
 	
 	# compile user data to render score
 	userinfo, songdata, pageinfo = rp.compile_data(ranktable, player, models.Song.objects)
-	return render(request, 'rankview.html', {'score': songdata, 'user': userinfo, 'pageinfo': pageinfo})
+	return render_to_response('rankview.html', {'score': songdata, 'user': userinfo, 'pageinfo': pageinfo})
 
 # TODO not implemented, you should run update in shell directly.
 def db_update(request):
