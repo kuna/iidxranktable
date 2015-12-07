@@ -97,3 +97,10 @@ $(function() {
 		jQuery.fn.dataTableExt.oSort["target-desc"] = target_desc;
 	}
 });
+
+/* user update */
+function updateuser(iidxmeid) {
+	$.getJSON("/iidx/update/user/" + iidxmeid, function(data) {
+		alert(data['status']);
+	});
+}

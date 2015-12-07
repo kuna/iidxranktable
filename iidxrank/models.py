@@ -1,7 +1,7 @@
 # lets refer: https://docs.djangoproject.com/en/1.9/intro/tutorial07/
 # http://www.b-list.org/weblog/2007/sep/22/standalone-django-scripts/
 
-from datetime import datetime
+from datetime import datetime, date
 from django.db import models	# whether to use django?
 from django.db.models import CASCADE
 from django.utils.timezone import now
@@ -46,9 +46,11 @@ class Player(models.Model):
 
 	def iidxmeid_private(self):
 		return self.iidxmeid[:1] + "*"*(len(self.iidxmeid)-2) + self.iidxmeid[-1:]
-
 	def iidxnick_private(self):
 		return self.iidxnick[:1] + "*"*(len(self.iidxnick)-2) + self.iidxnick[-1:]
+	def isRefreshable(self):
+		#print (now() - self.time).total_seconds() / 60 / 60 / 24
+		return ((now() - self.time).total_seconds() / 60 / 60 / 24) >= 1
 
 class PlayRecord(models.Model):
 	# MUST use db_index for performance

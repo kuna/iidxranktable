@@ -36,10 +36,12 @@ table .t0 { background-color:#fcfcfc; }
 table .t1 { background-color:#efefef; }
 table .loading { color:#999; text-align: center; padding:20px; }
 
-/* others */
-.clear { clear:both; }
-#message { position:fixed; display:block; right:0px; top:0px; height:auto; width:auto; background-color:#cc6; color:#fff; font-size:12px; padding: 7px; }
-
+/* userpage */
+#goto { cursor:pointer; cursor:hand;/*fallback*/ }
+#container .notice_inner h4.djname { float:left; }
+#container .notice_inner h4.level { float:right; cursor:pointer; cursor:hand; }
+#container .notice_inner h4.level span { display:none; }
+#container .notice_inner h4.level:hover span { display:inline; }
 
 /* about difficulty color */
 .SPA, .DPA { color:#b33; }
@@ -51,3 +53,13 @@ table .loading { color:#999; text-align: center; padding:20px; }
 .SPA_s, .DPA_s { text-shadow:0px 0px 3px #f66; }
 .SPH_s, .DPH_s { text-shadow: 0px 0px 3px #ff6; }
 .SPN_s, .DPN_s { text-shadow: 0px 0px 3px #66f; }
+
+/* others (common) */
+.clear { clear:both; }
+.center { text-align:center; }
+#message { position:fixed; display:block; right:0px; top:0px; height:auto; width:auto; background-color:#cc6; color:#fff; font-size:12px; padding: 7px; }
+.row { clear:both; margin-bottom:10px; }
+.row button { margin-right:6px; margin-bottom:6px; }
+
+.btn-recommend { background-color:#366; color:#fff; font-weight:bold; }
+.btn-recommend:hover { text-shadow:#ffe 0 0 10px; }

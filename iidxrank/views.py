@@ -43,6 +43,19 @@ def userpage(request, username="!"):
 		player = jsondata.loadJSONurl(userjson_url)
 		if (not checkValidPlayer(player)):
 			return HttpResponseNotFound('<h1>Invalid User, or Cannot connect to json.iidx.me</h1>')
+
+		# check is db exists
+		try:
+			player_obj = models.Player.objects.get(iidxid=player['userdata']['iidxid'])
+			splevel = round(player_obj.splevel, 2)
+			if (splevel == 0):
+				splevel = '-'
+			dplevel = round(player_obj.dplevel, 2)
+			if (dplevel == 0):
+				dplevel = '-'
+		except:
+			splevel = '-'
+			dplevel = '-'
 	
 	playerinfo = {
 		'userid': username,
@@ -50,8 +63,8 @@ def userpage(request, username="!"):
 		'iidxid': player['userdata']['iidxid'].replace('-', ''),
 		'spclass': iidx.getdanstring(player['userdata']['spclass']),
 		'dpclass': iidx.getdanstring(player['userdata']['dpclass']),
-		'spclass_est': 0,	# TODO: estimated level
-		'dpclass_est': 0,	# TODO: estimated level
+		'splevel': splevel,	# estimated level
+		'dplevel': dplevel,	# estimated level
 	}
 
 	# TODO: apart userpage from index. change index to search.

@@ -131,8 +131,7 @@ def iterate_song(_range=(-0.5, 0.5), iterate_time=5):
 		error_sum += min(scores)
 	return error_sum
 
-
-def iterate_player(_range=(-0.5, 0.5), iterate_time=5):
+def calculate_player(player, _range=(-0.5, 0.5), iterate_time=20):
 	def getScore(player, level, type):
 		cul = 0
 		for precord in player.playrecord:
@@ -146,6 +145,34 @@ def iterate_player(_range=(-0.5, 0.5), iterate_time=5):
 			cul += abs(v - model(5, level, precord.song.calclevel))	# weight is 5, maybe
 		return cul
 
+	# random walk for 10 times
+	lvls = [player.splevel,]
+	scores = [getScore(player, lvls[0], "SP"),]
+	for t in range(iterate_time):
+		new_level = player.splevel + random.uniform(_range[0], _range[1])
+		lvls.append(new_level)
+		scores.append(getScore(player, new_level, "SP"))
+	player.splevel = lvls[scores.index(min(scores))]
+
+	# random walk for 10 times
+	lvls = [player.dplevel,]
+	scores = [getScore(player, lvls[0], "DP"),]
+	for t in range(iterate_time):
+		new_level = player.dplevel + random.uniform(_range[0], _range[1])
+		lvls.append(new_level)
+		scores.append(getScore(player, new_level, "DP"))
+	player.dplevel = lvls[scores.index(min(scores))]
+	return min(scores)
+
+def calculate_player_by_name(iidxmeid, _range=(-0.5, 0.5), iterate_time=15):
+	player = db.Player.query.filter_by(iidxmeid=iidxmeid).one()
+	# in case of this player hadn't played any(or big difference), initalize it
+	print 'initalize player level ...'
+	calculate_player(player, (0, 12), 10)
+	print 'detailing player level ...'
+	return calculate_player(player, _range, iterate_time)
+
+def iterate_player(_range=(-0.5, 0.5), iterate_time=5):
 	i = 0
 	players = db.Player.query.all()
 	error_sum = 0
@@ -154,24 +181,7 @@ def iterate_player(_range=(-0.5, 0.5), iterate_time=5):
 			print "%d/%d" % (i, len(players))
 		i+=1
 
-		# random walk for 10 times
-		lvls = [player.splevel,]
-		scores = [getScore(player, lvls[0], "SP"),]
-		for t in range(iterate_time):
-			new_level = player.splevel + random.uniform(_range[0], _range[1])
-			lvls.append(new_level)
-			scores.append(getScore(player, new_level, "SP"))
-		player.splevel = lvls[scores.index(min(scores))]
-
-		# random walk for 10 times
-		lvls = [player.dplevel,]
-		scores = [getScore(player, lvls[0], "DP"),]
-		for t in range(iterate_time):
-			new_level = player.dplevel + random.uniform(_range[0], _range[1])
-			lvls.append(new_level)
-			scores.append(getScore(player, new_level, "DP"))
-		player.dplevel = lvls[scores.index(min(scores))]
-		error_sum += min(scores)
+		error_sum += calculate_player(player, _range, iterate_time)
 	return error_sum
 
 

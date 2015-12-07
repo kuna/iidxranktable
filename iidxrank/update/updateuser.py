@@ -6,6 +6,7 @@ import db
 import math
 import parser_iidxme
 import time
+from datetime import datetime
 
 # crolling user's information
 def update_songs():
@@ -89,44 +90,44 @@ def update_user_from_data(player, user_info):
 
 	return add_count
 
+def update_single_user_by_name(iidxmeid):
+	return update_single_user(db.Player.query.filter_by(iidxmeid=iidxmeid).one())
+
+def update_single_user(player):
+	add_count = 0
+	sppoint = 0
+	dppoint = 0
+	spclass = 0
+	dpclass = 0
+	# start from level 8
+	for mode in ("sp", "dp"):
+		for i in range(8, 13):
+			try:
+				print 'updating user %s (%s) - (%s, %d) ...' % (player.iidxmeid, player.iidxnick, mode, i)
+				user_info = parser_iidxme.parse_user(player.iidxmeid, mode, i)
+				sppoint = user_info['userdata']['sppoint']
+				dppoint = user_info['userdata']['dppoint']
+				spclass = user_info['userdata']['spclass']
+				dpclass = user_info['userdata']['dpclass']
+				add_count += update_user_from_data(player, user_info)
+				time.sleep(0.5)		# to avoid suspend as traffic abusing
+			except (KeyboardInterrupt, SystemExit):
+				print 'bye'
+				exit()
+			except:
+				print 'error during parsing. ignore error and continue'
+	player.sppoint = sppoint
+	player.dppoint = dppoint
+	player.spclass = spclass
+	player.dpclass = dpclass
+	player.time = datetime.utcnow()
+
+	return add_count
+
 def update_user_information():
 	add_count = 0
-	start_str = 'HANDA'
 	for player in db.Player.query.all():
-		if (start_str != ''):
-			if (start_str == player.iidxnick):
-				print 'found'
-				start_str = ''
-				continue
-			else:
-				print player.id
-				continue
-		sppoint = 0
-		dppoint = 0
-		spclass = 0
-		dpclass = 0
-		# start from level 8
-		for mode in ("sp", "dp"):
-			for i in range(8, 13):
-				try:
-					print 'updating user %s (%s) - (%s, %d) ...' % (player.iidxmeid, player.iidxnick, mode, i)
-					user_info = parser_iidxme.parse_user(player.iidxmeid, mode, i)
-					sppoint = user_info['userdata']['sppoint']
-					dppoint = user_info['userdata']['dppoint']
-					spclass = user_info['userdata']['spclass']
-					dpclass = user_info['userdata']['dpclass']
-					add_count += update_user_from_data(player, user_info)
-					time.sleep(0.5)		# to avoid suspend as traffic abusing
-				except (KeyboardInterrupt, SystemExit):
-					print 'bye'
-					exit()
-				except:
-					print 'error during parsing. ignore error and continue'
-		player.sppoint = sppoint
-		player.dppoint = dppoint
-		player.spclass = spclass
-		player.dpclass = dpclass
-
+		add_count += update_single_user(player)
 		print 'added %d playrecord' % add_count
 		db_session.commit()
 

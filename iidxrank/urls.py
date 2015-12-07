@@ -28,10 +28,11 @@ urlpatterns = [
 
 # update (NOT WORKING NOW)
 	url(r'^iidx/update/$', views_update.index),
-	url(r'^iidx/update/?(P<update>\w+)/$', views_update.startUpdate),
+	url(r'^iidx/update/(?P<update>\w+)/$', views_update.startUpdate),
 	url(r'^iidx/update/status/$', views_update.recentStatus),
 	url(r'^iidx/update/send/$', views_update.sendMessage),
 	url(r'^iidx/update/rank/$', views_update.rankupdate),
+	url(r'^iidx/update/user/(?P<username>\w+)/$', views_update.json_update_player),
 
 # comment, board
 	url(r'^iidx/songcomment/all/$', views.songcomment_all),
@@ -55,7 +56,7 @@ urlpatterns = [
 	url(r'^iidx/!/userrank/$', views.userrank),
 	url(r'^iidx/(?P<username>\w+)/recommend/$', views.recommend),
 	url(r'^iidx/(?P<username>\w+)/$', views.userpage),
-	url(r'^iidx/(?P<username>\w+)/(?P<diff>\w+)/(?P<level>[0-9]+)/$', views.rankpage, name="rankpage"),
+	url(r'^iidx/(?P<username>\w+)/(?P<diff>\w+)/(?P<level>\w+)/$', views.rankpage, name="rankpage"),
 	url(r'^iidx/!/$', views.userpage),
-	url(r'^iidx/!/(?P<diff>\w+)/(?P<level>[0-9]+)/$', views.rankpage, name="rankpage"),
+	url(r'^iidx/!/(?P<diff>\w+)/(?P<level>\w+)/$', views.rankpage, name="rankpage"),
 ]

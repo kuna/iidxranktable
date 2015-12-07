@@ -7,29 +7,18 @@ import db		# you might need sqlalchemy
 from django.db import transaction
 
 def update_iidxme():
-	global models
 	def update(data):
-		songs = models.Song.objects.all()
 		added_data = 0
 		for song in data:
-			song_query = models.Song.objects.filter(songid=song['id'], songtype=song['diff'])
-			if not song_query.count():
-				if song['notes'] == None:
-					song['notes'] = 0
-				models.Song.objects.create(
-					songtitle=song['title'], 
+			if not db.Song.query.filter_by(songid=song['id'], songtype=song['diff']).count():
+				song = db.Song(songtitle=song['title'], 
 					songtype=song['diff'],
 					songid=song['id'],
 					songlevel=song['level'],
-					songnotes=song['notes'],
-					version=song['version'],
-				)
+					songnotes=song['notes'])
+				db_session.add(song)
 				added_data = added_data+1
-			else:
-				# just make update you want
-				song_obj = song_query.first()
-				song_obj.version = song['version']
-				song_obj.save()
+		db_session.commit()
 		print "added %d datas" % added_data
 
 	for lvl in range(6, 13):
@@ -44,64 +33,65 @@ def update_iidxme():
 
 # update or create rank table
 def updateDB(data, tablename, tabletitle, level):
-	global models
 	added_data = 0
 
 	# get table first
-	table = models.RankTable.objects.filter(tablename=tablename)
+	table = db.RankTable.query.filter_by(tablename=tablename)
 	if (not table.count()):
-		table = RankTable.objects.create(tablename=tablename,
+		table = db.RankTable(tablename=tablename,
 			tabletitle=tabletitle,
-			copyright = '',
-			type='',
-			level=0)
-		table.save()
+			level=level)
+		db_session.add(table)
 	else:
-		table = table.first()
+		table = table.one()
 		# update table info
 		table.tabletitle = tabletitle
-		table.save()
+		table.level = level
+		table.time = datetime.datetime.now()
 
 	# process rankitems/rankcategories
 	for group in data:
 		# before adding items, get category first
-		category = models.RankCategory.objects.filter(ranktable=table, categoryname=group[0])
+		category = db.RankCategory.query.filter_by(table_id=table.id, categoryname=group[0])
 		if (not category.count()):
-			category = models.RankCategory(ranktable=table, categoryname=group[0])
-			category.save()
+			category = db.RankCategory(table_id=table.id, categoryname=group[0])
+			# append category to group
+			table.category.append(category)
+			db_session.add(category)
 		else:
-			category = category.first()
+			category = category.one()
 
 		# make rank item
 		# if already exists then update category only
 		for item in group[1]:
 			song_tag = item[0] + "," + item[1]
-			rankitem = models.RankItem.objects.filter(rankcategory=category, info=song_tag)
+			rankitem = db.RankItem.query.filter_by(rankcategory=category, info=song_tag)
 			if not rankitem.count():
+				###########################################
 				# search song automatically from DB
-				song = models.Song.objects.filter(songtitle=item[0], songtype=item[1], songlevel=level)
+				song = db.Song.query.filter_by(songtitle=item[0], songtype=item[1], songlevel=level)
 				if (not song.count()):
 					song = smart_suggestion(item[0], item[1], level)	# name, diff, level
 					if (song == None):
 						continue	# ignore
 				else:
-					song = song.first()
+					song = song.one()
 				# check once more, if same song is already exists in ranktable
 				# if it does, then cancel add new one
-				rankitem_query = models.RankItem(rankcategory__ranktable=table, song=song)
+				rankitem_query = db.RankItem.query.filter_by(rankcategory__ranktable=table, song=song)
 				if (rankitem_query.count()):
 					print 'same song already exists in rank table!'
 					print 'just modifying tag...'
-					rankitem = rankitem_query.first()
+					rankitem = rankitem_query.one()
 					rankitem.info = song_tag
-					rankitem.save()
 					continue
+				#############################################
 
-				rankitem = models.RankItem(info=song_tag,
-					rankcategory=category,
-					song= song)
+				rankitem = db.RankItem(info=song_tag, category_id=category.id)
 				# append item to category
-				rankitem.save()
+				category.rankitem.append(rankitem)
+				db_session.add(rankitem)
+				added_data = added_data+1
 			else:
 				rankitem = rankitem.first()
 				rankitem.category = category
@@ -160,9 +150,9 @@ def update_DP():
 #
 def smart_suggestion(name, diff, level):
 	import sys
-	global models
 	# first get all song data
-	songs = models.Song.objects.filter(songtype=diff, songlevel=level).all()
+	songs = db.Song.query.filter_by(songtype=diff)\
+		.filter(db.Song.songlevel == level)
 
 	# make new array for suggestion
 	title_arr = []
@@ -178,7 +168,7 @@ def smart_suggestion(name, diff, level):
 	#	sug_songs.append()
 
 	while (1):
-		print("cannot find matching one(%s / %s / %d), but some suggestion was found" % (name, diff, level))
+		print "cannot find matching one, but some suggestion was found"
 		idx = 1
 		print "0. (deleted)"
 		for sug_title in suggestions:
@@ -199,16 +189,16 @@ def smart_suggestion(name, diff, level):
 			if (code > len(suggestions)):
 				print 'out of suggestions'
 				continue
-			return models.Song.objects.filter(songtype=diff, songtitle=suggestions[code-1][0]).first()
+			return db.Song.query.filter_by(songtype=diff, songtitle=suggestions[code-1][0]).one()
 		elif (code < 0):
 			# search song which that code exists
-			songs = models.Song.objects.filter(songtype=diff, songid=-code)
+			songs = db.Song.query.filter_by(songtype=diff, songid=-code)
 			# if not then loop again
 			if not songs.count():
 				print 'no song of such code exists'
 				continue
 			else:
-				song = songs.first()
+				song = songs.one()
 				print 'you selected song [%s]. if okay then [y]' % song.songtitle
 				okay = raw_input("> ")
 				if (okay == "y"):
@@ -246,143 +236,27 @@ def update_relation():
 	print "%d items updated." % updated_cnt
 
 
-# import from sqlite3 database
-def importDB():
-	transaction.set_autocommit(False)
-
-	print 'opening DB ...'
-	# init db of sqlalchemy
-	db_session = db.init_db()
-
-
-	# copy players first (or update player info)
-	print '[1/3] playerinfo'
-	players = db.Player.query.all()
-	for player in players:
-		print "%d/%d" % (player.id, len(players))
-		player_obj = models.Player.objects.filter(iidxid=player.iidxid).first()
-		if (player_obj == None):
-			models.Player.objects.create(
-				iidxid = player.iidxid,
-				iidxmeid = player.iidxmeid,
-				iidxnick = player.iidxnick,
-				sppoint = player.sppoint,
-				dppoint = player.dppoint,
-				spclass = player.spclass,
-				dpclass = player.dpclass,
-				splevel = player.splevel,
-				dplevel = player.dplevel
-				)
-		else:
-			player_obj.iidxnick = player.iidxnick
-			player_obj.sppoint = player.sppoint
-			player_obj.dppoint = player.dppoint
-			player_obj.spclass = player.spclass
-			player_obj.dpclass = player.dpclass
-			player_obj.splevel = player.splevel
-			player_obj.dplevel = player.dplevel
-			player_obj.save()	# date is automatically updated
-
-
-	# copy playerdata
-	# if unknown song found then ignore it
-	print '[2/3] playerdata'
-	precords = db.PlayRecord.query.all()
-	for precord in precords:
-		print "%d/%d" % (precord.id, len(precords))
-		player_obj = models.Player.objects.filter(iidxid=precord.player.iidxid).first()
-		song_obj = models.Song.objects.filter(songid=precord.song.songid, songtype=precord.song.songtype).first()
-		if (player_obj == None or song_obj == None):
-			print 'song_obj missing: %d songid' % precord.song.songid
-			continue
-		precord_obj = models.PlayRecord.objects.filter(player=player_obj, song=song_obj).first()
-		if (precord_obj == None):
-			models.PlayRecord.objects.create(
-				player = player_obj,
-				song = song_obj,
-				playscore = precord.playscore,
-				playmiss = precord.playmiss,
-				playclear = precord.playclear
-				)
-		else:
-			precord_obj.playscore = precord.playscore
-			precord_obj.playmiss = precord.playmiss
-			precord_obj.playclear = precord.playclear
-			precord_obj.save()
-
-	# copy song calclevel
-	# if unknown song found then ignore it
-	print '[3/3] song calclevel'
-	songs = db.Song.query.all()
-	for song in songs:
-		song_obj = models.Song.objects.filter(songid=song.songid, songtype=song.songtype).first()
-		if (song_obj == None):
-			print 'song_obj missing: %d songid' % song.songid
-			continue
-		song_obj.calclevel = song.calclevel
-		song_obj.calcweight = song.calcweight
-		song_obj.save()
-
-
-	# commit
-	print 'committing'
-	transaction.commit()
-	transaction.set_autocommit(True)
-
-	# close session
-	print 'DB migration finished'
-	db_session.remove()
-	# TODO: song recommendation service(test)
-	# - like stairway.ne.jp
-	# - show only clear percentage over 50% or, EXscore up
-	# TODO: song level show/sort(rank) service(test)
-	# - make page per level/type(SP/DP)
-	# TODO: make player rank service(test)
-	# - make page per type(SP/DP) & show ranking
-
-
-# message part
-outputmsgs = []
-inputmsgs = []
-
-def output(message):
-	global outputmsgs
-	outputmsgs.append(message)
-
-def getRecentMsgs():
-	global outputmsgs
-	return outputmsgs
-
-def sendMessage(message):
-	global inputmsgs
-	inputmsgs.append(message)
-
-def pollMessage():
-	import time
-	global inputmsgs
-	while (len(inputmsgs <= 0)):
-		time.sleep(0.1)
-	return inputmsgs.pop(0)
-
-
-
-def setModel(_models):
-	global models
-	models = _models
-
-
 def main():
 	#
 	# you should execute it through IDLE because of unicode
+	# (if you're windows)
 	#
+	print 'opening DB ...'
+	global db_session
+	db_session = db.init_db()
 
 	update_iidxme()
 
+	# this site is depreciated
 	#update_SP()
 
 	update_DP()
 
 	#update_relation()
+
+	print 'finished. closing DB ...'
+	db_session.commit()
+	db_session.remove()
 
 if __name__ == '__main__':
 	main()

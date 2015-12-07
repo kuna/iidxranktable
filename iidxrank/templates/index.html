@@ -56,17 +56,6 @@ $(document).ready(function () {
 });
 </script>
 
-<style type="text/css">
-#goto { cursor:pointer; cursor:hand;/*fallback*/ }
-.row { clear:both; margin-bottom:10px; }
-.row button { margin-right:6px; margin-bottom:6px; }
-.center { text-align:center; }
-
-h4.djname { float:left; }
-h4.level { float:right; cursor:help; }
-h4.level span { display:none; }
-h4.level:hover span { display:inline; }
-</style>
 {% endblock %}
 {% block body %}
 <div id="container">
@@ -75,7 +64,7 @@ h4.level:hover span { display:inline; }
 		<div class="row">
 			<div class="userimage" style="text-align:center;"><img src="/iidx/qpro/{{ player.iidxid }}"></div>
 			<h4 class="djname">DJ {{ player.username }}</h4>
-			<h4 class="level"><span class="label label-default">COMING SOON</span>★{{ player.spclass}} / ★{{ player.dpclass }}</h4>
+			<h4 class="level" onclick="if (confirm('점수를 갱신하시겠습니까?')) { updateuser('{{ player.userid }}'); }"><span class="label label-default">★{{ player.splevel }} / ★{{ player.dplevel }}</span>★{{ player.spclass }} / ★{{ player.dpclass }}</h4>
 		</div>
 		{% endif %}
 
@@ -98,6 +87,11 @@ h4.level:hover span { display:inline; }
 	</div>
 	
 	<div class="row center">
+		{% if player %}
+			<a href="/iidx/{{ player.userid }}/recommend/"><button type="button" class="btn btn-recommend">Recommend</button></a>
+		{% endif %}
+		<a href="/iidx/!/songrank/"><button type="button" class="btn btn-warning">Songs</button></a>
+		<a href="/iidx/!/songrank/"><button type="button" class="btn btn-warning">Players</button></a>
 		<a href="/iidx/songcomment/all/1/"><button type="button" class="btn btn-warning">Recent Comments</button></a>
 		<a href="/iidx/musiclist/"><button type="button" class="btn btn-warning">Musiclist</button></a>
 	</div>
