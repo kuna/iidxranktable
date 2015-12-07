@@ -6,7 +6,6 @@ import db
 import math
 from random import random as rand
 import random
-import matplotlib.pyplot as plot		# only for debugee
 from sqlalchemy import text
 
 def norm(x, std):
@@ -23,6 +22,7 @@ def randomTest(p):
 ############################################################
 # show us a little graph
 def showSongStat(type="SP", onlysave=True, fname="songstat.png"):
+	import matplotlib.pyplot as plot		# only for debugee
 	if (len(type) != 2):
 		raise Exception("invalid song type")
 
@@ -40,6 +40,7 @@ def showSongStat(type="SP", onlysave=True, fname="songstat.png"):
 	plot.clf()
 
 def showPlayerStat(onlysave=True, fname="playerstat.png"):
+	import matplotlib.pyplot as plot		# only for debugee
 	x = []
 	y = []
 	for player in db.Player.query.all():
@@ -261,8 +262,8 @@ def main():
 		iterate_player((-0.2, 0.2), 3)
 		if (True):
 			print 'song'
-			showSongStat("SP", True, "songstatSP%d.png"%i)
-			showSongStat("DP", True, "songstatDP%d.png"%i)
+			#showSongStat("SP", True, "songstatSP%d.png"%i)
+			#showSongStat("DP", True, "songstatDP%d.png"%i)
 			print 'player'
 			showPlayerStat(True, "playerstat%d.png"%i)
 		if ((i+1)%10 == 0):
