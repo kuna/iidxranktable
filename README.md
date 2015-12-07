@@ -14,19 +14,18 @@ Python (django)
 
 SQL (MariaDB)
 
+SqlAlchemy (for update module)
+
 
 ### How to use
 
 run ```pip install -r requirements.txt``` and ```python manage.py runserver```.
 
-To update DB, run 
+To update DB totally, go to \iidxrank\update and run 
 ```
-python manage.py shell
-from iidxrank.update import updatedb
-from iidxrank import models
-updatedb.setModel(models)
-updatedb.update_iidxme()
-updatedb.update_DP()
+python update.py
+python updateuser.py
+python calculatedb.py
 ```
 or go into ```/admin``` for admin page. (song information from iidx.me, DP from zasa.sakura.ne.jp)
 
