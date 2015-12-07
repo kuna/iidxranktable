@@ -21,42 +21,53 @@ import views_update
 import views_json
 
 urlpatterns = [
-# utilities (admin, imgtl ...)
-    url(r'^iidx/admin/', include(admin.site.urls)),
-	url(r'^iidx/imgtl/$', views.imgtl),
-	url(r'^iidx/qpro/(?P<iidxid>[0-9]+)/$', views.qpro),
+	url(r'^iidx/', include([
+	# utilities (admin, imgtl ...)
+	    url(r'^admin/', include(admin.site.urls)),
+		url(r'^imgtl/$', views.imgtl),
+		url(r'^qpro/(?P<iidxid>[0-9]+)/$', views.qpro),
 
-# update (NOT WORKING NOW)
-	url(r'^iidx/update/$', views_update.index),
-	url(r'^iidx/update/(?P<update>\w+)/$', views_update.startUpdate),
-	url(r'^iidx/update/status/$', views_update.recentStatus),
-	url(r'^iidx/update/send/$', views_update.sendMessage),
-	url(r'^iidx/update/rank/$', views_update.rankupdate),
-	url(r'^iidx/update/user/(?P<username>\w+)/$', views_update.json_update_player),
+	# update (NOT WORKING NOW)
+		url(r'^update/', include([
+			url(r'^$', views_update.index),
+			url(r'^status/$', views_update.recentStatus),
+			url(r'^send/$', views_update.sendMessage),
+			url(r'^rank/$', views_update.rankupdate),
+			url(r'^user/(?P<username>\w+)/$', views_update.json_update_player),
+			url(r'^(?P<update>\w+)/$', views_update.startUpdate),
+		])),
 
-# comment, board
-	url(r'^iidx/songcomment/all/$', views.songcomment_all),
-	url(r'^iidx/songcomment/all/(?P<page>[0-9]+)/$', views.songcomment_all),
-	url(r'^iidx/songcomment/(?P<ranktablename>\w+)/(?P<songid>[0-9]+)/$', views_board.songcomment, name="songcomment"),
-	url(r'^iidx/board/(?P<boardid>[0-9]+)/$', views_board.board),
-	url(r'^iidx/board/(?P<boardid>[0-9]+)/(?P<boardpage>[0-9]+)/$', views_board.board, name="board"),
+	# comment, board
+		url(r'^songcomment/', include([
+			url(r'^all/$', views.songcomment_all),
+			url(r'^all/(?P<page>[0-9]+)/$', views.songcomment_all),
+			url(r'^(?P<ranktablename>\w+)/(?P<songid>[0-9]+)/$', views_board.songcomment, name="songcomment"),
+		])),
+		url(r'^board/', include([
+			url(r'^(?P<boardid>[0-9]+)/$', views_board.board),
+			url(r'^(?P<boardid>[0-9]+)/(?P<boardpage>[0-9]+)/$', views_board.board, name="board"),
+		])),
 
-# select music
-	url(r'^iidx/musiclist/$', views.musiclist),
-	url(r'^iidx/json/musiclist/(?P<type>\w+)/level/(?P<level>[0-9]+)/$', views_json.json_level),
-	url(r'^iidx/json/musiclist/(?P<type>\w+)/series/(?P<series>\w+)/$', views_json.json_series),
-	url(r'^iidx/json/userlist/$', views_json.json_user),
-	url(r'^iidx/json/recommend/(?P<username>\w+)/(?P<type>\w+)/$', views_json.json_recommend),
-	url(r'^iidx/json/recommend/(?P<username>\w+)/(?P<type>\w+)/(?P<level>[0-9]+)/$', views_json.json_recommend),
+	# select music
+		url(r'^musiclist/$', views.musiclist),
+		url(r'^json/', include([
+			url(r'^musiclist/(?P<type>\w+)/level/(?P<level>[0-9]+)/$', views_json.json_level),
+			url(r'^musiclist/(?P<type>\w+)/series/(?P<series>\w+)/$', views_json.json_series),
+			url(r'^userlist/$', views_json.json_user),
+			url(r'^recommend/(?P<username>\w+)/(?P<type>\w+)/$', views_json.json_recommend),
+			url(r'^recommend/(?P<username>\w+)/(?P<type>\w+)/(?P<level>[0-9]+)/$', views_json.json_recommend),
+		])),
 
-# common urls (mainpage, userpage, rankpage)
-	url(r'^iidx/$', views.mainpage),
-	url(r'^iidx/!/$', RedirectView.as_view(url='/iidx/')),
-	url(r'^iidx/!/songrank/$', views.songrank),
-	url(r'^iidx/!/userrank/$', views.userrank),
-	url(r'^iidx/(?P<username>\w+)/recommend/$', views.recommend),
-	url(r'^iidx/(?P<username>\w+)/$', views.userpage),
-	url(r'^iidx/(?P<username>\w+)/(?P<diff>\w+)/(?P<level>\w+)/$', views.rankpage, name="rankpage"),
-	url(r'^iidx/!/$', views.userpage),
-	url(r'^iidx/!/(?P<diff>\w+)/(?P<level>\w+)/$', views.rankpage, name="rankpage"),
+	# common urls (mainpage, userpage, rankpage)
+		url(r'^$', views.mainpage),
+		url(r'^!/$', RedirectView.as_view(url='/iidx/')),
+		url(r'^!/songrank/$', views.songrank),
+		url(r'^!/userrank/$', views.userrank),
+		url(r'^!/(?P<diff>\w+)/(?P<level>\w+)/$', views.rankpage, name="rankpage"),
+		url(r'^(?P<username>\w+)/', include([
+			url(r'^$', views.userpage),
+			url(r'^recommend/$', views.recommend),
+			url(r'^(?P<diff>\w+)/(?P<level>\w+)/$', views.rankpage, name="rankpage"),
+		])),
+	])),
 ]
