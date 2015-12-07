@@ -56,4 +56,6 @@ urlpatterns = [
 	url(r'^iidx/(?P<username>\w+)/recommend/$', views.recommend),
 	url(r'^iidx/(?P<username>\w+)/$', views.userpage),
 	url(r'^iidx/(?P<username>\w+)/(?P<diff>\w+)/(?P<level>[0-9]+)/$', views.rankpage, name="rankpage"),
+	url(r'^iidx/!/$', views.userpage),
+	url(r'^iidx/!/(?P<diff>\w+)/(?P<level>[0-9]+)/$', views.rankpage, name="rankpage"),
 ]

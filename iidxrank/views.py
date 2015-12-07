@@ -26,7 +26,7 @@ def mainpage(request):
 	notices = models.Board.objects.filter(title='notice').first().boardcomment_set
 	return render(request, 'notice.html', {'notices': notices.order_by('-time')})
 
-def userpage(request, username):
+def userpage(request, username="!"):
 	if (username == "!"):
 		# make dummy data
 		player = {
@@ -57,7 +57,7 @@ def userpage(request, username):
 	# TODO: apart userpage from index. change index to search.
 	return render(request, 'index.html', {'player': playerinfo})
 
-def rankpage(request, username, diff, level):
+def rankpage(request, username="!", diff="SP", level=12):
 	# check is argument valid
 	diff = diff.upper()
 	level = level.upper()

@@ -33,65 +33,67 @@ function loadJSON(json_url, processor, onload) {
 
 /* 'custom' type sorting for datatable */
 $(function() {
-	function cmp(a, b) {
-		return (a==b)?0:((a<b)?-1:1);
-	}
+	if (jQuery.fn.dataTableExt) {
+		function cmp(a, b) {
+			return (a==b)?0:((a<b)?-1:1);
+		}
 
-	function conv_series(s) {
-		if (s == "ss")
-			return 1.5;
-		else
-			return parseInt(s);
-	}
+		function conv_series(s) {
+			if (s == "ss")
+				return 1.5;
+			else
+				return parseInt(s);
+		}
 
-	function conv_diff(s) {
-		if (s == "-")
-			return -999;
-		return parseFloat(s.toString().replace(/★/g, ""));
-	}
+		function conv_diff(s) {
+			if (s == "-")
+				return -999;
+			return parseFloat(s.toString().replace(/★/g, ""));
+		}
 
-	function conv_target(s) {
-		if (s == "FC")
-			return 7;
-		else if (s == "EXH")
-			return 6;
-		else if (s == "HARD")
-			return 5;
-		else if (s == "GROOVE")
-			return 4;
-		else if (s == "EASY")
-			return 3;
-		return 0;
-	}
+		function conv_target(s) {
+			if (s == "FC")
+				return 7;
+			else if (s == "EXH")
+				return 6;
+			else if (s == "HARD")
+				return 5;
+			else if (s == "GROOVE")
+				return 4;
+			else if (s == "EASY")
+				return 3;
+			return 0;
+		}
 
-	function diff_asc(a, b) {
-		return cmp(conv_diff(a), conv_diff(b));
-	}
+		function diff_asc(a, b) {
+			return cmp(conv_diff(a), conv_diff(b));
+		}
 
-	function diff_desc(a, b) {
-		return cmp(conv_diff(b), conv_diff(a));
-	}
+		function diff_desc(a, b) {
+			return cmp(conv_diff(b), conv_diff(a));
+		}
 
-	function series_asc(a, b) {
-		return cmp(conv_series(a), conv_series(b));
-	}
+		function series_asc(a, b) {
+			return cmp(conv_series(a), conv_series(b));
+		}
 
-	function series_desc(a, b) {
-		return cmp(conv_series(b), conv_series(a));
-	}
+		function series_desc(a, b) {
+			return cmp(conv_series(b), conv_series(a));
+		}
 
-	function target_asc(a, b) {
-		return cmp(conv_target(a), conv_target(b));
-	}
+		function target_asc(a, b) {
+			return cmp(conv_target(a), conv_target(b));
+		}
 
-	function target_desc(a, b) {
-		return cmp(conv_target(b), conv_target(a));
-	}
+		function target_desc(a, b) {
+			return cmp(conv_target(b), conv_target(a));
+		}
 
-	jQuery.fn.dataTableExt.oSort["diff-asc"] = diff_asc;
-	jQuery.fn.dataTableExt.oSort["diff-desc"] = diff_desc;
-	jQuery.fn.dataTableExt.oSort["series-asc"] = series_asc;
-	jQuery.fn.dataTableExt.oSort["series-desc"] = series_desc;
-	jQuery.fn.dataTableExt.oSort["target-asc"] = target_asc;
-	jQuery.fn.dataTableExt.oSort["target-desc"] = target_desc;
+		jQuery.fn.dataTableExt.oSort["diff-asc"] = diff_asc;
+		jQuery.fn.dataTableExt.oSort["diff-desc"] = diff_desc;
+		jQuery.fn.dataTableExt.oSort["series-asc"] = series_asc;
+		jQuery.fn.dataTableExt.oSort["series-desc"] = series_desc;
+		jQuery.fn.dataTableExt.oSort["target-asc"] = target_asc;
+		jQuery.fn.dataTableExt.oSort["target-desc"] = target_desc;
+	}
 });

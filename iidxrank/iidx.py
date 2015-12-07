@@ -96,3 +96,6 @@ def getrank(rate):
 		return u"E"
 	else:
 		return u"F"
+
+def diff_linear_conv(d):
+	pass

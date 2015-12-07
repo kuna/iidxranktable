@@ -57,7 +57,6 @@ $(document).ready(function () {
 </script>
 
 <style type="text/css">
-#container { max-width: 320px; margin:100px auto 0; }
 #goto { cursor:pointer; cursor:hand;/*fallback*/ }
 .row { clear:both; margin-bottom:10px; }
 .row button { margin-right:6px; margin-bottom:6px; }
@@ -71,22 +70,26 @@ h4.level:hover span { display:inline; }
 {% endblock %}
 {% block body %}
 <div id="container">
-	{% if player %}
-	<div class="row">
-		<div class="userimage" style="text-align:center;"><img src="/iidx/qpro/{{ player.iidxid }}"></div>
-		<h4 class="djname">DJ {{ player.username }}</h4>
-		<h4 class="level"><span class="label label-default">COMING SOON</span>★{{ player.spclass}} / ★{{ player.dpclass }}</h4>
-	</div>
-	{% endif %}
+	<div class="notice_inner">
+		{% if player %}
+		<div class="row">
+			<div class="userimage" style="text-align:center;"><img src="/iidx/qpro/{{ player.iidxid }}"></div>
+			<h4 class="djname">DJ {{ player.username }}</h4>
+			<h4 class="level"><span class="label label-default">COMING SOON</span>★{{ player.spclass}} / ★{{ player.dpclass }}</h4>
+		</div>
+		{% endif %}
 
-	<div class="row input-group">
-		<input type="text" class="form-control" value="{{ player.userid }}" aria-describedby="basic-addon2" id="username">
-		<span class="input-group-addon" id="goto">iidx.me ID</span>
-	</div>
+		<div class="row input-group">
+			<input type="text" class="form-control" value="{{ player.userid }}" aria-describedby="basic-addon2" id="username">
+			<span class="input-group-addon" id="goto">iidx.me ID</span>
+		</div>
 
-	{% block notice %}
-		
-	{% endblock %}
+		<div class="row input-group">
+			{% block notice %}
+				
+			{% endblock %}
+		</div>
+	</div>
 
 	<div class="row center" id="spcontainer">
 	</div>
