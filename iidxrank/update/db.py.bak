@@ -9,7 +9,7 @@ import os
 Base = declarative_base()
 
 class RankTable(Base):
-	__tablename__ = 'ranktable'
+	__tablename__ = 'iidxrank_ranktable'
 	id = Column(Integer, primary_key=True, index=True)
 	time = Column('time', DateTime, nullable=False, default=func.now())		# db updated time
 	category = relationship('RankCategory', backref='ranktable', lazy='select')
@@ -37,11 +37,11 @@ class RankTable(Base):
 			.all()
 
 class RankCategory(Base):
-	__tablename__ = 'rankcategory'
+	__tablename__ = 'iidxrank_rankcategory'
 	id = Column(Integer, primary_key=True, index=True)
-	rankitem = relationship('RankItem', backref='category', lazy='select')
+	rankitem = relationship('RankItem', backref='category')
 
-	table_id = Column(Integer, ForeignKey('ranktable.id'))
+	ranktable_id = Column(Integer, ForeignKey('iidxrank_ranktable.id'))
 	categoryname = Column('categoryname', String(20))
 
 	@property
@@ -54,19 +54,19 @@ class RankCategory(Base):
 		return song_obj
 
 class RankItem(Base):
-	__tablename__ = 'rankitem'
+	__tablename__ = 'iidxrank_rankitem'
 	id = Column(Integer, primary_key=True, index=True)
-	song_id = Column(Integer, ForeignKey('song.id'))	# this cannot be null & can direct same song
-	category_id = Column(Integer, ForeignKey('rankcategory.id'))
+	song_id = Column(Integer, ForeignKey('iidxrank_song.id'))	# this cannot be null & can direct same song
+	rankcategory_id = Column(Integer, ForeignKey('iidxrank_rankcategory.id'))
 
 	songtype = Column('songtype', String(8))		# dph/spa ...
 	songtitle = Column('songtitle', String(40))
 
 class Song(Base):
-	__tablename__ = 'song'
+	__tablename__ = 'iidxrank_song'
 	__table_args__ = (UniqueConstraint('songid', 'songtype'), )
 	id = Column(Integer, primary_key=True, index=True)
-	playrecord = relationship('PlayRecord', backref='song', lazy='select')
+	playrecord = relationship('PlayRecord', backref='song')
 	rankitem = relationship('RankItem', backref='song', lazy='select')
 
 	songid = Column('songid', Integer)
@@ -80,20 +80,20 @@ class Song(Base):
 	calcweight = Column(Float)
 
 class PlayRecord(Base):
-	__tablename__ = 'playrecord'
+	__tablename__ = 'iidxrank_playrecord'
 	id = Column(Integer, primary_key=True, index=True)
-	player_id = Column(Integer, ForeignKey('player.id'))
-	song_id = Column(Integer, ForeignKey('song.id'))
+	player_id = Column(Integer, ForeignKey('iidxrank_player.id'))
+	song_id = Column(Integer, ForeignKey('iidxrank_song.id'))
 
 	playscore = Column('playscore', Integer)
 	playclear = Column('playclear', Integer)
 	playmiss = Column('playmiss', Integer)
 
 class Player(Base):
-	__tablename__ = 'player'
+	__tablename__ = 'iidxrank_player'
 	id = Column(Integer, primary_key=True, index=True)
 	time = Column('time', DateTime, nullable=False, default=func.now())
-	playrecord = relationship('PlayRecord', backref='player', lazy='select')
+	playrecord = relationship('PlayRecord', backref='player')
 
 	iidxid = Column('iidxid', String(12))
 	iidxmeid = Column('iidxmeid', String(12))
@@ -114,9 +114,12 @@ class Player(Base):
 
 
 def init_db():
+	"""
 	if (not os.path.exists("data.db")):
 		open("data.db", "a").close()	# create empty file
 	engine = create_engine('sqlite:///data.db', convert_unicode=True)
+	"""
+	engine = create_engine('mysql://id:pass@localhost/database?charset=utf8', convert_unicode=True)
 	db_session = scoped_session(sessionmaker(autocommit=False,
 	                                         autoflush=False,
 	                                         bind=engine))
