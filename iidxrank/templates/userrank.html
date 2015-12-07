@@ -10,6 +10,16 @@
 function loadUserlist() {
 	var dataSet = []
 	function processor(row_json, idx) {
+		splevel = row_json.splevel;
+		if (splevel != 0)
+			splevel = "★"+splevel;
+		else
+			splevel = "-";
+		dplevel = row_json.dplevel;
+		if (dplevel != 0)
+			dplevel = "★"+dplevel;
+		else
+			dplevel = "-";
 		dataSet.push([
 			row_json.sprank,
 			row_json.dprank,
@@ -18,8 +28,8 @@ function loadUserlist() {
 			row_json.iidxmeid,
 			row_json.spdan,
 			row_json.dpdan,
-			row_json.splevel,
-			row_json.dplevel
+			splevel,
+			dplevel
 		]);
 	}
 	function onload() {
@@ -27,6 +37,10 @@ function loadUserlist() {
 		$('#list').DataTable({
 			data: dataSet,
 			order: [[ 0, "asc" ]],
+			columnDefs: [
+				{ "type": "diff", "targets": 7 },
+				{ "type": "diff", "targets": 8 }
+			],
 			iDisplayLength: 50,
 			destroy: true
 		});
@@ -35,7 +49,7 @@ function loadUserlist() {
 }
 
 $(function() {
-	$("#tabledata").html("<tr><td class='loading' colspan=7>Loading ...</td></tr>");
+	$("#tabledata").html("<tr><td class='loading' colspan=9>Loading ...</td></tr>");
 	loadUserlist();
 });
 </script>
@@ -51,7 +65,7 @@ $(function() {
 		</div>
 	</div>
 
-	<table id="list" class="hover stripe">
+	<table id="list" class="hover stripe display">
 		<thead>
 			<tr>
 				<th class="small">SP順位</th>

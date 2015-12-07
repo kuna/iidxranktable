@@ -177,11 +177,11 @@ def findRecommend_fast(player, playtype="SP", level=-1):
 			100,	# noplay
 			100,	# fail
 			100,	# assist
-			round(calculatedb.model(-song.calcweight, song.calclevel-1.0, mylevel)*100),	# easy 3
+			round(calculatedb.model(-song.calcweight, song.calclevel-0.6, mylevel)*100),	# easy 3
 			round(calculatedb.model(-song.calcweight, song.calclevel, mylevel)*100),	# groove 4
 			round(calculatedb.model(-song.calcweight, song.calclevel+0.3, mylevel)*100),		# hard 5
 			round(calculatedb.model(-song.calcweight, song.calclevel+1.0, mylevel)*100),	# exh
-			round(calculatedb.model(-song.calcweight, song.calclevel+3, mylevel)*100),	# fc
+			round(calculatedb.model(-song.calcweight, song.calclevel+2.3, mylevel)*100),	# fc
 		]
 		target_clear = 0
 		for i in range(8):

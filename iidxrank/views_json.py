@@ -23,6 +23,8 @@ def createSonginfoFromModel(songs):
 		})
 	return song_array
 
+def getLevel(lv):
+	return round(lv, 2)
 ##############################################################
 
 def json_level(request, type, level):
@@ -39,11 +41,11 @@ def json_user(request):
 		user_array.append({
 			'iidxid': user.iidxid,
 			'iidxmeid': user.iidxmeid_private(),
-			'iidxnick': user.iidxnick_private(),
+			'iidxnick': user.iidxnick,
 			'spdan': iidx.getdanstring(user.spclass),
 			'dpdan': iidx.getdanstring(user.dpclass),
-			'splevel': round(user.splevel, 2),
-			'dplevel': round(user.dplevel, 2),
+			'splevel': getLevel(user.splevel),
+			'dplevel': getLevel(user.dplevel),
 			'sprank': models.Player.objects.filter(splevel__gt=user.splevel).count()+1,
 			'dprank': models.Player.objects.filter(dplevel__gt=user.dplevel).count()+1,
 		})

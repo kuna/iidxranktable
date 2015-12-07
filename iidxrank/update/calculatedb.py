@@ -243,6 +243,8 @@ def main():
 		iterate_song((-0.2, 0.2), 2)
 	"""
 
+	# full iteration
+	"""
 	for i in range(20):
 		print "iteration %d" % i
 		iterate_song((-0.2, 0.2), 3)
@@ -255,6 +257,7 @@ def main():
 			showPlayerStat(True, "playerstat%d.png"%i)
 		if ((i+1)%10 == 0):
 			db_session.commit()
+	"""
 	
 
 	print 'finished. closing DB ...'

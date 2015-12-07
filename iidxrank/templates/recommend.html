@@ -42,7 +42,7 @@ function loadRecommend(user, type, level) {
 			row_json.songtype,
 			row_json.songtitle,
 			row_json.target,
-			row_json.clear,
+			row_json.clear+"%",
 			makeGraph(row_json.clears)
 		]);
 	}
@@ -51,6 +51,12 @@ function loadRecommend(user, type, level) {
 		$('#list').DataTable({
 			data: dataSet,
 			order: [[ 4, "desc" ]],
+			columnDefs: [
+				{ "type": "string", "targets": 5 },
+				{ "type": "diff", "targets": 0 },
+				{ "type": "num-fmt", "targets": 4 },
+				{ "type": "target", "targets": 3 }
+			],
 			iDisplayLength: 50,
 			destroy: true
 		});
@@ -84,7 +90,7 @@ $(function() {
 	</div>
 
 
-	<table id="list" class="hover stripe">
+	<table id="list" class="hover stripe display">
 		<thead>
 			<tr>
 				<th class="small">★</th>

@@ -20,7 +20,7 @@ function loadSonglist(type, lvl) {
 		dataSet.push([
 			type+"★"+row_json.songlevel,
 			row_json.songtitle,
-			row_json.calclevel,
+			"★"+row_json.calclevel,
 			row_json.series,
 			recmd
 		]);
@@ -30,6 +30,11 @@ function loadSonglist(type, lvl) {
 		$('#list').DataTable({
 			data: dataSet,
 			order: [[ 2, "desc" ]],
+			columnDefs: [
+				{ "type": "diff", "targets": 0 },
+				{ "type": "diff", "targets": 2 },
+				{ "type": "series", "targets": 3 }
+			],
 			iDisplayLength: 50,
 			destroy: true
 		});
@@ -60,10 +65,13 @@ $(function() {
 			<a href="#"><button class="btn btn-default" onclick='loadSonglist("DP", 11);'>DP11</button></a>
 			<a href="#"><button class="btn btn-default" onclick='loadSonglist("DP", 10);'>DP10</button></a>
 		</div>
+		<div class="clear">
+			추정치는 10레벨까지 파싱한 것을 기준으로 하여 하드 게이지 기준으로 선형보간된 값입니다.
+		</div>
 	</div>
 
 
-	<table id="list" class="hover stripe">
+	<table id="list" class="hover stripe display">
 		<thead>
 			<tr>
 				<th class="small">★</th>
