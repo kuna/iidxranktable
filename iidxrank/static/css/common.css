@@ -13,7 +13,7 @@ http://mplus.font-face.jp/#/
 
 /* container */
 #container { max-width: 980px; margin:auto; padding:0 20px; }
-#container.fixed { max-width:1080px; width: 1100px; }
+#container.fixed { max-width:1080px; width: 1120px; }
 #container .notice_inner { max-width: 480px; margin: 100px auto 0; }
 #footer { font-size:11px; color:#ccc; text-align: center; width:100%;cursor:default; margin-top: 80px; }
 #menu { margin: 20px 0; }

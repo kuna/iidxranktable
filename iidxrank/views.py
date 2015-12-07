@@ -61,8 +61,9 @@ def rankpage(request, username="!", diff="SP", level=12):
 	# check is argument valid
 	diff = diff.upper()
 	level = level.upper()
-	ranktable = models.RankTable.objects.filter(tablename=diff+level).first()
-	if (ranktable == None):
+	try:
+		ranktable = models.RankTable.objects.get(tablename=diff+level)
+	except:
 		return HttpResponseNotFound('<h1>Invalid table</h1>')
 
 	# load player json data
@@ -77,7 +78,6 @@ def rankpage(request, username="!", diff="SP", level=12):
 	# compile user data to render score
 	userinfo, songdata, pageinfo = rp.compile_data(ranktable, player, models.Song.objects)
 	return render(request, 'rankview.html', {'score': songdata, 'user': userinfo, 'pageinfo': pageinfo})
-	#return HttpResponse('rankpage - %s, %s, %s' % (username, diff, level))
 
 # TODO not implemented, you should run update in shell directly.
 def db_update(request):

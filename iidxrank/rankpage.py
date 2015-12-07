@@ -116,10 +116,10 @@ def addMetadata(musicdata, data, song_query):
 			music['rank'] = iidx.getrank(music['rate'])
 
 			# add song pk id
-			song_obj = song_query.filter(songid=music['data']['id'], songtype=music['data']['diff_detail']).first()
-			if (song_obj):
+			try:
+				song_obj = song_query.get(songid=music['data']['id'], songtype=music['data']['diff_detail'])
 				music['pkid'] = song_obj.id
-			else:
+			except:
 				music['pkid'] = -1
 
 	# 
