@@ -41,7 +41,7 @@ table .loading { color:#999; text-align: center; padding:20px; }
 #container .notice_inner h4.djname { float:left; }
 #container .notice_inner h4.level { float:right; cursor:pointer; cursor:hand; }
 #container .notice_inner h4.level span { display:none; }
-#container .notice_inner h4.level:hover span { display:inline; }
+#container .notice_inner h4.level:hover span { display:block; margin-top:-30px; position:absolute; }
 
 /* about difficulty color */
 .SPA, .DPA { color:#b33; }

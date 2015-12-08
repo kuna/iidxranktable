@@ -62,6 +62,10 @@ $(document).ready(function () {
 	<div class="notice_inner">
 		{% if player %}
 		<div class="row">
+			<center><a href=".."><button class="btn btn-default"><span class="
+glyphicon glyphicon-home"></span></button></a></center>
+		</div>		
+		<div class="row">
 			<div class="userimage" style="text-align:center;"><img src="/iidx/qpro/{{ player.iidxid }}"></div>
 			<h4 class="djname">DJ {{ player.username }}</h4>
 			<h4 class="level" onclick="if (confirm('점수를 갱신하시겠습니까?')) { updateuser('{{ player.userid }}'); }"><span class="label label-default">★{{ player.splevel }} / ★{{ player.dplevel }}</span>★{{ player.spclass }} / ★{{ player.dpclass }}</h4>
