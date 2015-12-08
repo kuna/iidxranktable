@@ -1,5 +1,5 @@
 #-*- coding: utf-8 -*-
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
+from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, render_to_response
@@ -22,7 +22,7 @@ def songcomment(request, ranktablename, songid):
 	ranktable = models.RankTable.objects.filter(tablename=ranktablename).first()
 	song = models.Song.objects.filter(id=songid).first()
 	if (ranktable == None or song == None):
-		return HttpResponseNotFound("invalid id")
+		raise Http404
 
 	# check admin
 	attr = 0
@@ -105,7 +105,7 @@ def board(request, boardid, boardpage=1):
 	# check is valid url
 	board = models.Board.objects.filter(id=boardid).first()
 	if (board == None):
-		return HttpResponseNotFound("invalid id")
+		raise Http404
 
 	# check admin
 	is_admin = request.user.is_superuser

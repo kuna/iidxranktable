@@ -1,5 +1,5 @@
 #-*- coding: utf-8 -*-
-from django.http import HttpResponse, HttpResponseNotFound, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, render_to_response
@@ -42,7 +42,8 @@ def userpage(request, username="!"):
 		userjson_url = "http://json.iidx.me/%s/recent/" % username
 		player = jsondata.loadJSONurl(userjson_url)
 		if (not checkValidPlayer(player)):
-			return HttpResponseNotFound('<h1>Invalid User, or Cannot connect to json.iidx.me</h1>')
+			# invalid user!
+			raise Http404
 
 		# check is db exists
 		try:
@@ -77,7 +78,8 @@ def rankpage(request, username="!", diff="SP", level=12):
 	try:
 		ranktable = models.RankTable.objects.get(tablename=diff+level)
 	except:
-		return HttpResponseNotFound('<h1>Invalid table</h1>')
+		# invalid table!
+		raise Http404
 
 	# load player json data
 	if (username == "!"):
@@ -86,17 +88,12 @@ def rankpage(request, username="!", diff="SP", level=12):
 		userjson_url = "http://json.iidx.me/%s/%s/level/%d/" % (username, ranktable.type.lower(), ranktable.level)
 		player = jsondata.loadJSONurl(userjson_url)
 		if (not checkValidPlayer(player)):
-			return HttpResponseNotFound('<h1>Invalid User, or Cannot connect to json.iidx.me</h1>')
+			# invalid user!
+			raise Http404
 	
 	# compile user data to render score
 	userinfo, songdata, pageinfo = rp.compile_data(ranktable, player, models.Song.objects)
 	return render_to_response('rankview.html', {'score': songdata, 'user': userinfo, 'pageinfo': pageinfo})
-
-# TODO not implemented, you should run update in shell directly.
-def db_update(request):
-	if not request.user.is_superuser:
-		return HttpResponseNotFound('<h1>Forbidden</h1>')
-	return HttpResponse("up-date page.")
 
 def songcomment_all(request, page=1):
 	songcomment_list = models.SongComment.objects.order_by('-time').all()
@@ -105,7 +102,8 @@ def songcomment_all(request, page=1):
 	try:
 		songcomments = paginator.page(page)
 	except:
-		return HttpResponseNotFound("invalid page")
+		# invalid pagenation!
+		raise Http404
 
 	return render_to_response('songcomment_all.html', {"comments": songcomments})
 
@@ -133,6 +131,7 @@ def userrank(request):
 @csrf_exempt
 def imgtl(request):
 	if request.method != "POST":
+		# allow only POST method
 		raise PermissionDenied
 
 	filename = request.POST['name']
