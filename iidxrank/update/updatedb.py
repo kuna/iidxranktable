@@ -66,8 +66,12 @@ def updateDB(data, tablename, tabletitle, level):
 		# make rank item
 		# if already exists then update category only
 		for item in group[1]:
+			if (item[0].find("STARLIGHT") >= 0):
+				print item
+	
+
 			song_tag = item[0] + "," + item[1]
-			rankitem = db.RankItem.query.filter_by(rankcategory=category, info=song_tag)
+			rankitem = db_session.query(db.RankItem).filter_by(rankcategory=category, info=song_tag)
 			if not rankitem.count():
 				###########################################
 				# search song automatically from DB
@@ -80,14 +84,15 @@ def updateDB(data, tablename, tabletitle, level):
 					song = song.one()
 				# check once more, if same song is already exists in ranktable
 				# if it does, then cancel add new one
-				rankitem_query = db.RankItem.query\
+				rankitem_query = db_session.query(db.RankItem)\
 					.join(db.RankItem.rankcategory)\
 					.filter(db.RankCategory.ranktable==table, db.RankItem.song==song)
 				if (rankitem_query.count()):
 					print 'same song already exists in rank table!'
-					print 'just modifying tag...'
+					print 'just modifying tag/category...'
 					rankitem = rankitem_query.one()
 					rankitem.info = song_tag
+					rankitem.rankcategory_id = category.id
 					continue
 				#############################################
 
@@ -97,8 +102,11 @@ def updateDB(data, tablename, tabletitle, level):
 				db_session.add(rankitem)
 				added_data = added_data+1
 			else:
-				rankitem = rankitem.first()
-				rankitem.category = category
+				rankitem = rankitem.one()
+				if (rankitem.song.songtitle.find("STARLIGHT") >= 0):
+					print rankitem.song.songtitle
+					print category.categoryname
+				rankitem.rankcategory_id = category.id
 
 	print "added %d datas" % added_data
 
