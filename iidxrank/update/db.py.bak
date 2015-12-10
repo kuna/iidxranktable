@@ -39,7 +39,7 @@ class RankTable(Base):
 class RankCategory(Base):
 	__tablename__ = 'iidxrank_rankcategory'
 	id = Column(Integer, primary_key=True, index=True)
-	rankitem = relationship('RankItem', backref='category')
+	rankitem = relationship('RankItem', backref='rankcategory')
 
 	ranktable_id = Column(Integer, ForeignKey('iidxrank_ranktable.id'))
 	categoryname = Column('categoryname', String(20))
@@ -59,8 +59,7 @@ class RankItem(Base):
 	song_id = Column(Integer, ForeignKey('iidxrank_song.id'))	# this cannot be null & can direct same song
 	rankcategory_id = Column(Integer, ForeignKey('iidxrank_rankcategory.id'))
 
-	songtype = Column('songtype', String(8))		# dph/spa ...
-	songtitle = Column('songtitle', String(40))
+	info = Column('info', String(400))
 
 class Song(Base):
 	__tablename__ = 'iidxrank_song'

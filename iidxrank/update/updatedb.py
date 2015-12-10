@@ -15,7 +15,9 @@ def update_iidxme():
 					songtype=song['diff'],
 					songid=song['id'],
 					songlevel=song['level'],
-					songnotes=song['notes'])
+					songnotes=song['notes'],
+					calclevel=0,
+					calcweight=0,)
 				db_session.add(song)
 				added_data = added_data+1
 		db_session.commit()
@@ -52,9 +54,9 @@ def updateDB(data, tablename, tabletitle, level):
 	# process rankitems/rankcategories
 	for group in data:
 		# before adding items, get category first
-		category = db.RankCategory.query.filter_by(table_id=table.id, categoryname=group[0])
+		category = db.RankCategory.query.filter_by(ranktable_id=table.id, categoryname=group[0])
 		if (not category.count()):
-			category = db.RankCategory(table_id=table.id, categoryname=group[0])
+			category = db.RankCategory(ranktable_id=table.id, categoryname=group[0])
 			# append category to group
 			table.category.append(category)
 			db_session.add(category)
@@ -78,7 +80,9 @@ def updateDB(data, tablename, tabletitle, level):
 					song = song.one()
 				# check once more, if same song is already exists in ranktable
 				# if it does, then cancel add new one
-				rankitem_query = db.RankItem.query.filter_by(rankcategory__ranktable=table, song=song)
+				rankitem_query = db.RankItem.query\
+					.join(db.RankItem.rankcategory)\
+					.filter(db.RankCategory.ranktable==table, db.RankItem.song==song)
 				if (rankitem_query.count()):
 					print 'same song already exists in rank table!'
 					print 'just modifying tag...'
@@ -87,7 +91,7 @@ def updateDB(data, tablename, tabletitle, level):
 					continue
 				#############################################
 
-				rankitem = db.RankItem(info=song_tag, category_id=category.id)
+				rankitem = db.RankItem(info=song_tag, rankcategory_id=category.id, song_id=song.id)
 				# append item to category
 				category.rankitem.append(rankitem)
 				db_session.add(rankitem)
@@ -95,7 +99,6 @@ def updateDB(data, tablename, tabletitle, level):
 			else:
 				rankitem = rankitem.first()
 				rankitem.category = category
-				rankitem.save()
 
 	print "added %d datas" % added_data
 
@@ -140,10 +143,10 @@ def update_DP():
 		u"Beatmania IIDX DP lv.9 Rank", 9) 
 	updateDB(parser_zasa.parse8(), "DP8", 
 		u"Beatmania IIDX DP lv.8 Rank", 8) 
-	updateDB(parser_zasa.parse7(), "DP7", 
-		u"Beatmania IIDX DP lv.7 Rank", 7) 
-	updateDB(parser_zasa.parse6(), "DP6", 
-		u"Beatmania IIDX DP lv.6 Rank", 6)
+#	updateDB(parser_zasa.parse7(), "DP7", 
+#		u"Beatmania IIDX DP lv.7 Rank", 7) 
+#	updateDB(parser_zasa.parse6(), "DP6", 
+#		u"Beatmania IIDX DP lv.6 Rank", 6)
 
 #
 # suggest similar song object from name/diff
@@ -168,7 +171,8 @@ def smart_suggestion(name, diff, level):
 	#	sug_songs.append()
 
 	while (1):
-		print "cannot find matching one, but some suggestion was found"
+		print "cannot find <%s / %s>" % (name, diff)
+		print "but some suggestion was found"
 		idx = 1
 		print "0. (deleted)"
 		for sug_title in suggestions:
@@ -245,7 +249,7 @@ def main():
 	global db_session
 	db_session = db.init_db()
 
-	update_iidxme()
+	#update_iidxme()
 
 	# this site is depreciated
 	#update_SP()
