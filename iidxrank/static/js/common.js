@@ -13,7 +13,7 @@ setTimeout(function() {
 	$("#message").fadeOut(2000);
 }, 5000);
 
-/* load json */
+/* load json (for datatable) */
 function loadJSON(json_url, processor, onload) {
 	$.getJSON(json_url, function(data) {
 		for (var row in data['songs']) {
@@ -103,4 +103,18 @@ function updateuser(iidxmeid) {
 	$.getJSON("/iidx/update/user/" + iidxmeid, function(data) {
 		alert(data['status']);
 	});
+}
+
+
+/* load json (for admin) */
+function updateSongRank(formobj) {
+	var formData = JSON.stringify($(formobj).serializeArray());
+	$.post("/iidx/update/rank/", $(formobj).serialize())
+		.done(function (data) {
+			alert(data.status
+				+"\naction:" + data.action
+				+"\ncategory to:" + data.rankcategory
+				+"\nsongname:" + data.song);
+			window.location.reload()
+		});
 }

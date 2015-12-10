@@ -15,10 +15,10 @@
 <form role="form" action="/iidx/update/rank/" method="POST" onsubmit="return confirm('continue?');">
 	{% csrf_token %}
 	<div class="form-group">
+		<input type="hidden" name="rankitem_id" value="{{ board.rankinfo.id }}">
+		<input type="hidden" name="song_id" value="{{ board.songinfo.id }}">
 		{% for cate in board.ranktable.rankcategory_set.all %}
 			<label>
-				<input type="hidden" name="rankitem_id" value="{{ board.rankinfo.id }}">
-				<input type="hidden" name="song_id" value="{{ board.songinfo.id }}">
 				<input type="radio" name="category_id" value="{{ cate.id }}"
 				{% if board.rankinfo and cate.id == board.rankinfo.rankcategory.id %}
 				checked
