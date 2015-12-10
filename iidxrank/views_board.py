@@ -26,7 +26,7 @@ def songcomment(request, ranktablename, songid):
 
 	# check admin
 	attr = 0
-	if (request.user.is_superuser):
+	if (request.user.is_staff):
 		attr = 2
 	# return message (mostly error)
 

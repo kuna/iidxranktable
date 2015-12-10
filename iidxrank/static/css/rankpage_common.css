@@ -90,10 +90,11 @@ body { font-family: 'M+ 1c medium', 'Malgun Gothic', NanumBarunGothicOTF,"Helvet
 #title { text-align: center; margin-bottom:40px; }
 
 #user span { font-weight: bold; font-size:13px; }
-#user .name { background-color: #000; margin-right:6px; }
+#user .name { background-color: #000; margin-right:8px; }
 #user .spdan, #user .dpdan { background-color: #eee; opacity:0.5; }
 #user .spdan { border-top-right-radius:0; border-bottom-right-radius:0; }
 #user .dpdan { border-top-left-radius:0; border-bottom-left-radius:0; }
+#user .iidxid { display:block; clear:both;  margin-left:7px; margin-bottom:-1px; }
 .SP.spdan, .DP.dpdan { font-weight: bold; opacity:1 !important; }
 .dan2,
 .dan3,
