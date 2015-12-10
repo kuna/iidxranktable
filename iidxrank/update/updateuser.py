@@ -37,7 +37,7 @@ def update_songs():
 def update_user():
 	add_count = 0
 	for user in parser_iidxme.parse_users():
-		player_query = db.Player.query.filter_by(iidxid=user[2])
+		player_query = db_session.query(db.Player).filter_by(iidxid=user[2])
 		if (player_query.count()):
 			# edit nickname
 			player = player_query.one()
@@ -69,7 +69,7 @@ def update_user_from_data(player, user_info):
 				continue
 			else:
 				song = song.one()
-			playrecord_query = db.PlayRecord.query.filter_by(player_id=player.id, song_id=song.id)
+			playrecord_query = db_session.query(db.PlayRecord).filter_by(player_id=player.id, song_id=song.id)
 			if (playrecord_query.count()):
 				# just update clear
 				pr = playrecord_query.one()
@@ -91,7 +91,7 @@ def update_user_from_data(player, user_info):
 	return add_count
 
 def update_single_user_by_name(iidxmeid):
-	return update_single_user(db.Player.query.filter_by(iidxmeid=iidxmeid).one())
+	return update_single_user(db_session.query(db.Player).filter_by(iidxmeid=iidxmeid).one())
 
 def update_single_user(player):
 	add_count = 0
