@@ -30,11 +30,12 @@ urlpatterns = [
 	# update (NOT WORKING NOW)
 		url(r'^update/', include([
 			url(r'^$', views_update.index),
-			url(r'^status/$', views_update.recentStatus),
-			url(r'^send/$', views_update.sendMessage),
-			url(r'^rank/$', views_update.rankupdate),
+			url(r'^status/$', views_update.status),
+			url(r'^status/json/$', views_update.json_status),
 			url(r'^user/(?P<username>\w+)/$', views_update.json_update_player),
-			url(r'^(?P<update>\w+)/$', views_update.startUpdate),
+			url(r'^user_status/(?P<username>\w+)/$', views_update.json_update_player_status),
+			url(r'^rank/$', views_update.rankupdate),
+			url(r'^(?P<update>\w+)/$', views_update.update),
 		])),
 
 	# comment, board

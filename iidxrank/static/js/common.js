@@ -98,12 +98,32 @@ $(function() {
 	}
 });
 
-/* user update */
-function updateuser(iidxmeid) {
-	$.getJSON("/iidx/update/user/" + iidxmeid, function(data) {
+/* (user) update */
+function update_json(url) {
+	$.getJSON(url, function(data) {
 		alert(data['status']);
 	});
 }
+function updateuser(iidxmeid) {
+	$.getJSON("/iidx/update/user/" + iidxmeid, function(data) {
+		if (data['status'] == "success") {
+			alert('업데이트가 진행중입니다. 잠시만 기다려주세요.');
+			$("#loading_animation").show();
+			setInterval(function () {
+				$.getJSON("/iidx/update/user_status/" + iidxmeid, function (data) {
+					if (!data.updating) {
+						alert("업데이트 완료");
+						$("#loading_animation").hide();
+						window.location.reload();
+					}
+				});
+			}, 2000);
+		} else {
+			alert(data['status']);
+		}
+	});
+}
+
 
 
 /* load json (for admin) */

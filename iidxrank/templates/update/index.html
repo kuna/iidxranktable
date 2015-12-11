@@ -1,0 +1,28 @@
+{% extends "update/common.html" %}
+{% block head %}
+<script language="javascript">
+function conf_update(e, obj) {
+	if (confirm("정말로 계속하시겠습니까?")) {
+		update_json($(this).attr('href'));
+	}
+	e.preventDefault();
+	return false;
+}
+$(function () {
+	$('#list .warning').click(conf_update);
+});
+</script>
+{% endblock %}
+{% block body %}
+	<ol id='list'>
+		<li><a href="./status">See status ...</a></li>
+		<li><a class="warning" href="./song">update songlist</a></li>
+		<li><a class="warning" href="./dp">update zasa (경고: 이 작업은 콘솔에서 하길 강력권고합니다)</a></li>
+		<li><b>아래 작업들은 시스템에 과부하를 줄 수 있으니 신중히 선택 요합니다.</b></li>
+		<li><a class="warning" href="./player" onclick="return conf_update();">update all player status</a></li>
+		<li><a class="warning" href="./playrecord" onclick="return conf_update();">update all playrecord</a></li>
+		<li><a class="warning" href="./calculateMCMC" onclick="return conf_update();">update all score (calculate)</a></li>
+		<li><a class="warning" href="./calculatesongrough" onclick="return conf_update();">update song score (rough)</a></li>
+		<li><a class="warning" href="./calculatesongdetail" onclick="return conf_update();">update song score (Detailed)</a></li>
+	</ol>
+{% endblock %}

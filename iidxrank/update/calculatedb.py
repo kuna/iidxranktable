@@ -7,6 +7,7 @@ import math
 from random import random as rand
 import random
 from sqlalchemy import text
+import log
 
 def norm(x, std):
 	return 1/(math.sqrt(
@@ -18,6 +19,7 @@ def rnorm(std):
 
 def randomTest(p):
 	return p<=rand()
+
 
 ############################################################
 # show us a little graph
@@ -56,15 +58,7 @@ def showPlayerStat(onlysave=True, fname="playerstat.png"):
 # using model (from walkure)
 def model(a, b, x):
 	return 1/(1+math.exp(a*(x-b)))
-	"""
-	try:
-		return 1/(1+math.exp(-a*(x-b)))
-	except Exception, e:
-		print 'error occured - press any key'
-		print (a, b, x)
-		input()
-		return 1
-	"""
+
 # make score per clear status
 def clearScore(playclear):
 	if (playclear <= 2):	# under assist: score failed
@@ -104,7 +98,7 @@ def iterate_song(_range=(-0.5, 0.5), iterate_time=5):
 	error_sum = 0
 	for song in songs:
 		if (i%10==0):
-			print "%d/%d" % (i, len(songs))
+			log.Print("%d/%d" % (i, len(songs)))
 		i+=1
 
 		# smaller score is better
@@ -168,9 +162,9 @@ def calculate_player(player, _range=(-0.5, 0.5), iterate_time=20):
 def calculate_player_by_name(iidxmeid, _range=(-0.5, 0.5), iterate_time=15):
 	player = db.Player.query.filter_by(iidxmeid=iidxmeid).one()
 	# in case of this player hadn't played any(or big difference), initalize it
-	print 'initalize player level ...'
+	log.Print('initalize player level ...')
 	calculate_player(player, (0, 12), 10)
-	print 'detailing player level ...'
+	log.Print('detailing player level ...')
 	return calculate_player(player, _range, iterate_time)
 
 def iterate_player(_range=(-0.5, 0.5), iterate_time=5):
@@ -179,7 +173,7 @@ def iterate_player(_range=(-0.5, 0.5), iterate_time=5):
 	error_sum = 0
 	for player in players:
 		if (i%10==0):
-			print "%d/%d" % (i, len(players))
+			log.Print("%d/%d" % (i, len(players)))
 		i+=1
 
 		error_sum += calculate_player(player, _range, iterate_time)
@@ -188,6 +182,7 @@ def iterate_player(_range=(-0.5, 0.5), iterate_time=5):
 
 def initDB():
 	# set inital values for calculation (song)
+	log.Print('initalize ...')
 	for song in db.Song.query.all():
 		pclear = []
 		for precord in song.playrecord:
@@ -231,47 +226,62 @@ def initDB():
 #
 ###########################################
 
+def calc_player_rough():
+	log.Print("playerlevel_stabilizing_rough")
+	for i in range(1):
+		log.Print("iteration %d" % i)
+		iterate_player((-14, 14), 40)
+
+def calc_song_rough():
+	log.Print("songlevel_stabilizing_rough")
+	for i in range(1):
+		log.Print("iteration %d" % i)
+		iterate_song((-14, 14), 40)
+
+def calc_player_stable():
+	log.Print("playerlevel_stabilizing")
+	for i in range(50):
+		log.Print("iteration %d" % i)
+		iterate_player((-0.2, 0.2), 2)
+
+def calc_song_stable():
+	log.Print("songlevel_stabilizing")
+	for i in range(50):
+		log.Print("iteration %d" % i)
+		iterate_song((-0.2, 0.2), 2)
+
+def calc_MCMC():
+	for i in range(20):
+		log.Print("iteration %d" % i)
+		iterate_song((-0.2, 0.2), 3)
+		iterate_player((-0.2, 0.2), 3)
+		if (True):
+			log.Print('song')
+			#showSongStat("SP", True, "songstatSP%d.png"%i)
+			#showSongStat("DP", True, "songstatDP%d.png"%i)
+			log.Print('player')
+			showPlayerStat(True, "playerstat%d.png"%i)
+		if ((i+1)%10 == 0):
+			db_session.commit()
+
 def main():
-	print 'opening DB ...'
+	log.Print('opening DB ...')
 	global db_session
 	db_session = db.init_db()
 
 	# you may comment this initing process if it's bad
-	#print 'initalize'
 	#initDB()
 
 	# make player stable
-	"""
-	for i in range(100):
-		print "iteration %d" % i
-		iterate_player((-0.2, 0.2), 2)
-	"""
+	#calc_player_stable()
 
 	# make song stable
-	"""
-	for i in range(100):
-		print "iteration %d" % i
-		iterate_song((-0.2, 0.2), 2)
-	"""
+	#calc_song_stable()
 
 	# full iteration
-	"""
-	for i in range(20):
-		print "iteration %d" % i
-		iterate_song((-0.2, 0.2), 3)
-		iterate_player((-0.2, 0.2), 3)
-		if (True):
-			print 'song'
-			#showSongStat("SP", True, "songstatSP%d.png"%i)
-			#showSongStat("DP", True, "songstatDP%d.png"%i)
-			print 'player'
-			showPlayerStat(True, "playerstat%d.png"%i)
-		if ((i+1)%10 == 0):
-			db_session.commit()
-	"""
-	
+	calc_MCMC()
 
-	print 'finished. closing DB ...'
+	log.Print('finished. closing DB ...')
 	db_session.commit()
 	db_session.remove()
 
@@ -279,11 +289,3 @@ def main():
 if __name__=="__main__":
 	main()
 
-#
-# 사실 정확하게 구하려면 매번 해당 난이도보다 잘 깬 곡과 못 깬 곡을 일일이 구하는 게 맞지만
-# 그렇게 20만개의 play query를 매번 query하기에는 너무나도 computation cost가 많이 듭니다.
-# 그래서 우리는 일종의 'model'이라는 것을 사용하고, 이에 대한 것은 위에 잘 나와있습니다.
-# 이 model은 20만개의 play data를 매번 query하지 않아도 유효한 결과를 얻을 수 있도록 도와줍니다. (일종의 대변하는 역할)
-# 어떤 역할이냐면 우리가 기대하는 형태의 play clear status를 미리 만들어주는 역할을 합니다. 현재 데이터가 이것에 적합하면 그 status로 옮겨가는 것입니다.
-# 이를 통해 우리는 더 잘하는 곡을 매번 query하지 않아도 대략 어느 수준의 곡이 더 잘할 것인지 예측할 수 있게 됩니다.
-# 

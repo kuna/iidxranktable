@@ -7,9 +7,11 @@ import math
 import parser_iidxme
 import time
 from datetime import datetime
+import log
 
 # crolling user's information
 def update_songs():
+	log.Print('updating songs')
 	def update(data):
 		added_data = 0
 		for song in data:
@@ -21,15 +23,15 @@ def update_songs():
 					songnotes=song['notes'])
 				db_session.add(song)
 				added_data = added_data+1
-		print "added %d datas" % added_data
+		log.Print("added %d datas" % added_data)
 
 	for lvl in range(8, 13):
-		print 'parsing iidxme sp (%d)' % lvl
+		log.Print('parsing iidxme sp (%d)' % lvl)
 		data = parser_iidxme.parse_songs(lvl, "sp")
 		update(data)
 
 	for lvl in range(8, 13):
-		print 'parsing iidxme dp (%d)' % lvl
+		log.Print('parsing iidxme dp (%d)' % lvl)
 		data = parser_iidxme.parse_songs(lvl, "dp")
 		update(data)
 
@@ -57,7 +59,7 @@ def update_user():
 			db_session.add(player)
 			add_count += 1
 	db_session.commit()
-	print 'added %d items' % add_count
+	log.Print('added %d items' % add_count)
 
 def update_user_from_data(player, user_info):
 	add_count = 0
@@ -103,7 +105,7 @@ def update_single_user(player):
 	for mode in ("sp", "dp"):
 		for i in range(8, 13):
 			try:
-				print 'updating user %s (%s) - (%s, %d) ...' % (player.iidxmeid, player.iidxnick, mode, i)
+				log.Print('updating user %s (%s) - (%s, %d) ...' % (player.iidxmeid, player.iidxnick, mode, i))
 				user_info = parser_iidxme.parse_user(player.iidxmeid, mode, i)
 				sppoint = user_info['userdata']['sppoint']
 				dppoint = user_info['userdata']['dppoint']
@@ -112,10 +114,10 @@ def update_single_user(player):
 				add_count += update_user_from_data(player, user_info)
 				time.sleep(0.5)		# to avoid suspend as traffic abusing
 			except (KeyboardInterrupt, SystemExit):
-				print 'bye'
+				log.Print('bye')
 				exit()
 			except:
-				print 'error during parsing. ignore error and continue'
+				log.Print('error during parsing. ignore error and continue')
 	player.sppoint = sppoint
 	player.dppoint = dppoint
 	player.spclass = spclass
@@ -125,32 +127,25 @@ def update_single_user(player):
 	return add_count
 
 def update_user_information():
+	log.Print('crolling user information ...')
 	add_count = 0
 	for player in db.Player.query.all():
 		add_count += update_single_user(player)
-		print 'added %d playrecord' % add_count
+		log.Print('added %d playrecord' % add_count)
 		db_session.commit()
 
 def main():
-	print 'opening DB ...'
+	log.Print('opening DB ...')
 	global db_session
 	db_session = db.init_db()
 
-	"""
-	print 'remove all player & playdata'
-	db.Player.query.delete()
-	db.PlayRecord.query.delete()
+	#update_songs()
 
-	print 'updating songs'
-	update_songs()
-
-	print 'crolling user list ...'
 	update_user()
-	"""
-	print 'crolling user information ...'
+
 	update_user_information()
 
-	print 'finished. closing DB ...'
+	log.Print('finished. closing DB ...')
 	db_session.commit()
 	db_session.remove()
 

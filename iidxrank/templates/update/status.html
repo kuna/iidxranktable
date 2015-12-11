@@ -1,0 +1,22 @@
+{% extends "update/common.html" %}
+{% block head %}
+	<script language="javascript">
+	$(function() {
+		function updateLogs() {
+			$.getJSON("../status/json/", function (data) {
+				$("#status").empty();
+				for (var idx in data.logs) {
+					html = "<li>" + data.logs[idx] + "</li>";
+					$("#status").append(html);
+				}
+			});
+		}
+		setInterval(updateLogs, 2000);
+	});
+	</script>
+{% endblock %}
+{% block body %}
+	<a href="..">return ...</a><br>
+	<ul id="status">
+	</ul>
+{% endblock %}

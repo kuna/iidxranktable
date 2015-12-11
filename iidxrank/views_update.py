@@ -2,36 +2,88 @@
 import thread
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, render_to_response
 import models
-from update import updatedb
 
 # for update
+from update import updatedb
 from update import updateuser
 from update import calculatedb
 from update import db
+from update import log
 
 def checkAdmin(request):
 	if not request.user.is_superuser:
 		raise PermissionDenied
 
+def checkStaff(request):
+	if not request.user.is_staff:
+		raise PermissionDenied
+
+############################################
+
 def index(request):
 	checkAdmin(request)
-	return render(request, 'update.html')
+	return render_to_response('update/index.html')
 
-def recentStatus(request):
-	checkAdmin(request)
-	lines = updatedb.getRecentMsgs()
-	return JsonResponse({'messages': lines})
+def status(request):
+	checkStaff(request)
+	return render_to_response('update/status.html')
+def json_status(request):
+	checkStaff(request)
+	return JsonResponse({'status': 'success', 'logs': log.getLogs()})
 
-def sendMessage(request, message):
-	checkAdmin(request)
-	updatedb.sendMessage(message)
+###### generic updater (for staff)  ########
+updating = False
+def update_worker(func):
+	global updating
+	updating = True
+	try:
+		log.Print('initalize DB...')
+		db_session = db.init_db()
+		updatedb.set_session(db_session)
+		func()
+		log.Print('finished. committing...')
+		db_session.commit()
+		db_session.remove()
+	except Exception, e:
+		import traceback
+		log.Print(e)
+		line = traceback.format_exc()
+		log.Print(line)
+	updating = False
+def update(request, update):
+	checkStaff(request)
+	global updating
+	if (updating):
+		return JsonResponse({'status': '이미 업데이트 중입니다'})
+
+	func = None
+	if (update == 'song'):
+		func = updatedb.update_iidxme
+	elif (update == 'dp'):
+		func = updatedb.update_DP
+	elif (update == 'player'):
+		func = updateuser.update_user
+	elif (update == 'playrecord'):
+		func = updateuser.update_user_information
+	elif (update == 'calculateMCMC'):
+		func = calculatedb.calc_MCMC
+	elif (update == 'calculatesongrough'):
+		func = calculatedb.calc_song_rough
+	elif (update == 'calculatesongdetail'):
+		func = calculatedb.calc_song_stable
+
+	if (func == None):
+		return JsonResponse({'status': '유효하지 않은 명령입니다'})
+	else:
+		log.Print("work: %s" % update)
+		thread.start_new_thread(update_worker, (func,))
 	return JsonResponse({'status': 'success'})
 
-# argument: category_id, song_id
+###### called when staff updates rankpage ######
 def rankupdate(request):
-	checkAdmin(request)
+	checkStaff(request)
 
 	# get argument
 	category_id = request.POST["category_id"]
@@ -62,32 +114,27 @@ def rankupdate(request):
 
 	return JsonResponse({'status': 'success', 'action': action, 'song': song.songtitle, 'rankcategory': rankcategory.categoryname})
 
-# returns JSON
-def startUpdate(request, update):
-	checkAdmin(request)
-	if (update == ""):
-		updatedb.dosomething;
-		return JsonResponse({'status': 'success'})
-	else:
-		return JsonResponse({'status': 'invalid action'})
-
-
 ############################################
 # user update
 #
 updating_user = False
+updating_username = ""
 def update_player_worker(iidxmeid):
 	global updating_user
 	updating_user = True
+	updating_username = iidxmeid
+	log.Print('initalize DB...')
 	db_session = db.init_db()
 
 	updateuser.update_single_user_by_name(iidxmeid)
 	calculatedb.calculate_player_by_name(iidxmeid)
 
+	log.Print('committing...')
 	db_session.commit()
 	db_session.remove()
-	print 'finished %s' % iidxmeid
+	log.Print('finished %s' % iidxmeid)
 	updating_user = False
+	updating_username = ""
 
 def json_update_player(request, username):
 	try:
@@ -95,7 +142,7 @@ def json_update_player(request, username):
 		if (not player.isRefreshable()):
 			return JsonResponse({'status': '업데이트는 24시간마다 가능합니다'})
 		else:
-			if (updating_user):
+			if (updating_user or updating):
 				return JsonResponse({'status': '현재 서버가 바쁩니다. 잠시 후에 시도해 주세요.'})
 
 			# make a new thread (worker)
@@ -107,3 +154,6 @@ def json_update_player(request, username):
 		print e
 		traceback.print_exc(file= sys.stdout)
 		return JsonResponse({'status': 'not existing user'})
+
+def json_update_player_status(request, username):
+	return JsonResponse({'status': 'success', 'updating': (updating_username == username)})
