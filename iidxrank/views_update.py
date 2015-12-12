@@ -126,6 +126,7 @@ def update_player_worker(iidxmeid):
 	log.Print('initalize DB...')
 	db_session = db.init_db()
 
+	calculatedb.set_session(db_session)
 	updateuser.update_single_user_by_name(iidxmeid)
 	calculatedb.calculate_player_by_name(iidxmeid)
 

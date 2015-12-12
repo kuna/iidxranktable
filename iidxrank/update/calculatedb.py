@@ -9,6 +9,9 @@ import random
 from sqlalchemy import text
 import log
 
+diffs = ['easy', 'normal', 'hd', 'exh']
+diffs_num = {'easy':3, 'normal':4, 'hd':5, 'exh':6}
+
 def norm(x, std):
 	return 1/(math.sqrt(
 		2*math.pi)*std)*math.exp(
@@ -60,31 +63,47 @@ def model(a, b, x):
 	return 1/(1+math.exp(a*(x-b)))
 
 # make score per clear status
-def clearScore(playclear):
-	if (playclear <= 2):	# under assist: score failed
-		return 0
-	elif (playclear == 3):	# easy clear
-		return 0.1
-	elif (playclear == 4):	# groove clear
-		return 0.2
-	elif (playclear == 5):	# hard
-		return 0.9
-	elif (playclear == 6):	# exh
-		return 0.95
-	elif (playclear == 7):	# fc
-		return 1
+# (used for player)
+def clearScore(playclear, type=None):
+	def getScoreValue(clear_goal):
+		if (playclear < clear_goal):
+			return 0
+		else:
+			return 1
+	# nonetype -> for player estimate
+	if (type == None):
+		if (playclear <= 2):	# under assist: score failed
+			return 0
+		elif (playclear == 3):	# easy clear
+			return 0.3
+		elif (playclear == 4):	# groove clear
+			return 0.4
+		elif (playclear == 5):	# hard
+			return 0.6
+		elif (playclear == 6):	# exh
+			return 0.9
+		elif (playclear == 7):	# fc
+			return 1
+	else:
+		if (type in diffs_num):
+			return getScoreValue(diffs_num[type])
+		else:
+			raise Exception("unsupported type of difficulty")
 
 ############################################################
 # update every user/song level
 # using MCMC algorithm
-def iterate_song(_range=(-0.5, 0.5), iterate_time=5):
+def iterate_song(_range=(-0.5, 0.5), iterate_time=5, diff="hd"):
+	calclevel_diff = "calclevel_" + diff
+	calcweight_diff = "calcweight_" + diff
+
 	# get clearrate of users whose level is enough
 	def getScore(song, level, weight):
 		cul = 0
 		for precord in song.playrecord:
 			if (precord.playclear == 0):	# ignore noclear
 				continue
-			v = clearScore(precord.playclear)
+			v = clearScore(precord.playclear, diff)
 			player_level = 0
 			if (song.songtype[:2] == "SP"):
 				player_level = precord.player.splevel
@@ -94,35 +113,55 @@ def iterate_song(_range=(-0.5, 0.5), iterate_time=5):
 		return cul
 
 	i = 0
-	songs = db.Song.query.all()
+	songs = db_session.query(db.Song).all()
 	error_sum = 0
 	for song in songs:
 		if (i%10==0):
 			log.Print("%d/%d" % (i, len(songs)))
 		i+=1
 
+		# if song has no playrecord
+		# then ignore
+		if (len(song.playrecord) == 0):
+			setattr(song, calclevel_diff, 0)
+			continue
+
 		# smaller score is better
 		# random walk for 5 times (for level)
-		lvls = [song.calclevel,]
-		scores = [getScore(song, lvls[0], song.calcweight),]
+		cur_lv = getattr(song, calclevel_diff)
+		cur_weight = getattr(song, calcweight_diff)
+		if (cur_lv>20):
+			cur_lv = 20
+			cur_weight = 10
+		elif(cur_lv<0):
+			cur_lv = 0
+			cur_weight = 10
+		lvls = [cur_lv,]
+		scores = [getScore(song, lvls[0], cur_weight),]
 		for t in range(iterate_time):
-			new_level = song.calclevel + random.uniform(_range[0], _range[1])
+			new_level = cur_lv + random.uniform(_range[0], _range[1])
+			if (new_level < 0):
+				new_level = 0
+			elif (new_level > 20):
+				new_level = 20
 			lvls.append(new_level)
-			scores.append(getScore(song, new_level, song.calcweight))
-		song.calclevel = lvls[scores.index(min(scores))]
+			scores.append(getScore(song, new_level, cur_weight))
+		setattr(song, calclevel_diff, lvls[scores.index(min(scores))])
 
 		# random walk for 5 times (for weight)
-		lvls = [song.calcweight,]
-		scores = [getScore(song, song.calclevel, lvls[0]),]
+		cur_lv = getattr(song, calclevel_diff)
+		lvls = [cur_weight,]
+		scores = [getScore(song, cur_lv, lvls[0]),]
 		for t in range(iterate_time):
-			new_weight = song.calcweight + random.uniform(_range[0], _range[1])*0.1*song.calcweight
+			new_weight = cur_weight + random.uniform(_range[0], _range[1])*0.1*cur_weight
 			if (new_weight > 20):
 				new_weight = 20
 			elif (new_weight < 0.5):
 				new_weight = 0.5
 			lvls.append(new_weight)
-			scores.append(getScore(song, song.calclevel, new_weight))
-		song.calcweight = lvls[scores.index(min(scores))]
+			scores.append(getScore(song, cur_lv, new_weight))
+		setattr(song, calcweight_diff, lvls[scores.index(min(scores))])
+
 		error_sum += min(scores)
 	return error_sum
 
@@ -135,9 +174,11 @@ def calculate_player(player, _range=(-0.5, 0.5), iterate_time=20):
 			if (precord.playclear == 0):	# ignore noclear
 				continue
 
-			# get current clear state
-			v = clearScore(precord.playclear)
-			cul += abs(v - model(5, level, precord.song.calclevel))	# weight is 5, maybe
+			# get current clear state (just easy, normal, hd!)
+			for diff in ["easy", "normal", "hd"]:
+				calclevel = getattr(precord.song, 'calclevel_'+diff)
+				v = clearScore(precord.playclear, diff)
+				cul += abs(v - model(5, level, calclevel))	# weight is 5, maybe
 		return cul
 
 	# random walk for 10 times
@@ -169,7 +210,7 @@ def calculate_player_by_name(iidxmeid, _range=(-0.5, 0.5), iterate_time=15):
 
 def iterate_player(_range=(-0.5, 0.5), iterate_time=5):
 	i = 0
-	players = db.Player.query.all()
+	players = db_session.query(db.Player).all()
 	error_sum = 0
 	for player in players:
 		if (i%10==0):
@@ -179,18 +220,29 @@ def iterate_player(_range=(-0.5, 0.5), iterate_time=5):
 		error_sum += calculate_player(player, _range, iterate_time)
 	return error_sum
 
+######################################
+# initalize DB with zero value
+def initDB_Zero():
+	log.Print('initalizing to Zero ...')
+	for song in db_session.query(db.Song).all():
+		for d in diffs:
+			setattr(song, "calclevel_"+d, 0)
+			setattr(song, "calcweight_"+d, 0)
 
+######################################
+# initalize DB 
 def initDB():
 	# set inital values for calculation (song)
 	log.Print('initalize ...')
-	for song in db.Song.query.all():
+	for song in db_session.query(db.Song).all():
 		pclear = []
 		for precord in song.playrecord:
 			pclear.append(precord.playclear)
 		# if no score data, then songlevel is 0 (unknown)
 		if (len(pclear) == 0):
-			song.calclevel = 0
-			song.calcweight = 10
+			for diff in diffs:
+				setattr(song, 'calclevel_'+diff, 0)
+				setattr(song, 'calcweight_'+diff, 10)
 			continue
 
 		# 1. check average clear score
@@ -206,12 +258,13 @@ def initDB():
 				break
 			i += 1
 		# gather all the information
-		song.calclevel = song.songlevel + float(i)/len(pclear) + 1-pclear_score_avg
-		song.calcweight = 10.0		# default is 10
+		for diff in diffs:
+			setattr(song, 'calclevel_'+diff, song.songlevel + float(i)/len(pclear) + 1-pclear_score_avg)
+			setattr(song, 'calcweight_'+diff, 10)	# default is 10
 
 	# set inital values for calculation (player)
 	# do MCMC like method to estimate player (wide range)
-	for player in db.Player.query.all():
+	for player in db_session.query(db.Player).all():
 		player.splevel = 0	# init
 		player.dplevel = 0	# init
 	iterate_player((0, 13), 100)
@@ -226,35 +279,48 @@ def initDB():
 #
 ###########################################
 
+def set_session(s):
+	global db_session
+	db_session = s
+
 def calc_player_rough():
 	log.Print("playerlevel_stabilizing_rough")
 	for i in range(1):
 		log.Print("iteration %d" % i)
 		iterate_player((-14, 14), 40)
 
-def calc_song_rough():
+def calc_song_rough(d=None):
 	log.Print("songlevel_stabilizing_rough")
 	for i in range(1):
 		log.Print("iteration %d" % i)
-		iterate_song((-14, 14), 40)
+		if (d == None):
+			d = diffs
+		for diff in d:
+			print diff
+			iterate_song((-4, 4), 10, diff)
 
 def calc_player_stable():
 	log.Print("playerlevel_stabilizing")
-	for i in range(50):
+	for i in range(30):
 		log.Print("iteration %d" % i)
 		iterate_player((-0.2, 0.2), 2)
 
-def calc_song_stable():
+def calc_song_stable(d=None):
 	log.Print("songlevel_stabilizing")
-	for i in range(50):
+	for i in range(10):
 		log.Print("iteration %d" % i)
-		iterate_song((-0.2, 0.2), 2)
+		if (d == None):
+			d = diffs
+		for diff in d:
+			print diff
+			iterate_song((-0.5, 0.5), 2, diff)
 
 def calc_MCMC():
 	for i in range(20):
 		log.Print("iteration %d" % i)
-		iterate_song((-0.2, 0.2), 3)
-		iterate_player((-0.2, 0.2), 3)
+		for diff in diffs:
+			iterate_song((-0.5, 0.5), 3, diff)
+		iterate_player((-0.5, 0.5), 3)
 		if (True):
 			log.Print('song')
 			#showSongStat("SP", True, "songstatSP%d.png"%i)
@@ -276,6 +342,7 @@ def main():
 	#calc_player_stable()
 
 	# make song stable
+	#calc_song_rough()
 	#calc_song_stable()
 
 	# full iteration

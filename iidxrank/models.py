@@ -14,13 +14,18 @@ class Song(models.Model):
 	songnotes = models.IntegerField(default=0)
 	version = models.CharField(max_length=20)
 
-	# TODO: add iidx song series & english name
-	#series = models.IntegerField(default=0)
+	# TODO: add iidx song english name
 	#songtitle_eng = models.CharField(max_length=100)
 
 	# for calculating MCMC ..?
-	calclevel = models.FloatField(default=0)
-	calcweight = models.FloatField(default=0)
+	calclevel_easy = models.FloatField(default=0)
+	calcweight_easy = models.FloatField(default=0)
+	calclevel_normal = models.FloatField(default=0)
+	calcweight_normal = models.FloatField(default=0)
+	calclevel_hd = models.FloatField(default=0)
+	calcweight_hd = models.FloatField(default=0)
+	calclevel_exh = models.FloatField(default=0)
+	calcweight_exh = models.FloatField(default=0)
 
 	def __unicode__(self):
 		return self.songtitle + "/" + str(self.songlevel) + "/" + self.songtype

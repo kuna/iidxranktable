@@ -17,6 +17,7 @@ def update_iidxme():
 					songid=song['id'],
 					songlevel=song['level'],
 					songnotes=song['notes'],
+					version=song['version'],
 					calclevel=0,
 					calcweight=0,)
 				db_session.add(song)
