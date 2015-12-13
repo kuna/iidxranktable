@@ -70,9 +70,16 @@ class RankTable(models.Model):
 	time = models.DateTimeField(default=now)		# db updated time
 	tablename = models.CharField(max_length=100)
 	tabletitle = models.CharField(max_length=100)
+	tabletitlehtml = models.CharField(max_length=200)
 	level = models.IntegerField(default=0)
 	type = models.CharField(max_length=100)
 	copyright = models.CharField(max_length=100)
+
+	def getTitleHTML(self):
+		if (self.tabletitlehtml == ""):
+			return self.tabletitle
+		else:
+			return self.tabletitlehtml
 
 	def __unicode__(self):
 		return self.tabletitle

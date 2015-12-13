@@ -47,12 +47,7 @@ def compile_data(ranktable, player, song_query):
 	# make information for return
 	pageinfo = {
 		'title': ranktable.tabletitle,
-		'titlehtml': ranktable.tabletitle\
-			.replace('SP', '<span style="color:red;">SP</span>')\
-			.replace('DP', '<span style="color:#0099FF;">DP</span>')\
-			.replace('Hard', '<span style="color:red;">Hard</span>')\
-
-			.replace('Normal', '<span style="color:#0099FF;">Normal</span>'),
+		'titlehtml': ranktable.getTitleHTML(),
 		'tablename': ranktable.tablename,
 		'type': ranktable.type,
 		'clearinfo': clearcount,
