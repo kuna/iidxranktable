@@ -6,8 +6,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 import os
 
-Base = declarative_base()
-
 class RankTable(Base):
 	__tablename__ = 'iidxrank_ranktable'
 	id = Column(Integer, primary_key=True, index=True)
@@ -118,17 +116,34 @@ class Player(Base):
 		return False
 
 
-# TODO edit this - to automatically initalize DB
-def init_db():
-	"""
-	if (not os.path.exists("data.db")):
-		open("data.db", "a").close()	# create empty file
-	engine = create_engine('sqlite:///data.db', convert_unicode=True)
-	"""
-	engine = create_engine('mysql://id:pass@localhost/database?charset=utf8', convert_unicode=True)
-	db_session = scoped_session(sessionmaker(autocommit=False,
-	                                         autoflush=False,
-	                                         bind=engine))
-	Base.query = db_session.query_property()
-	Base.metadata.create_all(bind=engine)
+Base = declarative_base()
+
+"""
+if (not os.path.exists("data.db")):
+	open("data.db", "a").close()	# create empty file
+engine = create_engine('sqlite:///data.db', convert_unicode=True)
+"""
+engine = create_engine('mysql://id:pass@localhost/database?charset=utf8', convert_unicode=True)
+db_session = scoped_session(sessionmaker(autocommit=False,
+                                         autoflush=False,
+                                         bind=engine))
+
+Base.query = db_session.query_property()
+
+# get db_session
+def get_session():
 	return db_session
+
+# do commit
+def commit():
+	db_session.commit()
+
+# do commit
+# you may don't need to use this
+def remove():
+	db_session.remove()
+
+# you shouldn't call it here - call it in django (migrate)
+def init_db():
+	raise Exception("Don't call this here!")
+	Base.metadata.create_all(bind=engine)

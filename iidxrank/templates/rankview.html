@@ -26,8 +26,10 @@ var rankpage_style_idx = 0;
 $(document).ready(function () {
 	$('#change_rank_css').click(function () {
 		rankpage_style_idx = (rankpage_style_idx + 1) % rankpage_style_arr.length;
-		$("#rankpage_style").attr("href", rankpage_style_arr[rankpage_style_idx]);
+		$('#rankpage_style').attr("href", rankpage_style_arr[rankpage_style_idx]);
+		$('#change_rank_css').text('Skin ' + (rankpage_style_idx+1) + '/' + rankpage_style_arr.length);
 	});
+	$('#change_rank_css').text('Skin 1/' + rankpage_style_arr.length);
 	$('#show_rank').click(function () {
 		$('.rank').show();
 	});
@@ -130,7 +132,12 @@ $(document).ready(function () {
 //
 $(window).load(function () {
 	$(".songlist .name").each(function (e) {
-		var canvas = new ranklist(150, 20, $(this).text(), "#000000", "14px");
+		clr = "#000000"
+		if ($(this).attr("data-series") == "23") {
+			// text color is different if it's current series
+			clr = "#cc66cc"
+		}
+		var canvas = new ranklist(150, 20, $(this).text(), clr, "14px");
 		$(this).empty();
 		$(this).append($(canvas.makeCanvas()));
 	});
@@ -196,7 +203,7 @@ $(window).load(function () {
 							target="_blank">
 							<li class="diff{{ song.data.diff }}" 
 								data-clear="{{ song.clear }}" data-rate="{{ song.rate }}">
-								<span class="name">{{ song.data.title }}</span>
+								<span class="name" data-series="{{ song.data.version }}">{{ song.data.title }}</span>
 								<div class="lamp_clear {{ song.clearstring }}"></div>
 								<div class="rank {{ song.rank }}"></div>
 							</li>
