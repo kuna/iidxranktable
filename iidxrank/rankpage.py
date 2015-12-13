@@ -93,6 +93,7 @@ def addMetadata(musicdata, data, song_query):
 					'diff': song.songtype[-1:],
 					'title': song.songtitle,
 					'id': song.songid,
+					'version': song.version,
 				},
 			}
 			musicdata.append(music)

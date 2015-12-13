@@ -11,8 +11,8 @@ function loadSonglist(type, lvl) {
 	var dataSet = []
 	function processor(row_json, idx) {
 		var recmd = "";
-		calcweight = (row_json.calcweight_easy + row_json.calcweight_normal + row_json.calcweight_hd + row_json.calcweight_exh)/4;
-		if (calcweight < 7) {			// don't recommend
+		calcweight = (row_json.calcweight_easy)/1;
+		if (calcweight < 5.5) {			// don't recommend
 			recmd= "△"
 		} else if (calcweight > 13) {	// recommend
 			recmd= "⊙"
