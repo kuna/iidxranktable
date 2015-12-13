@@ -7,6 +7,12 @@ import db		# you might need sqlalchemy
 from django.db import transaction
 import log
 
+# initalization
+
+db_session = db.get_session()
+
+####################################################
+
 def update_iidxme():
 	def update(data):
 		added_data = 0
@@ -105,6 +111,10 @@ def updateDB(data, tablename, tabletitle, level):
 
 	log.Print("added %d datas" % added_data)
 
+#
+# this site is depreciated
+# don't use
+#
 def update_SP():
 	log.Print('parsing 2ch')
 	updateDB(parser_custom.parse12(), "SP12_2ch", 
@@ -216,7 +226,8 @@ def smart_suggestion(name, diff, level):
 
 #
 # make relation with song
-# it's currently depreciated ...
+# depreciated
+# don't use
 #
 def update_relation():
 	log.Print('making relation with song table ...')
@@ -242,31 +253,19 @@ def update_relation():
 
 	log.Print("%d items updated." % updated_cnt)
 
-def set_session(s):
-	global db_session
-	db_session = s
-
 def main():
 	#
 	# you should execute it through IDLE because of unicode
 	# (if you're windows)
 	#
-	log.Print('opening DB ...')
-	global db_session
-	db_session = db.init_db()
 
-	#update_iidxme()
-
-	# this site is depreciated
-	#update_SP()
+	update_iidxme()
 
 	update_DP()
 
-	#update_relation()
-
 	log.Print('finished. closing DB ...')
-	db_session.commit()
-	db_session.remove()
+	db.commit()
+	db.remove()
 
 if __name__ == '__main__':
 	main()

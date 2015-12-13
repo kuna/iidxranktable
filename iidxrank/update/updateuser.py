@@ -9,6 +9,8 @@ import time
 from datetime import datetime
 import log
 
+db_session = db.get_session()
+
 # crolling user's information
 def update_songs():
 	log.Print('updating songs')
@@ -135,17 +137,13 @@ def update_user_information():
 		db_session.commit()
 
 def main():
-	log.Print('opening DB ...')
-	global db_session
-	db_session = db.init_db()
-
 	#update_user()
 
 	update_user_information()
 
 	log.Print('finished. closing DB ...')
-	db_session.commit()
-	db_session.remove()
+	db.commit()
+	db.remove()
 
 
 if __name__=="__main__":

@@ -120,19 +120,15 @@ def rankupdate(request):
 updating_user = False
 updating_username = ""
 def update_player_worker(iidxmeid):
-	global updating_user
+	global updating_user, updating_username
 	updating_user = True
 	updating_username = iidxmeid
-	log.Print('initalize DB...')
-	db_session = db.init_db()
 
-	calculatedb.set_session(db_session)
 	updateuser.update_single_user_by_name(iidxmeid)
 	calculatedb.calculate_player_by_name(iidxmeid)
 
 	log.Print('committing...')
-	db_session.commit()
-	db_session.remove()
+	db.commit()
 	log.Print('finished %s' % iidxmeid)
 	updating_user = False
 	updating_username = ""
@@ -157,4 +153,4 @@ def json_update_player(request, username):
 		return JsonResponse({'status': 'not existing user'})
 
 def json_update_player_status(request, username):
-	return JsonResponse({'status': 'success', 'updating': (updating_username == username)})
+	return JsonResponse({'status': 'success', 'updating':(updating_username == username)})

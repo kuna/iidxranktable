@@ -113,6 +113,7 @@ function updateuser(iidxmeid) {
 			$("#loading_animation").show();
 			setInterval(function () {
 				$.getJSON("/iidx/update/user_status/" + iidxmeid, function (data) {
+					console.log(data.updating);
 					if (!data.updating) {
 						alert("업데이트 완료");
 						$("#loading_animation").hide();

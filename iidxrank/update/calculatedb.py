@@ -9,6 +9,8 @@ import random
 from sqlalchemy import text
 import log
 
+# basic initalization
+db_session = db.get_session()
 diffs = ['easy', 'normal', 'hd', 'exh']
 diffs_num = {'easy':3, 'normal':4, 'hd':5, 'exh':6}
 
@@ -288,10 +290,6 @@ def initDB():
 #
 ###########################################
 
-def set_session(s):
-	global db_session
-	db_session = s
-
 def calc_player_rough():
 	log.Print("playerlevel_stabilizing_rough")
 	for i in range(1):
@@ -340,10 +338,6 @@ def calc_MCMC():
 			db_session.commit()
 
 def main():
-	log.Print('opening DB ...')
-	global db_session
-	db_session = db.init_db()
-
 	# you may comment this initing process if it's bad
 	#initDB()
 
@@ -358,8 +352,8 @@ def main():
 	calc_MCMC()
 
 	log.Print('finished. closing DB ...')
-	db_session.commit()
-	db_session.remove()
+	db.commit()
+	db.remove()
 
 
 if __name__=="__main__":
