@@ -48,7 +48,9 @@ $(function() {
 		function conv_diff(s) {
 			if (s == "-")
 				return -999;
-			return parseFloat(s.toString().replace(/★/g, ""));
+			else if (s == "∞")
+				return 999;
+			return parseFloat(s.replace(/SP|DP/i,"").toString().replace(/★/g, ""));
 		}
 
 		function conv_target(s) {
@@ -137,4 +139,15 @@ function updateSongRank(formobj) {
 				+"\nsongname:" + data.song);
 			window.location.reload()
 		});
+}
+
+/* process songlevel */
+function convertSongLevel(level) {
+	if (level > 17) {
+		return "∞";
+	} else if (level <= 0.1) {
+		return "-";
+	} else {
+		return "★"+level;
+	}
 }

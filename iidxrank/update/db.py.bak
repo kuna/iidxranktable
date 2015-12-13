@@ -75,8 +75,14 @@ class Song(Base):
 	songnotes = Column('songnotes', Integer)
 
 	# for calculating MCMC
-	calclevel = Column(Float)
-	calcweight = Column(Float)
+	calclevel_easy = Column(Float)
+	calcweight_easy = Column(Float)
+	calclevel_normal = Column(Float)
+	calcweight_normal = Column(Float)
+	calclevel_hd = Column(Float)
+	calcweight_hd = Column(Float)
+	calclevel_exh = Column(Float)
+	calcweight_exh = Column(Float)
 
 class PlayRecord(Base):
 	__tablename__ = 'iidxrank_playrecord'
@@ -112,6 +118,7 @@ class Player(Base):
 		return False
 
 
+# TODO edit this - to automatically initalize DB
 def init_db():
 	"""
 	if (not os.path.exists("data.db")):

@@ -120,6 +120,7 @@ def iterate_song(_range=(-0.5, 0.5), iterate_time=5, diff="hd"):
 			# ignore too much low or high score
 			if (player_level >2 or player_level < 18):
 				continue
+			# get models' clear estimation of suggested 'level'
 			cul += (v - model_song(weight, player_level, level))**2	# model is inversed in song!
 		return cul
 

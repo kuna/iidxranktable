@@ -10,16 +10,6 @@
 function loadUserlist() {
 	var dataSet = []
 	function processor(row_json, idx) {
-		splevel = row_json.splevel;
-		if (splevel != 0)
-			splevel = "★"+splevel;
-		else
-			splevel = "-";
-		dplevel = row_json.dplevel;
-		if (dplevel != 0)
-			dplevel = "★"+dplevel;
-		else
-			dplevel = "-";
 		dataSet.push([
 			row_json.sprank,
 			row_json.dprank,
@@ -28,8 +18,8 @@ function loadUserlist() {
 			row_json.iidxmeid,
 			row_json.spdan,
 			row_json.dpdan,
-			splevel,
-			dplevel
+			convertSongLevel(row_json.splevel),
+			convertSongLevel(row_json.dplevel)
 		]);
 	}
 	function onload() {

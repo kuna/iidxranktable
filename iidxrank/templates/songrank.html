@@ -18,9 +18,12 @@ function loadSonglist(type, lvl) {
 		}
 
 		dataSet.push([
-			type+"★"+row_json.songlevel,
+			type+convertSongLevel(row_json.songlevel),
 			row_json.songtitle,
-			"★"+row_json.calclevel,
+			convertSongLevel(row_json.calclevel_easy),
+			convertSongLevel(row_json.calclevel_normal),
+			convertSongLevel(row_json.calclevel_hd),
+			convertSongLevel(row_json.calclevel_exh),
 			row_json.series,
 			recmd
 		]);
@@ -33,7 +36,10 @@ function loadSonglist(type, lvl) {
 			columnDefs: [
 				{ "type": "diff", "targets": 0 },
 				{ "type": "diff", "targets": 2 },
-				{ "type": "series", "targets": 3 }
+				{ "type": "diff", "targets": 3 },
+				{ "type": "diff", "targets": 4 },
+				{ "type": "diff", "targets": 5 },
+				{ "type": "series", "targets": 6 }
 			],
 			iDisplayLength: 50,
 			destroy: true
@@ -43,7 +49,7 @@ function loadSonglist(type, lvl) {
 }
 
 $(function() {
-	$("#tabledata").html("<tr><td class='loading' colspan=5>Loading ...</td></tr>");
+	$("#tabledata").html("<tr><td class='loading' colspan=8>Loading ...</td></tr>");
 	loadSonglist("SP", 12);
 });
 </script>
@@ -74,11 +80,17 @@ $(function() {
 	<table id="list" class="hover stripe display">
 		<thead>
 			<tr>
-				<th class="small">★</th>
-				<th>Title</th>
-				<th>Estimated</th>
-				<th>Series</th>
-				<th class="small">良</th>
+				<th class="small" rowspan='2'>★</th>
+				<th rowspan='2'>Title</th>
+				<th colspan='4'>Estimated</th>
+				<th rowspan='2'>Series</th>
+				<th class="small" rowspan='2'>良</th>
+			</tr>
+			<tr>
+				<th>Easy</th>
+				<th>Groove</th>
+				<th>Hard</th>
+				<th>EXH</th>
 			</tr>
 		</thead>
 		<tbody id="tabledata">

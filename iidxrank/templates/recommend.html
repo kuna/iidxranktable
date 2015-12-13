@@ -38,7 +38,7 @@ function loadRecommend(user, type, level) {
 	var dataSet = []
 	function processor(row_json, idx) {
 		dataSet.push([
-			"★"+row_json.songlevel,
+			convertSongLevel(row_json.songlevel),
 			row_json.songtype,
 			row_json.songtitle,
 			row_json.target,
