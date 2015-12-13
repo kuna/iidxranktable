@@ -133,10 +133,10 @@ $(document).ready(function () {
 //
 $(window).load(function () {
 	$(".songlist .name").each(function (e) {
-		clr = "#000000"
+		clr = "#000000";
 		if ($(this).attr("data-series") == "23") {
 			// text color is different if it's current series
-			clr = "#cc66cc"
+			clr = "#cc66cc";
 		}
 		var canvas = new ranklist(150, 20, $(this).text(), clr, "14px");
 		$(this).empty();
