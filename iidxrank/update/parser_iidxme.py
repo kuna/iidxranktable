@@ -13,18 +13,18 @@ def parse_users():
 			names = soup.find_all(class_="djname")
 			iidxids = soup.find_all(class_="iidxid")
 			i = 0
-			for (name, iidxid) in (names, iidxids):
+			for (name, iidxid) in zip(names, iidxids):
 				if (i>0):
-					iidxmeid = name.find('a').get_text().replace("/", "")
+					iidxmeid = name.find('a')['href'].replace("/", "")
 					arr.append( (name.get_text(), iidxmeid, iidxid.get_text()) )
 				i+= 1
 
-		data = urllib.urlopen("http://iidx.me/?page=%d" % num)
+		data = urllib.urlopen("http://iidx.me/!/userlist/?page=%d" % num)
 		soup = BeautifulSoup(data.read())
 		getUsers(soup, arr)
 
 	def getPageCount():
-		data = urllib.urlopen("http://iidx.me")
+		data = urllib.urlopen("http://iidx.me/!/userlist/")
 		soup = BeautifulSoup(data.read())
 		page = soup.find_all(class_="page")
 		return int(page[len(page)-1].get_text())
@@ -41,7 +41,7 @@ def parse_users():
 # (djname, iidxid, ...)
 #
 def parse_user(username, mode, level):
-	parsedata = jsondata.loadJSONurl("http://json.iidx.me/%s/%s/%d/" % (username, mode, level))
+	parsedata = jsondata.loadJSONurl("http://json.iidx.me/%s/%s/level/%d/" % (username, mode, level))
 
 	return parsedata
 
@@ -50,7 +50,7 @@ def parse_user(username, mode, level):
 # (title, level, notes, version, diff, id ...)
 #
 def parse_songs(level, mode):
-	parsedata = jsondata.loadJSONurl("http://json.iidx.me/delmitz/%s/level/%d" % (mode, level))
+	parsedata = jsondata.loadJSONurl("http://json.iidx.me/delmitz/%s/level/%d/" % (mode, level))
 
 	# remove scores
 	ret = []

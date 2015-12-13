@@ -65,7 +65,7 @@ def update_user_from_data(player, user_info):
 	add_count = 0
 	# add clear data
 	for playrecord in user_info['musicdata']:
-		if (playrecord['clear'] > 2):	# only over assist clear
+		if (playrecord['clear'] >= 1):	# over failed user
 			song = db.Song.query.filter_by(songid=playrecord['data']['id'], songtype=playrecord['data']['diff'].upper())
 			if (not song.count()):
 				continue
@@ -112,7 +112,7 @@ def update_single_user(player):
 				spclass = user_info['userdata']['spclass']
 				dpclass = user_info['userdata']['dpclass']
 				add_count += update_user_from_data(player, user_info)
-				time.sleep(0.5)		# to avoid suspend as traffic abusing
+				time.sleep(0.1)		# to avoid being suspend as traffic abusing
 			except (KeyboardInterrupt, SystemExit):
 				log.Print('bye')
 				exit()
@@ -139,9 +139,7 @@ def main():
 	global db_session
 	db_session = db.init_db()
 
-	#update_songs()
-
-	update_user()
+	#update_user()
 
 	update_user_information()
 

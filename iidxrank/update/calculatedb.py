@@ -23,7 +23,6 @@ def rnorm(std):
 def randomTest(p):
 	return p<=rand()
 
-
 ############################################################
 # show us a little graph
 def showSongStat(type="SP", onlysave=True, fname="songstat.png"):
@@ -59,36 +58,45 @@ def showPlayerStat(onlysave=True, fname="playerstat.png"):
 	plot.clf()
 
 # using model (from walkure)
-def model(a, b, x):
+def model_user(a, b, x):
+	return 1/(1+math.exp(-a*(x-b)))
+def model_song(a, b, x):
 	return 1/(1+math.exp(a*(x-b)))
 
 # make score per clear status
 # (used for player)
 def clearScore(playclear, type=None):
+	if (type == None):
+		if (playclear == 1):
+			return 0
+		elif (playclear == 2):
+			return 0
+		elif (playclear == 3):
+			return 0.3
+		elif (playclear == 4):
+			return 0.4
+		elif (playclear == 5):
+			return 0.7
+		elif (playclear == 6):
+			return 0.9
+		elif (playclear == 7):
+			return 1
+
 	def getScoreValue(clear_goal):
 		if (playclear < clear_goal):
 			return 0
 		else:
 			return 1
-	# nonetype -> for player estimate
-	if (type == None):
-		if (playclear <= 2):	# under assist: score failed
-			return 0
-		elif (playclear == 3):	# easy clear
-			return 0.3
-		elif (playclear == 4):	# groove clear
-			return 0.4
-		elif (playclear == 5):	# hard
-			return 0.6
-		elif (playclear == 6):	# exh
-			return 0.9
-		elif (playclear == 7):	# fc
-			return 1
+	if (type in diffs_num):
+		return getScoreValue(diffs_num[type])
 	else:
-		if (type in diffs_num):
-			return getScoreValue(diffs_num[type])
-		else:
-			raise Exception("unsupported type of difficulty")
+		raise Exception("unsupported type of difficulty")
+
+# reject if player has no playrecord / no fail / only fullcombo
+def checkValidPlayer(player):
+	if (len(player.playrecord) == 0):
+		return False
+	return True
 
 ############################################################
 # update every user/song level
@@ -109,7 +117,10 @@ def iterate_song(_range=(-0.5, 0.5), iterate_time=5, diff="hd"):
 				player_level = precord.player.splevel
 			else:
 				player_level = precord.player.dplevel
-			cul += abs(v - model(-weight, level, player_level))	# model is inversed in song!
+			# ignore too much low or high score
+			if (player_level >2 or player_level < 18):
+				continue
+			cul += (v - model_song(weight, player_level, level))**2	# model is inversed in song!
 		return cul
 
 	i = 0
@@ -124,7 +135,6 @@ def iterate_song(_range=(-0.5, 0.5), iterate_time=5, diff="hd"):
 		# then ignore
 		if (len(song.playrecord) == 0):
 			setattr(song, calclevel_diff, 0)
-			continue
 
 		# smaller score is better
 		# random walk for 5 times (for level)
@@ -133,17 +143,17 @@ def iterate_song(_range=(-0.5, 0.5), iterate_time=5, diff="hd"):
 		if (cur_lv>20):
 			cur_lv = 20
 			cur_weight = 10
-		elif(cur_lv<0):
+		elif (cur_lv<0):	# too small value
 			cur_lv = 0
 			cur_weight = 10
+		if (cur_weight > 20):
+			cur_weight = 20
+		elif (cur_weight < 1):
+			cur_weight = 1
 		lvls = [cur_lv,]
 		scores = [getScore(song, lvls[0], cur_weight),]
 		for t in range(iterate_time):
 			new_level = cur_lv + random.uniform(_range[0], _range[1])
-			if (new_level < 0):
-				new_level = 0
-			elif (new_level > 20):
-				new_level = 20
 			lvls.append(new_level)
 			scores.append(getScore(song, new_level, cur_weight))
 		setattr(song, calclevel_diff, lvls[scores.index(min(scores))])
@@ -154,10 +164,6 @@ def iterate_song(_range=(-0.5, 0.5), iterate_time=5, diff="hd"):
 		scores = [getScore(song, cur_lv, lvls[0]),]
 		for t in range(iterate_time):
 			new_weight = cur_weight + random.uniform(_range[0], _range[1])*0.1*cur_weight
-			if (new_weight > 20):
-				new_weight = 20
-			elif (new_weight < 0.5):
-				new_weight = 0.5
 			lvls.append(new_weight)
 			scores.append(getScore(song, cur_lv, new_weight))
 		setattr(song, calcweight_diff, lvls[scores.index(min(scores))])
@@ -174,11 +180,13 @@ def calculate_player(player, _range=(-0.5, 0.5), iterate_time=20):
 			if (precord.playclear == 0):	# ignore noclear
 				continue
 
-			# get current clear state (just easy, normal, hd!)
-			for diff in ["easy", "normal", "hd"]:
+			# get current clear state
+			for diff in ["easy", "hd", "exh"]:
 				calclevel = getattr(precord.song, 'calclevel_'+diff)
-				v = clearScore(precord.playclear, diff)
-				cul += abs(v - model(5, level, calclevel))	# weight is 5, maybe
+				if (calclevel < 2 or calclevel > 18):	# too low level or too high level is wrong calculated: ignore
+					continue
+				v = clearScore(precord.playclear, diff)			# real value (model: expected)
+				cul += (v - model_user(5, calclevel, level))**2	# weight is 5, maybe
 		return cul
 
 	# random walk for 10 times
@@ -303,11 +311,11 @@ def calc_player_stable():
 	log.Print("playerlevel_stabilizing")
 	for i in range(30):
 		log.Print("iteration %d" % i)
-		iterate_player((-0.2, 0.2), 2)
+		iterate_player((-0.5, 0.5), 2)
 
 def calc_song_stable(d=None):
 	log.Print("songlevel_stabilizing")
-	for i in range(10):
+	for i in range(30):
 		log.Print("iteration %d" % i)
 		if (d == None):
 			d = diffs
