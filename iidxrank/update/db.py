@@ -5,6 +5,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 from datetime import datetime
 import os
+import private
 
 Base = declarative_base()
 
@@ -123,7 +124,7 @@ if (not os.path.exists("data.db")):
 	open("data.db", "a").close()	# create empty file
 engine = create_engine('sqlite:///data.db', convert_unicode=True)
 """
-engine = create_engine('mysql://id:pass@localhost/database?charset=utf8', convert_unicode=True)
+engine = create_engine(private.session_url, convert_unicode=True)
 db_session = scoped_session(sessionmaker(autocommit=False,
                                          autoflush=False,
                                          bind=engine))

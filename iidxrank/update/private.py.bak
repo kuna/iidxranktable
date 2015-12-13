@@ -1,0 +1,1 @@
+session_url = 'mysql://user:pass@localhost/database?charset=utf8'
