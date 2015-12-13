@@ -6,6 +6,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 import os
 
+Base = declarative_base()
+
 class RankTable(Base):
 	__tablename__ = 'iidxrank_ranktable'
 	id = Column(Integer, primary_key=True, index=True)
@@ -115,8 +117,6 @@ class Player(Base):
 			return (datetime.now() - self.time).total_seconds() >= 24*3600*30
 		return False
 
-
-Base = declarative_base()
 
 """
 if (not os.path.exists("data.db")):
