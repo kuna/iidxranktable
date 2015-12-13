@@ -1,5 +1,5 @@
-.lamp_clear { background:url('../img/clearlamp.png') no-repeat; display:block; position:absolute; 
-	right:0px; top:6px; width:20px; height:24px; }
+.lamp_clear { background:url('../img/clearlamp2.png') no-repeat; display:block; position:absolute; 
+	right:0px; top:0px; width:22px; height:30px; }
 .lamp_clear.NO_PLAY { display:none; }
 .lamp_clear.FAILED { background-position:0 0; }
 .lamp_clear.ASSIST_CLEAR { background-position:0 -30px; }
@@ -10,9 +10,9 @@
 .lamp_clear.FULL_COMBO { background-position:0 -180px; }
 
 /* background. preferred to DP user */
-li.diffA { background-color: #fee; }
-li.diffH { background-color: #ffe; }
-li.diffN { background-color: #eef; }
+li.diffA { background-color: #f0f0f0; }
+li.diffH { background-color: #fffff0; }
+li.diffN { background-color: #f0f0ff; }
 
 /* and song cell border color overlapped */
-.songlist li { border-color: #999; }
+.songlist li { border-color: #ccc; }
