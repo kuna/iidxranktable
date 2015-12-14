@@ -158,7 +158,7 @@ def addMetadata(musicdata, data, song_query):
 		else:
 			categoryname = category_model.categoryname
 			categorytype = category_model.categorytype
-			sortindex = category_model.sortindex
+			sortindex = category_model.get_sortindex()
 			if (not sortindex):
 				sortindex = 0
 		# if processed category exists, then return it
@@ -195,6 +195,7 @@ def addMetadata(musicdata, data, song_query):
 	# category lamp process
 	#
 	for catearray in categories:
+		print catearray['category'], catearray['sortindex']
 		for song in catearray['songs']:
 			if (song['clear'] < catearray['categoryclear']):
 				catearray['categoryclear'] = song['clear']
