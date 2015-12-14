@@ -61,7 +61,9 @@ function loadRecommend(user, type, level) {
 			iDisplayLength: 50,
 			destroy: true
 		});
+		$("#buttons button").removeAttr('disabled');
 	}
+	$("#buttons button").attr('disabled', true);
 	loadJSON("/iidx/json/recommend/" + user + "/" + type + "/" + level, processor, onload);
 }
 
@@ -77,10 +79,10 @@ $(function() {
 <div id="container">
 	<div id="menu">
 		<!-- addon button -->
-		<div class="clear">
+		<div class="row">
 			<a href=".."><button id="home" class="btn btn-default" style="float:left;">return</button></a>
 		</div>
-		<div class="clear">
+		<div class="row" id="buttons">
 			<a href="#"><button class="btn btn-default" onclick='loadRecommend("{{ username }}", "SP", 12);'>SP12</button></a>
 			<a href="#"><button class="btn btn-default" onclick='loadRecommend("{{ username }}", "SP", 11);'>SP11</button></a>
 			<a href="#"><button class="btn btn-default" onclick='loadRecommend("{{ username }}", "SP", 10);'>SP10</button></a>
