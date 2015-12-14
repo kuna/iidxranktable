@@ -23,7 +23,7 @@ body { font-family: 'M+ 1c medium', 'Malgun Gothic', NanumBarunGothicOTF,"Helvet
 .cell { border-left: 2px solid; }
 .cell:last-child { border-right: 2px solid; }
 .celltype0 { border-bottom: 2px solid; }
-.celltype1 { border-bottom: 1px solid #333; }
+.celltype1 { border-bottom: 1px solid #ccc; }
 
 /*
  * inner table (song list / name)

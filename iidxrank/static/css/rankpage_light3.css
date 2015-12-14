@@ -1,5 +1,5 @@
 .lamp_clear { background:url('../img/clearlamp2.png') no-repeat; display:block; position:absolute; 
-	right:0px; top:0px; width:22px; height:30px; }
+	right:0px; top:0px; width:18px; height:30px; }
 .lamp_clear.NO_PLAY { display:none; }
 .lamp_clear.FAILED { background-position:0 0; }
 .lamp_clear.ASSIST_CLEAR { background-position:0 -30px; }
