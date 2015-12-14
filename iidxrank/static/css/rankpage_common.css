@@ -10,7 +10,7 @@ body { font-family: 'M+ 1c medium', 'Malgun Gothic', NanumBarunGothicOTF,"Helvet
 /*
  * outer table (category / level)
  */
-.outertable { width:100%; }
+.outertable { width:100%; background-color:#fff; }
 .outertable div:first-child { width:120px; }
 .table { display:table; border-spacing: 0px; }
 .row { display:table-row; }
@@ -19,29 +19,27 @@ body { font-family: 'M+ 1c medium', 'Malgun Gothic', NanumBarunGothicOTF,"Helvet
 /* outer table border setting */
 .table:first-child { border-top: 2px solid #000; }
 .row { }
-.cell { border-left: 2px solid #000; border-bottom: 2px solid #000; }
-.cell:last-child { border-right: 2px solid #000; }
+.cell { border-color: #000; }
+.cell { border-left: 2px solid; }
+.cell:last-child { border-right: 2px solid; }
+.celltype0 { border-bottom: 2px solid; }
+.celltype1 { border-bottom: 1px solid #333; }
 
 /*
  * inner table (song list / name)
  */
 .songlist { list-style: none; overflow: hidden; margin:0; }
-.songlist li { float:left; display:block; padding:2px 0; width:20%; height: 25px; 
+.songlist li { float:left; display:block; padding:2px 0; width:20%; height: 27px; 
 		border-right:1px solid #ccc; border-bottom: 1px solid #ccc; 
 		overflow: hidden; position: relative; word-break: break-all; }
 .songlist li:hover { background:#fff;  }
 .songlist .name { padding:0 8px; /*letter-spacing: -0.5px*/ }
-.rowname { font-weight: bold; text-align: center; }
+.rowname { font-weight: bold; text-align: center; position: relative; }
 
 
-/* clear lamp (sample for top) */
-#preview { clear:both; width:100%; height:40px; }
-#preview li { display:block; margin-right:20px; position: relative; float:left; }
-.lamp_sample { margin-left: 5px; }
-#preview li .clearcount { font-size:10px; font-style:italic; position:absolute; top:22px; left:0; }
 
 /* cell clear lamp */
-.lamp_category { display:inline-block; height:20px; width:24px; background: url('../img/clearlamp.png') no-repeat; }
+.lamp_category { display:block; height:20px; width:24px; background: url('../img/clearlamp.png') no-repeat; }
 .lamp_category.NO_PLAY { display:none; }
 .lamp_category.FAILED { background-position: 0 6px; }
 .lamp_category.ASSIST_CLEAR { background-position: 0 -24px; }
@@ -52,7 +50,7 @@ body { font-family: 'M+ 1c medium', 'Malgun Gothic', NanumBarunGothicOTF,"Helvet
 .lamp_category.FULL_COMBO { background-position: 0 -174px; }
 
 /* category(group) clear lamp */
-.lamp_group { border-radius:.25em; padding: .2em .6em .3em; display:inline; font-size:13px; }
+.lamp_group { display:block; width:11px; height:11px; background: url('../img/righttriangle.png') no-repeat -1px -1px; position:absolute; right:0; top:0; }
 .lamp_group.NO_PLAY {  }
 .lamp_group.FAILED { background-color:#999; color:#fff; }
 .lamp_group.ASSIST_CLEAR { background-color:#97b; color:#fff; }
@@ -63,7 +61,7 @@ body { font-family: 'M+ 1c medium', 'Malgun Gothic', NanumBarunGothicOTF,"Helvet
 .lamp_group.FULL_COMBO { background-color:#0cc; color:#fff; }
 
 /* rank show */
-.rank { position: absolute; width:16px; height:10px; top:7px; right:8px; 
+.rank { position: absolute; width:16px; height:10px; top:7px; right:3px; 
 	display: none; background: url('../img/rank.png') no-repeat; }
 .rank.AAA { background-position: 0 0; }
 .rank.AA { background-position: 0 -17px; }
@@ -87,11 +85,29 @@ body { font-family: 'M+ 1c medium', 'Malgun Gothic', NanumBarunGothicOTF,"Helvet
 .gAAA { left:88.88%; }
 
 /* header part */
-#title { text-align: center; margin-bottom:40px; }
+#title { text-align: center; margin-bottom:100px; }
+#info { clear:both; height:30px; overflow:hidden; margin-bottom:10px; }
 
+/* user pic */
+#userimage { display:none; }
+
+/* clear status (sample for top) */
+#preview { float:right; list-style:none; }
+#preview li { width:50px; height:23px; float:left; display:block; padding:3px 0 0 15px; background: url('../img/clearlamp.png') no-repeat; font-size: 8pt; }
+#preview li.failed { background-position: 0 6px; }
+#preview li.assist { background-position: 0 -24px; }
+#preview li.easy { background-position: 0 -54px; }
+#preview li.normal { background-position: 0 -84px; }
+#preview li.hard { background-position: 0 -114px; }
+#preview li.exh { background-position: 0 -144px; }
+#preview li.fc { background-position: 0 -174px; }
+
+/* user infos */
+#user { float:left; }
 #user span { font-weight: bold; font-size:13px; }
-#user .name { background-color: #000; margin-right:8px; }
-#user .spdan, #user .dpdan { background-color: #eee; opacity:0.5; }
+#user .label { display:block; float:left; padding:7px 10px; }
+#user .name { background-color: #000; margin-right:15px; }
+#user .spdan, #user .dpdan { background-color: #eee; opacity:0.6; width: 42px; padding: 7px 0; }
 #user .spdan { border-top-right-radius:0; border-bottom-right-radius:0; }
 #user .dpdan { border-top-left-radius:0; border-bottom-left-radius:0; }
 #user .iidxid { color:#666; margin-left:8px; }

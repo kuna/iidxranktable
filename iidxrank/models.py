@@ -87,6 +87,7 @@ class RankTable(models.Model):
 class RankCategory(models.Model):
 	ranktable = models.ForeignKey(RankTable, on_delete=models.CASCADE)
 	categoryname = models.CharField(max_length=20)
+	categorytype = models.IntegerField(default=0)
 	sortindex = models.FloatField(default=None, null=True, blank=True)
 
 	def get_sortindex(self):

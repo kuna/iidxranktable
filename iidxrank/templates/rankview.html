@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=1120, user-scalable=1">
 
 <link rel=stylesheet type=text/css href="{% static 'css/rankpage_common.css' %}">
-<link rel=stylesheet type=text/css id="rankpage_style" href="{% static 'css/rankpage_light2.css' %}">
+<link rel=stylesheet type=text/css id="rankpage_style" href="{% static 'css/rankpage_light3.css' %}">
 <script type="text/javascript" src="{% static 'js/html2canvas.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/ranklist.js' %}"></script>
 
@@ -18,8 +18,8 @@ var png_base64 = "";
 var ftitle = "{{ pageinfo.title }} - DJ {{ user.name }}"
 var fname = ftitle + ".png";
 var rankpage_style_arr = [
-"{% static 'css/rankpage_light2.css' %}",
 "{% static 'css/rankpage_light3.css' %}",
+"{% static 'css/rankpage_light2.css' %}",
 "{% static 'css/rankpage_default.css' %}",
 "{% static 'css/rankpage_light.css' %}",
 ];
@@ -33,7 +33,7 @@ $(document).ready(function () {
 	});
 	$('#change_rank_css').text('Skin 1/' + rankpage_style_arr.length);
 	$('#show_rank').click(function () {
-		$('.rank').show();
+		$('.rank').toggle();
 	});
 	$('#order_rate').click(function () {
 		$('.songlist').each(function (e) {
@@ -167,37 +167,55 @@ $(window).load(function () {
 	<h2 id="title">{{ pageinfo.titlehtml|safe }}</h2>
 
 	<!-- user image qpro -->
-	<div class="userimage" style="
-		float: right;
-		margin-top: -100px;
-		margin-bottom: -70px;
-		">
+	<div id="userimage">
 		<img src="/iidx/qpro/{{ user.iidxid }}/" width="170">
+		<script language="javascript">
+			$(function() {
+				$('#container .inner').css('background', 'url("/iidx/qpro/{{ user.iidxid }}/") no-repeat -30px 60px');
+			});
+		</script>
 	</div>
 
 	<!-- user info -->
-	<p id="user"><span class="label name">DJ {{ user.name }}<span class="iidxid">{{ user.iidxid }}</span></span><span class="label {{ pageinfo.type }} spdan dan{{ user.spdannum }}">{{ user.spdan }}</span><span class="label {{ pageinfo.type }} dpdan dan{{ user.dpdannum }}">{{ user.dpdan }}</span></p>
+	<div id="info">
+		<p id="user">
+			<span class="label name"><span>DJ {{ user.name }}</span><span class="iidxid">{{ user.iidxid }}</span></span>
+			<span class="label {{ pageinfo.type }} spdan dan{{ user.spdannum }}">{{ user.spdan }}</span><span class="label {{ pageinfo.type }} dpdan dan{{ user.dpdannum }}">{{ user.dpdan }}</span>
+		</p>
 
-	<!-- clear lamp info -->
-	<ul id="preview">
-		<li>FAILED<span class="clearcount">({{ pageinfo.clearinfo.failed }})</span><div class="lamp_sample lamp_category FAILED"></div></li>
-		<li>ASSIST CLEAR<span class="clearcount">({{ pageinfo.clearinfo.assist }})</span><div class="lamp_sample lamp_category ASSIST_CLEAR"></div></li>
-		<li>EASY CLEAR<span class="clearcount">({{ pageinfo.clearinfo.easy }})</span><div class="lamp_sample lamp_category EASY_CLEAR"></div></li>
-		<li>CLEAR<span class="clearcount">({{ pageinfo.clearinfo.normal }})</span><div class="lamp_sample lamp_category CLEAR"></div></li>
-		<li>HARD CLEAR<span class="clearcount">({{ pageinfo.clearinfo.hard }})</span><div class="lamp_sample lamp_category HARD_CLEAR"></div></li>
-		<li>EX-HARD CLEAR<span class="clearcount">({{ pageinfo.clearinfo.exhard }})</span><div class="lamp_sample lamp_category EX-HARD_CLEAR"></div></li>
-		<li>FULLCOMBO<span class="clearcount">({{ pageinfo.clearinfo.fullcombo }})</span><div class="lamp_sample lamp_category FULL_COMBO"></div></li>
-	</ul>
+		<!-- clear lamp info -->
+		<ul id="preview">
+			<li class="failed">{{ pageinfo.clearinfo.failed }}</li>
+			<li class="assist">{{ pageinfo.clearinfo.assist }}</li>
+			<li class="easy">{{ pageinfo.clearinfo.easy }}</li>
+			<li class="normal">{{ pageinfo.clearinfo.normal }}</li>
+			<li class="hard">{{ pageinfo.clearinfo.hard }}</li>
+			<li class="exh">{{ pageinfo.clearinfo.exhard }}</li>
+			<li class="fc">{{ pageinfo.clearinfo.fullcombo }}</li>
+		</ul>
+
+		<!--<ul id="rankinfo">
+			<li class="AAA">{{ pageinfo.rankinfo.AAA }}</li>
+			<li class="AA">{{ pageinfo.rankinfo.AA }}</li>
+			<li class="A">{{ pageinfo.rankinfo.A }}</li>
+			<li class="B">{{ pageinfo.rankinfo.B }}</li>
+			<li class="C">{{ pageinfo.rankinfo.C }}</li>
+			<li class="D">{{ pageinfo.rankinfo.D }}</li>
+			<li class="E">{{ pageinfo.rankinfo.E }}</li>
+			<li class="F">{{ pageinfo.rankinfo.F }}</li>
+		</ul>-->
+	</div>
 
 	<div id="ranktable">
 		<div class="table outertable">
 			{% for category in score %}
 			<div class="row">
-				<div class="cell rowname">
+				<div class="cell celltype{{ category.categorytype }} rowname">
 					<!-- <span class="name">{{ category.category }}</span> -->
-					<span class="lamp_group {{ category.categoryclearstring }}">{{ category.category }}</span>
+					<span>{{ category.category }}</span>
+					<div class="lamp_group {{ category.categoryclearstring }}"></div>
 				</div>
-				<div class="cell">
+				<div class="cell celltype{{ category.categorytype }}">
 					<ul class="songlist">
 						{% for song in category.songs %}
 						<a href="/iidx/songcomment/{{ pageinfo.tablename }}/{{ song.pkid }}/"

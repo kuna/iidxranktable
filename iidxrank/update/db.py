@@ -45,6 +45,7 @@ class RankCategory(Base):
 
 	ranktable_id = Column(Integer, ForeignKey('iidxrank_ranktable.id'))
 	categoryname = Column('categoryname', String(20))
+	categorytype = Column('categorytype', Integer, default=0)
 
 	@property
 	def songs(self):
