@@ -46,7 +46,9 @@ function loadSonglist(type, lvl) {
 			iDisplayLength: 50,
 			destroy: true
 		});
+		$("#buttons button").removeAttr('disabled');
 	}
+	$("#buttons button").attr('disabled', true);
 	loadJSON("/iidx/json/musiclist/"+type+"/level/"+lvl, processor, onload);
 }
 
@@ -62,10 +64,10 @@ $(function() {
 <div id="container">
 	<div id="menu">
 		<!-- addon button -->
-		<div class="clear">
+		<div class="row">
 			<a href="../.."><button id="home" class="btn btn-default" style="float:left;">return</button></a>
 		</div>
-		<div class="clear">
+		<div class="row" id="buttons">
 			<a href="#"><button class="btn btn-default" onclick='loadSonglist("SP", 12);'>SP12</button></a>
 			<a href="#"><button class="btn btn-default" onclick='loadSonglist("SP", 11);'>SP11</button></a>
 			<a href="#"><button class="btn btn-default" onclick='loadSonglist("SP", 10);'>SP10</button></a>
@@ -73,8 +75,10 @@ $(function() {
 			<a href="#"><button class="btn btn-default" onclick='loadSonglist("DP", 11);'>DP11</button></a>
 			<a href="#"><button class="btn btn-default" onclick='loadSonglist("DP", 10);'>DP10</button></a>
 		</div>
-		<div class="clear">
-			추정치는 10레벨까지 파싱한 것을 기준으로 하여 하드 게이지 기준으로 선형보간된 값입니다.
+		<div class="row">
+			<ul>
+				<li>충분한 플레이 기록<i>(FAIL이 없거나 전부 HC~EXHC 이상이거나)</i>이 없을 경우에는 수치가 올바르게 표시되지 않을 수 있습니다.</li>
+			</ul>
 		</div>
 	</div>
 

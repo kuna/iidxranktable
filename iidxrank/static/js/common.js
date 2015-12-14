@@ -120,7 +120,7 @@ function updateuser(iidxmeid) {
 						window.location.reload();
 					}
 				});
-			}, 2000);
+			}, 3000);
 		} else {
 			alert(data['status']);
 		}
