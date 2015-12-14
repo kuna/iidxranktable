@@ -195,7 +195,6 @@ def addMetadata(musicdata, data, song_query):
 	# category lamp process
 	#
 	for catearray in categories:
-		print catearray['category'], catearray['sortindex']
 		for song in catearray['songs']:
 			if (song['clear'] < catearray['categoryclear']):
 				catearray['categoryclear'] = song['clear']
