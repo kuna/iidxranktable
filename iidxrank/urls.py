@@ -32,10 +32,11 @@ urlpatterns = [
 			url(r'^$', views_update.index),
 			url(r'^status/$', views_update.status),
 			url(r'^status/json/$', views_update.json_status),
-			url(r'^user/(?P<username>\w+)/$', views_update.json_update_player),
-			url(r'^user_status/(?P<username>\w+)/$', views_update.json_update_player_status),
+			# username
+			url(r'^user/(?P<username>(\w|-)+)/$', views_update.json_update_player),
+			url(r'^user_status/(?P<username>(\w|-)+)/$', views_update.json_update_player_status),
 			url(r'^rank/$', views_update.rankupdate),
-			url(r'^(?P<update>\w+)/$', views_update.update),
+			url(r'^(?P<update>(\w|-)+)/$', views_update.update),
 		])),
 
 	# comment, board
@@ -55,8 +56,9 @@ urlpatterns = [
 			url(r'^musiclist/(?P<type>\w+)/level/(?P<level>[0-9]+)/$', views_json.json_level),
 			url(r'^musiclist/(?P<type>\w+)/series/(?P<series>\w+)/$', views_json.json_series),
 			url(r'^userlist/$', views_json.json_user),
-			url(r'^recommend/(?P<username>\w+)/(?P<type>\w+)/$', views_json.json_recommend),
-			url(r'^recommend/(?P<username>\w+)/(?P<type>\w+)/(?P<level>[0-9]+)/$', views_json.json_recommend),
+			# username
+			url(r'^recommend/(?P<username>(\w|-)+)/(?P<type>\w+)/$', views_json.json_recommend),
+			url(r'^recommend/(?P<username>(\w|-)+)/(?P<type>\w+)/(?P<level>[0-9]+)/$', views_json.json_recommend),
 		])),
 
 	# common urls (mainpage, userpage, rankpage)
@@ -65,7 +67,8 @@ urlpatterns = [
 		url(r'^!/songrank/$', views.songrank),
 		url(r'^!/userrank/$', views.userrank),
 		url(r'^!/(?P<diff>\w+)/(?P<level>\w+)/$', views.rankpage, name="rankpage"),
-		url(r'^(?P<username>\w+)/', include([
+		# username
+		url(r'^(?P<username>(\w|-)+)/', include([
 			url(r'^$', views.userpage),
 			url(r'^recommend/$', views.recommend),
 			url(r'^(?P<diff>\w+)/(?P<level>\w+)/$', views.rankpage, name="rankpage"),
