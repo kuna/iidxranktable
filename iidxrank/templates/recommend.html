@@ -101,7 +101,7 @@ $(function() {
 				<th>Title</th>
 				<th>Target</th>
 				<th>Prob</th>
-				<th class="small">Graph</th>
+				<th class="small" data-orderable="false">Graph</th>
 			</tr>
 		</thead>
 		<tbody id="tabledata">
@@ -115,4 +115,4 @@ $(function() {
 </div>
 
 {% endblock %}
-{% block etc %}updated {{ pageinfo.date|date:"ymd" }} / <a href="#">what is this?</a>{% endblock %}
+{% block etc %}{% include 'table_detail.html' %}{% endblock %}
