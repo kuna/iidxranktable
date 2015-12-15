@@ -139,7 +139,7 @@ $(window).load(function () {
 			// text color is different if it's current series
 			clr = "#cc66cc";
 		}
-		var canvas = new ranklist(150, 20, $(this).text(), clr, "14px");
+		var canvas = new ranklist(150, 20, $(this).text(), clr, 14);
 		$(this).empty();
 		$(this).append($(canvas.makeCanvas()));
 	});
