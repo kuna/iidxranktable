@@ -108,7 +108,7 @@ body { font-family: 'M+ 1c medium', 'Malgun Gothic', NanumBarunGothicOTF,"Helvet
 #user span { font-weight: bold; font-size:13px; }
 #user .label { display:block; float:left; padding:7px 10px; }
 #user .name { background-color: #000; margin-right:15px; }
-#user .spdan, #user .dpdan { background-color: #eee; opacity:0.6; width: 42px; padding: 7px 0; }
+#user .spdan, #user .dpdan { background-color: #bbb; opacity:0.6; width: 42px; padding: 7px 0; }
 #user .spdan { border-top-right-radius:0; border-bottom-right-radius:0; }
 #user .dpdan { border-top-left-radius:0; border-bottom-left-radius:0; }
 #user .iidxid { color:#666; margin-left:8px; }

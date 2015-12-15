@@ -50,7 +50,6 @@ function ranklist(width, height, text, color, size) {
 		ctx.fillStyle = this.color;
 		ctx.font = font_title;
 		ctx.fillText(this.title, 0, this.height - 4);
-		console.log(font_subtitle + " " + font_title);
 		ctx.font = font_subtitle;
 		ctx.fillText(this.subtitle, subtitle_x, this.height - 4);
 
