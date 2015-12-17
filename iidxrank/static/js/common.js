@@ -8,11 +8,6 @@ function openComment(url) {
 	return false;
 }
 
-/* alert message */
-setTimeout(function() {
-	$("#message").fadeOut(2000);
-}, 5000);
-
 /* load json (for datatable) */
 function loadJSON(json_url, processor, onload) {
 	$.getJSON(json_url, function(data) {
@@ -175,4 +170,31 @@ function saveSetting(key, val) {
 		/* this browser doesn't support Local Storage Objects, sorry! */
 		return undefined;
 	}
+}
+
+/*  loading screen */
+function showLoadingBackground() {
+	$("$loading_background").show();
+}
+function showLoading(message) {
+	$("#loading_message").text(message);
+	$("#loading_message").show();
+	showLoadingBackground();
+}
+function hideLoadingBackground() {
+	$("#loading_background").fadeOut(500);
+}
+function hideLoading(message) {
+	$("#loading_message").fadeOut(500);
+	hideLoadingBackground();
+}
+function showMessage(message) {
+	// temporarily message, so it'll fade out automatically.
+	$("#message").text(message);
+	if (_tid != undefined) {
+		clearTimeout(_tid);
+	}
+	_tid = setTimeout(function() {
+		$("#message").fadeOut(2000);
+	}, 5000);
 }

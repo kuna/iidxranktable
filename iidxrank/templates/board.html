@@ -7,7 +7,11 @@
 
 {% block body %}
 {% if status.message %}
-<div id="message">{{ status.message }}</div>
+<script language="javascript">
+$(function () {
+	showMessage("{{ status.message }}");
+})
+</script>
 {% endif %}
 
 <!-- song comment board body -->

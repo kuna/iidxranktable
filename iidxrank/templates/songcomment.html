@@ -7,7 +7,11 @@
 
 {% block body %}
 {% if board.message %}
-<div id="message">{{ board.message }}</div>
+<script language="javascript">
+$(function () {
+	showMessage("{{ status.message }}");
+})
+</script>
 {% endif %}
 
 {% if board.admin %}
