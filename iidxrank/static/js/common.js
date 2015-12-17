@@ -191,7 +191,7 @@ function hideLoading(message) {
 function showMessage(message) {
 	// temporarily message, so it'll fade out automatically.
 	$("#message").text(message);
-	if (_tid != undefined) {
+	if (typeof _tid !== 'undefined') {
 		clearTimeout(_tid);
 	}
 	_tid = setTimeout(function() {
