@@ -17,7 +17,7 @@ class RankTable(Base):
 
 	tablename = Column('tablename', String(100))
 	tabletitle = Column('tabletitle', String(100))
-	tabletitlehtml = Column('tabletitle', String(200))
+	tabletitlehtml = Column('tabletitlehtml', String(200))
 	level = Column('level', Integer)
 	type = Column('type', String(100))
 	copyright = Column('copyright', String(100))

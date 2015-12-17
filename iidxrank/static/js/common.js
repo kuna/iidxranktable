@@ -152,3 +152,27 @@ function convertSongLevel(level) {
 		return "★"+level;
 	}
 }
+
+/* uses local storage for save/load settings */
+function loadSetting(key, def) {
+	if (typeof(Storage) !== "undefined") {
+		r = localStorage.getItem(key);
+		if (r == undefined) {
+			return def;
+		} else {
+			return r;
+		}
+	} else {
+		/* this browser doesn't support Local Storage Objects, sorry! */
+		return def;
+	}
+}
+function saveSetting(key, val) {
+	if (typeof(Storage) !== "undefined") {
+		localStorage.setItem(key, val);
+		return val;
+	} else {
+		/* this browser doesn't support Local Storage Objects, sorry! */
+		return undefined;
+	}
+}

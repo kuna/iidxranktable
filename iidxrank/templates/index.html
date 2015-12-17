@@ -20,6 +20,7 @@ function moveUserpage() {
 		window.location.href = dname + "/iidx";
 	} else {
 		window.location.href = dname + "/iidx/" + username;
+		saveSetting("username", username);
 	}
 }
 
@@ -36,8 +37,10 @@ $(document).ready(function () {
 	});
 
 	var username = "{{ player.userid }}";
-	if (username.length == 0)
+	if (username.length == 0) {
 		username = "!";
+		$("#username").val(loadSetting("username", ""));
+	}
 
 	addSPbutton("SP12.7", "/iidx/" + username + "/sp/12_7");
 	addSPbutton("SP12 (2ch)", "/iidx/" + username + "/sp/12");
