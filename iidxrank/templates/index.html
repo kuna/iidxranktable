@@ -1,7 +1,7 @@
 {% extends "common.html" %}
 {% load staticfiles %}
 {% block head %}
-<script>
+<script language="javascript">
 var dname = "http://" + window.location.host;
 
 function addSPbutton(text, url) {
@@ -16,11 +16,11 @@ function addDPbutton(text, url) {
 
 function moveUserpage() {
 	var username = $("#username").val();
+	saveSetting("username", username);
 	if (username == "") {
 		window.location.href = dname + "/iidx";
 	} else {
 		window.location.href = dname + "/iidx/" + username;
-		saveSetting("username", username);
 	}
 }
 
