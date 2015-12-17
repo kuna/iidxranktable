@@ -35,7 +35,9 @@ function loadUserlist() {
 			iDisplayLength: 50,
 			destroy: true
 		});
+		hideLoading();
 	}
+	showLoading("please wait ...");
 	loadJSON("/iidx/json/userlist/", processor, onload);
 }
 

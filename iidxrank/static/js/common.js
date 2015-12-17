@@ -174,7 +174,7 @@ function saveSetting(key, val) {
 
 /*  loading screen */
 function showLoadingBackground() {
-	$("$loading_background").show();
+	$("#loading_background").show();
 }
 function showLoading(message) {
 	$("#loading_message").text(message);

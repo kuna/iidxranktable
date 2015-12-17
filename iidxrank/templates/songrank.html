@@ -46,9 +46,9 @@ function loadSonglist(type, lvl) {
 			iDisplayLength: 50,
 			destroy: true
 		});
-		$("#buttons button").removeAttr('disabled');
+		hideLoading();
 	}
-	$("#buttons button").attr('disabled', true);
+	showLoading("please wait ...");
 	loadJSON("/iidx/json/musiclist/"+type+"/level/"+lvl, processor, onload);
 }
 
