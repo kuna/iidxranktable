@@ -76,6 +76,7 @@ class Song(Base):
 	songtitle = Column('songtitle', String(40))
 	songlevel = Column('songlevel', Integer)
 	songnotes = Column('songnotes', Integer)
+	version = Column('version', String(20))
 
 	# for calculating MCMC
 	calclevel_easy = Column(Float)
