@@ -37,13 +37,24 @@ def parse_users():
 	return r
 
 #
-# parse_user: return user info
+# parse_user: return user info (includes song)
 # (djname, iidxid, ...)
 #
 def parse_user(username, mode, level):
 	parsedata = jsondata.loadJSONurl("http://json.iidx.me/%s/%s/level/%d/" % (username, mode, level))
 
 	return parsedata
+
+#
+# parse_user: return user info (only user info)
+# (djname, iidxmeid, iidxid)
+#
+def parse_userinfo(username):
+	parsedata = jsondata.loadJSONurl("http://json.iidx.me/%s/recent/" % username)
+	if parsedata == None:
+		return None
+	else:
+		return ( parsedata['userdata']['djname'], username, parsedata['userdata']['iidxid'] )
 
 #
 # parse_songs: return songs in level
