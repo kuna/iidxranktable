@@ -211,15 +211,15 @@ def calculate_player(player, _range=(-0.5, 0.5), iterate_time=20):
 	player.dplevel = lvls[scores.index(min(scores))]
 	return min(scores)
 
+# you need to commit manually
 def calculate_player_by_name(iidxmeid, _range=(-0.5, 0.5), iterate_time=15):
 	player = db.Player.query.filter_by(iidxmeid=iidxmeid).one()
 	# in case of this player hadn't played any(or big difference), initalize it
 	log.Print('initalize player level ...')
-	calculate_player(player, (0, 12), 100)
+	calculate_player(player, (0, 20), 50)
 	log.Print('detailing player level ...')
+	calculate_player(player, (6, 6), 20)
 	err = calculate_player(player, _range, iterate_time)
-	# must save it to DB right now
-	db.commit()
 	return err
 
 def iterate_player(_range=(-0.5, 0.5), iterate_time=5):

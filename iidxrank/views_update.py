@@ -122,7 +122,11 @@ def update_player_worker(iidxmeid):
 	updating_username = iidxmeid
 
 	updateuser.update_single_user_by_name(iidxmeid)
+	# commit first to get data in calculatedb
+	db.commit()
 	calculatedb.calculate_player_by_name(iidxmeid)
+	# must save it to DB right now to show right result
+	db.commit()
 
 	log.Print('committing...')
 	db.commit()
