@@ -6,7 +6,7 @@ import db
 import math
 import parser_iidxme
 import time
-from datetime import datetime
+from datetime import datetime, date
 import log
 
 db_session = db.get_session()
@@ -37,29 +37,33 @@ def update_songs():
 		data = parser_iidxme.parse_songs(lvl, "dp")
 		update(data)
 
+def add_user(user):
+	player_query = db_session.query(db.Player).filter_by(iidxid=user[2])
+	if (player_query.count()):
+		# edit nickname
+		player = player_query.one()
+		player.iidxnick = user[0]
+		player.iidxmeid = user[1]
+		return 0
+	else:
+		# add new user
+		player = db.Player(iidxid=user[2], 
+				iidxnick=user[0],
+				iidxmeid=user[1],
+				time=datetime.min,
+				sppoint=0,
+				dppoint=0,
+				spclass=0,
+				dpclass=0,
+				splevel=0,
+				dplevel=0)
+		db_session.add(player)
+		return 1
 
 def update_user():
 	add_count = 0
 	for user in parser_iidxme.parse_users():
-		player_query = db_session.query(db.Player).filter_by(iidxid=user[2])
-		if (player_query.count()):
-			# edit nickname
-			player = player_query.one()
-			player.iidxnick = user[0]
-			player.iidxmeid = user[1]
-		else:
-			# add new user
-			player = db.Player(iidxid=user[2], 
-					iidxnick=user[0],
-					iidxmeid=user[1],
-					sppoint=0,
-					dppoint=0,
-					spclass=0,
-					dpclass=0,
-					splevel=0,
-					dplevel=0)
-			db_session.add(player)
-			add_count += 1
+		add_count += add_user(user)
 	db_session.commit()
 	log.Print('added %d items' % add_count)
 

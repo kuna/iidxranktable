@@ -11,6 +11,7 @@ from update import updateuser
 from update import calculatedb
 from update import db
 from update import log
+from update import parser_iidxme
 
 def checkAdmin(request):
 	if not request.user.is_superuser:
@@ -40,12 +41,8 @@ def update_worker(func):
 	updating = True
 	try:
 		log.Print('initalize DB...')
-		db_session = db.init_db()
-		updatedb.set_session(db_session)
 		func()
 		log.Print('finished. committing...')
-		db_session.commit()
-		db_session.remove()
 	except Exception, e:
 		import traceback
 		log.Print(e)
@@ -150,7 +147,15 @@ def json_update_player(request, username):
 		import traceback, sys
 		print e
 		traceback.print_exc(file= sys.stdout)
-		return JsonResponse({'status': 'not existing user'})
+		user_info = parser_iidxme.parse_userinfo(username)
+		if (user_info == None):
+			return JsonResponse({'status': 'not existing user'})
+		else:
+			log.Print('creating new user %s ...' % username)
+			updateuser.add_user(user_info)
+			db.commit()	# MUST do commit!
+			# try again recursively
+			return json_update_player(request, username)
 
 def json_update_player_status(request, username):
 	return JsonResponse({'status': 'success', 'updating':(updating_username == username)})
