@@ -121,12 +121,19 @@ def update_player_worker(iidxmeid):
 	updating_user = True
 	updating_username = iidxmeid
 
-	updateuser.update_single_user_by_name(iidxmeid)
-	# commit first to get data in calculatedb
-	db.commit()
-	calculatedb.calculate_player_by_name(iidxmeid)
-	# must save it to DB right now to show right result
-	db.commit()
+	try:
+		updateuser.update_single_user_by_name(iidxmeid)
+		# commit first to get data in calculatedb
+		db.commit()
+	except Exception, e:
+		log.Print("error occured during updateuser.update_single_user_by_name(%s)" % updating_user)
+
+	try:
+		calculatedb.calculate_player_by_name(iidxmeid)
+		# must save it to DB right now to show right result
+		db.commit()
+	except Exception, e:
+		log.Print("error occured during calculatedb.calculate_player_by_name(%s)" % updating_user)
 
 	log.Print('committing...')
 	db.commit()
