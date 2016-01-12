@@ -297,7 +297,7 @@ def calc_player_rough():
 	log.Print("playerlevel_stabilizing_rough")
 	for i in range(1):
 		log.Print("iteration %d" % i)
-		iterate_player((-14, 14), 40)
+		iterate_player((-14, 14), 20)
 
 def calc_song_rough(d=None):
 	log.Print("songlevel_stabilizing_rough")
@@ -345,11 +345,14 @@ def main():
 	#initDB()
 
 	# make player stable
-	#calc_player_stable()
+	calc_player_rough()
+	calc_player_stable()
+	db.commit()
 
 	# make song stable
-	#calc_song_rough()
-	#calc_song_stable()
+	calc_song_rough()
+	calc_song_stable()
+	db.commit()
 
 	# full iteration
 	calc_MCMC()
