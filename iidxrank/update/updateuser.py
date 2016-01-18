@@ -141,7 +141,7 @@ def update_user_information():
 		db_session.commit()
 
 def main():
-	#update_user()
+	update_user()
 
 	update_user_information()
 
