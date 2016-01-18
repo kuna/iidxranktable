@@ -193,6 +193,8 @@ def calculate_player(player, _range=(-0.5, 0.5), iterate_time=20):
 		return cul
 
 	# random walk for 10 times
+	if (player.splevel < 0):
+		player.splevel = 0
 	lvls = [player.splevel,]
 	scores = [getScore(player, lvls[0], "SP"),]
 	for t in range(iterate_time):
@@ -202,6 +204,8 @@ def calculate_player(player, _range=(-0.5, 0.5), iterate_time=20):
 	player.splevel = lvls[scores.index(min(scores))]
 
 	# random walk for 10 times
+	if (player.dplevel < 0):
+		player.dplevel = 0
 	lvls = [player.dplevel,]
 	scores = [getScore(player, lvls[0], "DP"),]
 	for t in range(iterate_time):

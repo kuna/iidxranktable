@@ -77,6 +77,8 @@ def getdanstring(dan):
 	elif (dan == 18):
 		return u"十段"
 	elif (dan == 19):
+		return u"中伝"
+	elif (dan == 20):
 		return u"皆伝"
 
 def getrank(rate):
