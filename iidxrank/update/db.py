@@ -5,6 +5,7 @@ from sqlalchemy.ext.declarative import declarative_base
 
 from datetime import datetime
 import os
+import private
 
 Base = declarative_base()
 
@@ -16,6 +17,7 @@ class RankTable(Base):
 
 	tablename = Column('tablename', String(100))
 	tabletitle = Column('tabletitle', String(100))
+	tabletitlehtml = Column('tabletitlehtml', String(200))
 	level = Column('level', Integer)
 	type = Column('type', String(100))
 	copyright = Column('copyright', String(100))
@@ -43,6 +45,7 @@ class RankCategory(Base):
 
 	ranktable_id = Column(Integer, ForeignKey('iidxrank_ranktable.id'))
 	categoryname = Column('categoryname', String(20))
+	categorytype = Column('categorytype', Integer, default=0)
 
 	@property
 	def songs(self):
@@ -73,10 +76,17 @@ class Song(Base):
 	songtitle = Column('songtitle', String(40))
 	songlevel = Column('songlevel', Integer)
 	songnotes = Column('songnotes', Integer)
+	version = Column('version', String(20))
 
 	# for calculating MCMC
-	calclevel = Column(Float)
-	calcweight = Column(Float)
+	calclevel_easy = Column(Float)
+	calcweight_easy = Column(Float)
+	calclevel_normal = Column(Float)
+	calcweight_normal = Column(Float)
+	calclevel_hd = Column(Float)
+	calcweight_hd = Column(Float)
+	calclevel_exh = Column(Float)
+	calcweight_exh = Column(Float)
 
 class PlayRecord(Base):
 	__tablename__ = 'iidxrank_playrecord'
@@ -112,16 +122,32 @@ class Player(Base):
 		return False
 
 
-def init_db():
-	"""
-	if (not os.path.exists("data.db")):
-		open("data.db", "a").close()	# create empty file
-	engine = create_engine('sqlite:///data.db', convert_unicode=True)
-	"""
-	engine = create_engine('mysql://id:pass@localhost/database?charset=utf8', convert_unicode=True)
-	db_session = scoped_session(sessionmaker(autocommit=False,
-	                                         autoflush=False,
-	                                         bind=engine))
-	Base.query = db_session.query_property()
-	Base.metadata.create_all(bind=engine)
+"""
+if (not os.path.exists("data.db")):
+	open("data.db", "a").close()	# create empty file
+engine = create_engine('sqlite:///data.db', convert_unicode=True)
+"""
+engine = create_engine(private.session_url, convert_unicode=True)
+db_session = scoped_session(sessionmaker(autocommit=False,
+                                         autoflush=False,
+                                         bind=engine))
+
+Base.query = db_session.query_property()
+
+# get db_session
+def get_session():
 	return db_session
+
+# do commit
+def commit():
+	db_session.commit()
+
+# do commit
+# you may don't need to use this
+def remove():
+	db_session.remove()
+
+# you shouldn't call it here - call it in django (migrate)
+def init_db():
+	raise Exception("Don't call this here!")
+	Base.metadata.create_all(bind=engine)

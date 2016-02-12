@@ -136,8 +136,8 @@ def findRecommend_fast(player, playtype="SP", level=-1):
 		# if level is not fit then ignore
 		if (level != -1 and song.songlevel != int(level)):
 			continue
-		# ignore not-calculated song
-		if (song.calclevel == 0):
+		# ignore not-evaulated song
+		if (song.calclevel_easy == 0):
 			continue
 
 		# find play record
@@ -170,18 +170,15 @@ def findRecommend_fast(player, playtype="SP", level=-1):
 		}
 
 		# get clear probability
-		###########################################
-		# this is not accurate! (try to be accurate)
-		###########################################
 		my_clear_prob = [
 			100,	# noplay
 			100,	# fail
 			100,	# assist
-			round(calculatedb.model(-song.calcweight, song.calclevel-0.6, mylevel)*100),	# easy 3
-			round(calculatedb.model(-song.calcweight, song.calclevel, mylevel)*100),	# groove 4
-			round(calculatedb.model(-song.calcweight, song.calclevel+0.3, mylevel)*100),		# hard 5
-			round(calculatedb.model(-song.calcweight, song.calclevel+1.0, mylevel)*100),	# exh
-			round(calculatedb.model(-song.calcweight, song.calclevel+2.3, mylevel)*100),	# fc
+			round(calculatedb.model_song(song.calcweight_easy, mylevel, song.calclevel_easy)*100),	# easy 3
+			round(calculatedb.model_song(song.calcweight_normal, mylevel, song.calclevel_normal)*100),	# groove 4
+			round(calculatedb.model_song(song.calcweight_hd, mylevel, song.calclevel_hd)*100),		# hard 5
+			round(calculatedb.model_song(song.calcweight_exh, mylevel, song.calclevel_exh)*100),	# exh
+			round(calculatedb.model_song(song.calcweight_exh, mylevel, song.calclevel_exh+1.0)*100),	# fc
 		]
 		target_clear = 0
 		for i in range(8):

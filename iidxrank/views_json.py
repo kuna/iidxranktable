@@ -20,8 +20,6 @@ def createSonginfoFromModel(songs):
 			'songlevel': song.songlevel,
 			'series': song.version,
 			'categories': cates,
-			'calclevel': round(song.calclevel_hd, 2),
-			'calcweight': round(song.calcweight_hd, 2),
 			'calclevel_easy': round(song.calclevel_easy, 2),
 			'calcweight_easy': round(song.calcweight_easy, 2),
 			'calclevel_normal': round(song.calclevel_normal, 2),

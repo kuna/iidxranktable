@@ -35,27 +35,39 @@ def compile_data(ranktable, player, song_query):
 	}
 	for category in score:
 		for x in category['songs']:
-			clearcount['noplay'] = clearcount['noplay'] + (x['clear'] == 0)
-			clearcount['failed'] = clearcount['failed'] + (x['clear'] == 1)
-			clearcount['assist'] = clearcount['assist'] + (x['clear'] == 2)
-			clearcount['easy'] = clearcount['easy'] + (x['clear'] == 3)
-			clearcount['normal'] = clearcount['normal'] + (x['clear'] == 4)
-			clearcount['hard'] = clearcount['hard'] + (x['clear'] == 5)
-			clearcount['exhard'] = clearcount['exhard'] + (x['clear'] == 6)
-			clearcount['fullcombo'] = clearcount['fullcombo'] + (x['clear'] == 7)
+			clearcount['noplay'] += (x['clear'] == 0)
+			clearcount['failed'] += (x['clear'] == 1)
+			clearcount['assist'] += (x['clear'] == 2)
+			clearcount['easy'] += (x['clear'] == 3)
+			clearcount['normal'] += (x['clear'] == 4)
+			clearcount['hard'] += (x['clear'] == 5)
+			clearcount['exhard'] += (x['clear'] == 6)
+			clearcount['fullcombo'] += (x['clear'] == 7)
+
+	# count rank
+	rankcount = {
+		'AAA': 0,
+		'AA': 0,
+		'A': 0,
+		'B': 0,
+		'C': 0,
+		'D': 0,
+		'E': 0,
+		'F': 0,
+	}
+	for category in score:
+		for x in category['songs']:
+			for rank in rankcount:
+				rankcount[rank] += (x['rank'] == rank)
 
 	# make information for return
 	pageinfo = {
 		'title': ranktable.tabletitle,
-		'titlehtml': ranktable.tabletitle\
-			.replace('SP', '<span style="color:red;">SP</span>')\
-			.replace('DP', '<span style="color:#0099FF;">DP</span>')\
-			.replace('Hard', '<span style="color:red;">Hard</span>')\
-
-			.replace('Normal', '<span style="color:#0099FF;">Normal</span>'),
+		'titlehtml': ranktable.getTitleHTML(),
 		'tablename': ranktable.tablename,
 		'type': ranktable.type,
 		'clearinfo': clearcount,
+		'rankinfo': rankcount,
 		'copyright': ranktable.copyright,
 		'date': ranktable.time,
 	}
@@ -93,6 +105,7 @@ def addMetadata(musicdata, data, song_query):
 					'diff': song.songtype[-1:],
 					'title': song.songtitle,
 					'id': song.songid,
+					'version': song.version,
 				},
 			}
 			musicdata.append(music)
@@ -136,16 +149,27 @@ def addMetadata(musicdata, data, song_query):
 			'category': category, 
 			'items': items,
 		})
-	def getCategory(categoryname, sortindex=None):
+	def getCategoryProcessed(category_model=None):
+		# none model means, '-'(no category)
+		if (category_model == None):
+			categoryname = '-'
+			categorytype = 0
+			sortindex = 0
+		else:
+			categoryname = category_model.categoryname
+			categorytype = category_model.categorytype
+			sortindex = category_model.get_sortindex()
+			if (not sortindex):
+				sortindex = 0
+		# if processed category exists, then return it
 		for category in categories:
 			if (category['category'] == categoryname):
 				return category
 		# if category is not exist, then make new one
-		if (not sortindex):
-			sortindex = 0
 		category = { 'category': categoryname, 
 				'songs': [],
 				'sortindex': sortindex,
+				'categorytype': categorytype,
 				'categoryclearstring': u'FULL_COMBO',
 				'categoryclear': 7 }	# default setting
 		categories.append(category)
@@ -163,9 +187,9 @@ def addMetadata(musicdata, data, song_query):
 	for music in musicdata:
 		category = getCategoryDB(music['pkid'])
 		if (category == None):
-			getCategory("-")['songs'].append(music)
+			getCategoryProcessed()['songs'].append(music)
 		else:
-			getCategory(category.categoryname, category.get_sortindex())['songs'].append(music)
+			getCategoryProcessed(category)['songs'].append(music)
 
 	#
 	# category lamp process

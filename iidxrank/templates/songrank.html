@@ -1,4 +1,5 @@
 {% extends "common.html" %}
+{% block subtitle %} - songrank{% endblock %}
 {% block head %}
 
 {% load staticfiles %}
@@ -11,16 +12,20 @@ function loadSonglist(type, lvl) {
 	var dataSet = []
 	function processor(row_json, idx) {
 		var recmd = "";
-		if (row_json.calcweight < 4) {			// don't recommend
+		calcweight = (row_json.calcweight_easy)/1;
+		if (calcweight < 5.5) {			// don't recommend
 			recmd= "△"
-		} else if (row_json.calcweight > 16) {	// recommend
+		} else if (calcweight > 13) {	// recommend
 			recmd= "⊙"
 		}
 
 		dataSet.push([
-			type+"★"+row_json.songlevel,
+			type+convertSongLevel(row_json.songlevel),
 			row_json.songtitle,
-			"★"+row_json.calclevel,
+			convertSongLevel(row_json.calclevel_easy),
+			convertSongLevel(row_json.calclevel_normal),
+			convertSongLevel(row_json.calclevel_hd),
+			convertSongLevel(row_json.calclevel_exh),
 			row_json.series,
 			recmd
 		]);
@@ -33,17 +38,22 @@ function loadSonglist(type, lvl) {
 			columnDefs: [
 				{ "type": "diff", "targets": 0 },
 				{ "type": "diff", "targets": 2 },
-				{ "type": "series", "targets": 3 }
+				{ "type": "diff", "targets": 3 },
+				{ "type": "diff", "targets": 4 },
+				{ "type": "diff", "targets": 5 },
+				{ "type": "series", "targets": 6 }
 			],
 			iDisplayLength: 50,
 			destroy: true
 		});
+		hideLoading();
 	}
+	showLoading("please wait ...");
 	loadJSON("/iidx/json/musiclist/"+type+"/level/"+lvl, processor, onload);
 }
 
 $(function() {
-	$("#tabledata").html("<tr><td class='loading' colspan=5>Loading ...</td></tr>");
+	$("#tabledata").html("<tr><td class='loading' colspan=8>Loading ...</td></tr>");
 	loadSonglist("SP", 12);
 });
 </script>
@@ -54,10 +64,10 @@ $(function() {
 <div id="container">
 	<div id="menu">
 		<!-- addon button -->
-		<div class="clear">
+		<div class="row">
 			<a href="../.."><button id="home" class="btn btn-default" style="float:left;">return</button></a>
 		</div>
-		<div class="clear">
+		<div class="row" id="buttons">
 			<a href="#"><button class="btn btn-default" onclick='loadSonglist("SP", 12);'>SP12</button></a>
 			<a href="#"><button class="btn btn-default" onclick='loadSonglist("SP", 11);'>SP11</button></a>
 			<a href="#"><button class="btn btn-default" onclick='loadSonglist("SP", 10);'>SP10</button></a>
@@ -65,8 +75,10 @@ $(function() {
 			<a href="#"><button class="btn btn-default" onclick='loadSonglist("DP", 11);'>DP11</button></a>
 			<a href="#"><button class="btn btn-default" onclick='loadSonglist("DP", 10);'>DP10</button></a>
 		</div>
-		<div class="clear">
-			추정치는 10레벨까지 파싱한 것을 기준으로 하여 하드 게이지 기준으로 선형보간된 값입니다.
+		<div class="row">
+			<ul>
+				<li>충분한 플레이 기록<i>(FAIL이 없거나 전부 HC~EXHC 이상이거나)</i>이 없을 경우에는 수치가 올바르게 표시되지 않을 수 있습니다.</li>
+			</ul>
 		</div>
 	</div>
 
@@ -74,11 +86,17 @@ $(function() {
 	<table id="list" class="hover stripe display">
 		<thead>
 			<tr>
-				<th class="small">★</th>
-				<th>Title</th>
-				<th>Estimated</th>
-				<th>Series</th>
-				<th class="small">良</th>
+				<th class="small" rowspan='2'>★</th>
+				<th rowspan='2'>Title</th>
+				<th colspan='4'>Estimated</th>
+				<th rowspan='2'>Series</th>
+				<th class="small" rowspan='2'>良</th>
+			</tr>
+			<tr>
+				<th>Easy</th>
+				<th>Groove</th>
+				<th>Hard</th>
+				<th>EXH</th>
 			</tr>
 		</thead>
 		<tbody id="tabledata">
@@ -92,4 +110,4 @@ $(function() {
 </div>
 
 {% endblock %}
-{% block etc %}updated {{ pageinfo.date|date:"ymd" }} / <a href="#">what is this?</a>{% endblock %}
+{% block etc %}{% include 'table_detail.html' %}{% endblock %}

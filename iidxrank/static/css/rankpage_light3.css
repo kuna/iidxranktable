@@ -1,5 +1,5 @@
-.lamp_clear { background:url('../img/clearlamp.png') no-repeat; display:block; position:absolute; 
-	right:0px; top:6px; width:20px; height:24px; }
+.lamp_clear { background:url('../img/clearlamp2.png') no-repeat; display:block; position:absolute; 
+	right:0px; top:0px; width:18px; height:30px; }
 .lamp_clear.lamp_clear_0 { display:none; }	/* no_play */
 .lamp_clear.lamp_clear_1 { background-position:0 0; }		/* failed */
 .lamp_clear.lamp_clear_2 { background-position:0 -30px; }	/* assist */

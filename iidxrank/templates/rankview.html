@@ -1,14 +1,16 @@
 {% extends "common.html" %}
+{% block subtitle %} - {{ pageinfo.title }}{% endblock %}
 {% block head %}
 {% load staticfiles %}
 <!-- override metadata -->
 <meta name="viewport" content="width=1120, user-scalable=1">
 
 <link rel=stylesheet type=text/css href="{% static 'css/rankpage_common.css' %}">
-<link rel=stylesheet type=text/css id="rankpage_style" href="{% static 'css/rankpage_light2.css' %}">
+<link rel=stylesheet type=text/css id="rankpage_style" href="{% static 'css/rankpage_light3.css' %}">
 <script type="text/javascript" src="{% static 'js/html2canvas.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/ranklist.js' %}"></script>
 
+<link href='https://fonts.googleapis.com/css?family=Comfortaa' rel='stylesheet' type='text/css'>
 <script language="javascript">
 // django csrf token
 window.csrftoken="{{ csrf_token }}";
@@ -17,19 +19,66 @@ var png_base64 = "";
 var ftitle = "{{ pageinfo.title }} - DJ {{ user.name }}"
 var fname = ftitle + ".png";
 var rankpage_style_arr = [
+"{% static 'css/rankpage_light3.css' %}",
 "{% static 'css/rankpage_light2.css' %}",
 "{% static 'css/rankpage_default.css' %}",
-"{% static 'css/rankpage_light.css' %}",
+"{% static 'css/rankpage_hard.css' %}",
 ];
-var rankpage_style_idx = 0;
+var rankpage_style_idx = parseInt(loadSetting("rankpage_idx", 0));
 
-$(document).ready(function () {
+
+/* we need additional script to load & save rank page */
+function modifyClear(obj, new_clear) {
+	$(obj).attr("data-clear", new_clear);
+	$(obj).find(".lamp_clear").attr("class", "lamp_clear lamp_clear_"+new_clear);
+}
+function createSaveString(nick, iidxid, spdan, dpdan, objs) {
+	arr_songs = [];
+	objs.each( function (idx) {
+		song = {};
+		song['id'] = $(this).attr('data-id');
+		song['clear'] = $(this).attr('data-clear');
+		arr_songs.push(song);
+	})
+	return JSON.stringify({'nick': nick, 'iidxid': iidxid, 'spdan': spdan, 'dpdan': dpdan, 'songs': arr_songs});
+}
+function loadSaveString(str) {
+	jsondata = JSON.parse(str);
+	$("#djname").text(jsondata.nick);
+	$("#iidxid").text(jsondata.iidxid);
+	for (var idx in jsondata.songs) {
+		var songobj = $("li.songli[data-id='" + jsondata.songs[idx].id + "']");
+		if (songobj) {
+			if (jsondata.songs[idx].clear > 0) {
+				console.log(jsondata.songs[idx]);
+				console.log(songobj);
+			}
+			modifyClear(songobj, jsondata.songs[idx].clear);
+		}
+	}
+}
+/**/
+
+$(function () {
+	/**************************************
+	 * skin part 
+	 **************************************/
+	function changeSkin() {
+		$('#rankpage_style').attr("href", rankpage_style_arr[rankpage_style_idx]);
+		$('#change_rank_css').text('Skin ' + (rankpage_style_idx+1) + '/' + rankpage_style_arr.length);
+		saveSetting("rankpage_idx", rankpage_style_idx);
+	}
 	$('#change_rank_css').click(function () {
 		rankpage_style_idx = (rankpage_style_idx + 1) % rankpage_style_arr.length;
-		$("#rankpage_style").attr("href", rankpage_style_arr[rankpage_style_idx]);
+		changeSkin();
 	});
+	changeSkin();
+
+	/**************************************
+	 * rank, rate
+	 **************************************/
 	$('#show_rank').click(function () {
-		$('.rank').show();
+		$('.rank').toggle();
 	});
 	$('#order_rate').click(function () {
 		$('.songlist').each(function (e) {
@@ -52,6 +101,47 @@ $(document).ready(function () {
 		});
 	});
 
+	/**************************************
+		saveload part 
+	 **************************************/
+	function getSaveState() {
+		nick = $("#djname").text();
+		iidxid = $("#iidxid").text();
+		return createSaveString(nick, iidxid, "8", "8", $("li.songli"));
+	}
+	// if not logined state then -
+	// activate function
+	// and load setting when page loads
+	// and save setting when exit
+	if ({{user.iidxid}} == 0) {
+		$('#load_and_save').click(function () { 
+			$("#loading_background").toggle();
+			$("#container_saveload").toggle();
+			$("#json_code").val(getSaveState());
+		});
+		$(window).unload(function () {
+			saveSetting("{{ pageinfo.tablename }}_data", getSaveState());
+		});
+		var savedata = loadSetting("{{ pageinfo.tablename }}_data");
+		if (savedata)
+			loadSaveString(savedata);
+	} else {
+		$('#load_and_save').hide();
+	}
+
+	/**************************************
+	 * clear modify part
+	 **************************************/
+	$("li.songli").bind('contextmenu', function (e) {
+		var new_clear = (parseInt($(this).attr("data-clear"))+1) % 8;
+		modifyClear($(this), new_clear);
+		e.preventDefault();
+		return false;
+	});
+
+	/**************************************
+	 * image capture/send to twitter part 
+	 **************************************/
 	$("#pleaseWaitDialog").show();
 	$("#capture").show();
 	$("#send").hide();
@@ -130,11 +220,17 @@ $(document).ready(function () {
 //
 $(window).load(function () {
 	$(".songlist .name").each(function (e) {
-		var canvas = new ranklist(150, 20, $(this).text(), "#000000", "14px");
+		clr = "#000000";
+		if ($(this).attr("data-series") == "23") {
+			// text color is different if it's current series
+			clr = "#cc66cc";
+		}
+		var canvas = new ranklist(150, 20, $(this).text(), clr, 14);
 		$(this).empty();
 		$(this).append($(canvas.makeCanvas()));
 	});
 });
+
 </script>
 
 {% endblock %}
@@ -147,6 +243,7 @@ $(window).load(function () {
 	<button id="order_rate" class="btn btn-default">order by rate</button>
 	<button id="order_clear" class="btn btn-default">order by clear</button>
 
+	<button id="load_and_save" class="btn btn-default"><span class="glyphicon glyphicon-file"></span></button>
 	<button id="capture" class="btn btn-default" data-loading-text="please wait..." ><span class="glyphicon glyphicon-camera"></span> capture</button>
 	<button id="send" class="btn btn-default" data-loading-text="uploading..."><span class="glyphicon glyphicon-upload"></span> upload for url/twitter</button>
 	<input type="text" id="url" value="" class="form-control" readonly>
@@ -158,46 +255,63 @@ $(window).load(function () {
 	<h2 id="title">{{ pageinfo.titlehtml|safe }}</h2>
 
 	<!-- user image qpro -->
-	<div class="userimage" style="
-		float: right;
-		margin-top: -100px;
-		margin-bottom: -70px;
-		">
+	<div id="userimage">
 		<img src="/iidx/qpro/{{ user.iidxid }}/" width="170">
+		<script language="javascript">
+			$(function() {
+				$('#container .inner').css('background', 'url("/iidx/qpro/{{ user.iidxid }}/") no-repeat -15px 0px');
+			});
+		</script>
 	</div>
 
 	<!-- user info -->
-	<p id="user"><span class="label name">DJ {{ user.name }}<span class="iidxid">{{ user.iidxid }}</span></span><span class="label {{ pageinfo.type }} spdan dan{{ user.spdannum }}">{{ user.spdan }}</span><span class="label {{ pageinfo.type }} dpdan dan{{ user.dpdannum }}">{{ user.dpdan }}</span></p>
+	<div id="info">
+		<p id="user">
+			<span class="label name"><span id="djname">DJ {{ user.name }}</span><span class="iidxid" id="iidxid">{{ user.iidxid }}</span></span>
+			<span class="label {{ pageinfo.type }} spdan dan{{ user.spdannum }}">{{ user.spdan }}</span><span class="label {{ pageinfo.type }} dpdan dan{{ user.dpdannum }}">{{ user.dpdan }}</span>
+		</p>
 
-	<!-- clear lamp info -->
-	<ul id="preview">
-		<li>FAILED<span class="clearcount">({{ pageinfo.clearinfo.failed }})</span><div class="lamp_sample lamp_category FAILED"></div></li>
-		<li>ASSIST CLEAR<span class="clearcount">({{ pageinfo.clearinfo.assist }})</span><div class="lamp_sample lamp_category ASSIST_CLEAR"></div></li>
-		<li>EASY CLEAR<span class="clearcount">({{ pageinfo.clearinfo.easy }})</span><div class="lamp_sample lamp_category EASY_CLEAR"></div></li>
-		<li>CLEAR<span class="clearcount">({{ pageinfo.clearinfo.normal }})</span><div class="lamp_sample lamp_category CLEAR"></div></li>
-		<li>HARD CLEAR<span class="clearcount">({{ pageinfo.clearinfo.hard }})</span><div class="lamp_sample lamp_category HARD_CLEAR"></div></li>
-		<li>EX-HARD CLEAR<span class="clearcount">({{ pageinfo.clearinfo.exhard }})</span><div class="lamp_sample lamp_category EX-HARD_CLEAR"></div></li>
-		<li>FULLCOMBO<span class="clearcount">({{ pageinfo.clearinfo.fullcombo }})</span><div class="lamp_sample lamp_category FULL_COMBO"></div></li>
-	</ul>
+		<!-- clear lamp info -->
+		<ul id="preview">
+			<li class="failed">{{ pageinfo.clearinfo.failed }}</li>
+			<li class="assist">{{ pageinfo.clearinfo.assist }}</li>
+			<li class="easy">{{ pageinfo.clearinfo.easy }}</li>
+			<li class="normal">{{ pageinfo.clearinfo.normal }}</li>
+			<li class="hard">{{ pageinfo.clearinfo.hard }}</li>
+			<li class="exh">{{ pageinfo.clearinfo.exhard }}</li>
+			<li class="fc">{{ pageinfo.clearinfo.fullcombo }}</li>
+		</ul>
+
+		<!--<ul id="rankinfo">
+			<li class="AAA">{{ pageinfo.rankinfo.AAA }}</li>
+			<li class="AA">{{ pageinfo.rankinfo.AA }}</li>
+			<li class="A">{{ pageinfo.rankinfo.A }}</li>
+			<li class="B">{{ pageinfo.rankinfo.B }}</li>
+			<li class="C">{{ pageinfo.rankinfo.C }}</li>
+			<li class="D">{{ pageinfo.rankinfo.D }}</li>
+			<li class="E">{{ pageinfo.rankinfo.E }}</li>
+			<li class="F">{{ pageinfo.rankinfo.F }}</li>
+		</ul>-->
+	</div>
 
 	<div id="ranktable">
 		<div class="table outertable">
 			{% for category in score %}
 			<div class="row">
-				<div class="cell rowname">
-					<!-- <span class="name">{{ category.category }}</span> -->
-					<span class="lamp_group {{ category.categoryclearstring }}">{{ category.category }}</span>
+				<div class="cell celltype{{ category.categorytype }} rowname">
+					<span class="name">{{ category.category }}</span>
+					<div class="lamp_group {{ category.categoryclearstring }}"></div>
 				</div>
-				<div class="cell">
+				<div class="cell celltype{{ category.categorytype }}">
 					<ul class="songlist">
 						{% for song in category.songs %}
 						<a href="/iidx/songcomment/{{ pageinfo.tablename }}/{{ song.pkid }}/"
 							onclick="return openComment(this.href);"
 							target="_blank">
-							<li class="diff{{ song.data.diff }}" 
-								data-clear="{{ song.clear }}" data-rate="{{ song.rate }}">
-								<span class="name">{{ song.data.title }}</span>
-								<div class="lamp_clear {{ song.clearstring }}"></div>
+							<li class="songli diff{{ song.data.diff }}" 
+								data-clear="{{ song.clear }}" data-rate="{{ song.rate }}" data-id="{{ song.pkid }}">
+								<span class="name" data-series="{{ song.data.version }}">{{ song.data.title }}</span>
+								<div class="lamp_clear lamp_clear_{{ song.clear }}"></div>
 								<div class="rank {{ song.rank }}"></div>
 							</li>
 						</a>
@@ -210,6 +324,9 @@ $(window).load(function () {
 	</div>
 </div></div>
 <div id="rankimg">
+</div>
+<div id="container_saveload" style="display:none;">
+	{% include 'rankviewsaveload.html' %}
 </div>
 {% endblock %}
 {% block etc %}{{ pageinfo.copyright }}<br>updated {{ pageinfo.date|date:"ymd" }}{% endblock %}

@@ -1,0 +1,18 @@
+.lamp_clear { background:url('../img/clear_slash.png') repeat-x; display:block; position:absolute; 
+	left:6px; top:0px; width:160px; height:24px; }
+.lamp_clear.lamp_clear_0 { display:none; }	/* noplay */
+.lamp_clear.lamp_clear_1 { display:none; }	/* failed */
+.lamp_clear.lamp_clear_2 { display:none; }	/* assist */
+.lamp_clear.lamp_clear_3 { display:none; }	/* easy */
+.lamp_clear.lamp_clear_4 { display:none; }	/* groove */
+.lamp_clear.lamp_clear_5 { background-position:0 -120px; }	/* hard */
+.lamp_clear.lamp_clear_6 { background-position:0 -150px; }	/* ex */
+.lamp_clear.lamp_clear_7 { background-position:0 -180px; }	/* fc */
+
+/* background. */
+li.diffA { background-color: #fff; }
+li.diffH { background-color: #ffe; }
+li.diffN { background-color: #eef; }
+
+/* and song cell border color overlapped */
+.songlist li { border-color: #ccc; }

@@ -7,19 +7,34 @@ import db		# you might need sqlalchemy
 from django.db import transaction
 import log
 
+# initalization
+
+db_session = db.get_session()
+
+####################################################
+
 def update_iidxme():
 	def update(data):
 		added_data = 0
 		for song in data:
 			if not db.Song.query.filter_by(songid=song['id'], songtype=song['diff']).count():
+				if (song['notes'] == None):
+					song['notes'] = 0
+
 				song = db.Song(songtitle=song['title'], 
 					songtype=song['diff'],
 					songid=song['id'],
 					songlevel=song['level'],
 					songnotes=song['notes'],
 					version=song['version'],
-					calclevel=0,
-					calcweight=0,)
+					calclevel_easy=0,
+					calcweight_easy=0,
+					calclevel_normal=0,
+					calcweight_normal=0,
+					calclevel_hd=0,
+					calcweight_hd=0,
+					calclevel_exh=0,
+					calcweight_exh=0)
 				db_session.add(song)
 				added_data = added_data+1
 		db_session.commit()
@@ -68,43 +83,50 @@ def updateDB(data, tablename, tabletitle, level):
 		# make rank item
 		# if already exists then update category only
 		for item in group[1]:
-			song_tag = item[0] + "," + item[1]
-			rankitem = db_session.query(db.RankItem).filter_by(rankcategory=category, info=song_tag)
-			if not rankitem.count():
-				###########################################
-				# search song automatically from DB
-				song = db.Song.query.filter_by(songtitle=item[0], songtype=item[1], songlevel=level)
-				if (not song.count()):
-					song = smart_suggestion(item[0], item[1], level)	# name, diff, level
-					if (song == None):
-						continue	# ignore
-				else:
-					song = song.one()
-				# check once more, if same song is already exists in ranktable
-				# if it does, then cancel add new one
-				rankitem_query = db_session.query(db.RankItem)\
-					.join(db.RankItem.rankcategory)\
-					.filter(db.RankCategory.ranktable==table, db.RankItem.song==song)
-				if (rankitem_query.count()):
-					log.Print('same song already exists in rank table!')
-					log.Print('just modifying tag/category...')
-					rankitem = rankitem_query.one()
-					rankitem.info = song_tag
-					rankitem.rankcategory_id = category.id
-					continue
-				#############################################
+			try:
+				song_tag = item[0] + "," + item[1]
+				rankitem = db_session.query(db.RankItem).filter_by(rankcategory=category, info=song_tag)
+				if not rankitem.count():
+					###########################################
+					# search song automatically from DB
+					song = db.Song.query.filter_by(songtitle=item[0], songtype=item[1], songlevel=level)
+					if (not song.count()):
+						song = smart_suggestion(item[0], item[1], level)	# name, diff, level
+						if (song == None):
+							continue	# ignore
+					else:
+						song = song.one()
+					# check once more, if same song is already exists in ranktable
+					# if it does, then cancel add new one
+					rankitem_query = db_session.query(db.RankItem)\
+						.join(db.RankItem.rankcategory)\
+						.filter(db.RankCategory.ranktable==table, db.RankItem.song==song)
+					if (rankitem_query.count()):
+						log.Print('same song already exists in rank table!')
+						log.Print('just modifying tag/category...')
+						rankitem = rankitem_query.one()
+						rankitem.info = song_tag
+						rankitem.rankcategory_id = category.id
+						continue
+					#############################################
 
-				rankitem = db.RankItem(info=song_tag, rankcategory_id=category.id, song_id=song.id)
-				# append item to category
-				category.rankitem.append(rankitem)
-				db_session.add(rankitem)
-				added_data = added_data+1
-			else:
-				rankitem = rankitem.one()
-				rankitem.rankcategory_id = category.id
+					rankitem = db.RankItem(info=song_tag, rankcategory_id=category.id, song_id=song.id)
+					# append item to category
+					category.rankitem.append(rankitem)
+					db_session.add(rankitem)
+					added_data = added_data+1
+				else:
+					rankitem = rankitem.one()
+					rankitem.rankcategory_id = category.id
+			except Exception as e:
+				print 'error occured: %s' % e, item
 
 	log.Print("added %d datas" % added_data)
 
+#
+# this site is depreciated
+# don't use
+#
 def update_SP():
 	log.Print('parsing 2ch')
 	updateDB(parser_custom.parse12(), "SP12_2ch", 
@@ -174,12 +196,12 @@ def smart_suggestion(name, diff, level):
 	#	sug_songs.append()
 
 	while (1):
-		log.Print("cannot find <%s / %s>" % (name, diff))
+		log.Print("cannot find <%s / %s>" % (name.encode('utf-8'), diff))
 		log.Print("but some suggestion was found")
 		idx = 1
 		log.Print("0. (deleted)")
 		for sug_title in suggestions:
-			log.Print("%d. %s (%s)" % (idx, sug_title[0], diff))
+			log.Print("%d. %s (%s)" % (idx, sug_title[0].encode('utf-8'), diff))
 			idx += 1
 		log.Print("enter the song you want or enter song code you want in negative")
 		log.Print("(ex: -23456)")
@@ -206,7 +228,7 @@ def smart_suggestion(name, diff, level):
 				continue
 			else:
 				song = songs.one()
-				log.Print('you selected song [%s]. if okay then [y]' % song.songtitle)
+				log.Print('you selected song [%s]. if okay then [y]' % song.songtitle.encode('utf-8'))
 				okay = raw_input("> ")
 				if (okay == "y"):
 					return song
@@ -216,7 +238,8 @@ def smart_suggestion(name, diff, level):
 
 #
 # make relation with song
-# it's currently depreciated ...
+# depreciated
+# don't use
 #
 def update_relation():
 	log.Print('making relation with song table ...')
@@ -242,31 +265,19 @@ def update_relation():
 
 	log.Print("%d items updated." % updated_cnt)
 
-def set_session(s):
-	global db_session
-	db_session = s
-
 def main():
 	#
 	# you should execute it through IDLE because of unicode
 	# (if you're windows)
 	#
-	log.Print('opening DB ...')
-	global db_session
-	db_session = db.init_db()
 
-	#update_iidxme()
-
-	# this site is depreciated
-	#update_SP()
+	update_iidxme()
 
 	update_DP()
 
-	#update_relation()
-
 	log.Print('finished. closing DB ...')
-	db_session.commit()
-	db_session.remove()
+	db.commit()
+	db.remove()
 
 if __name__ == '__main__':
 	main()

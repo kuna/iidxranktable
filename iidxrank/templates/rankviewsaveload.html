@@ -1,0 +1,31 @@
+<script language="javascript">
+$(function () {
+	function closeDialog () { $("#container_saveload").hide(); hideLoadingBackground(); }
+	$("#dialog_close").click( closeDialog );
+	$("#dialog_load").click(function () { 
+		try {
+			loadSaveString($("#json_code").val()); 
+			closeDialog(); 
+		} catch (e) {
+			console.log(e);
+			alert("error\n뭔가 잘못된 데이터입니다!");
+		}
+	});
+});
+</script>
+<p>
+	iidx.me 아이디가 없어도 대략적인 사용이 가능합니다.<br>
+	마우스 오른쪽 클릭을 통해서 클리어 상태를 조작하실 수 있습니다.<br>
+</p>
+<!--
+<p><label>nickname <input id="nick" type="text"></label></p>
+<p><label>iidx ID <input id="iidxid" type="text"></label></p>
+<p><label>SP段 <input id="spdan" type="number"></label></p>
+<p><label>DP段 <input id="dpdan" type="number"></label></p>
+-->
+<textarea id="json_code" cols="50" rows="10"></textarea>
+
+<p>
+	<button id="dialog_close">close</button>
+	<button id="dialog_load">load</button>
+</p>

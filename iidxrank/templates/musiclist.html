@@ -111,8 +111,10 @@ function loadList(url) {
 				}
 				$('body').scrollTop($('#song_lists').offset().top);
 			}
+			hideLoading();
 		}
 	});
+	showLoading("please wait ...")
 }
 
 function addSeries(series) {

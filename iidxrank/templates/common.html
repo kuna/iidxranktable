@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 	<head>
-		<title>{% block title %}iidx.me table rank{% endblock %}</title>
+		<title>{% block title %}iidx.me table rank{% endblock %}{% block subtitle %}{% endblock %}</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1" />
         <meta name="description" content="Beatmania IIDX SP/DP 서열표 검색 사이트입니다. 配列表を検索ができます。">
@@ -20,6 +20,10 @@
 		{% block body %}{% endblock %}
 		<div id="footer">by @lazykuna<br>iidx.me is powered by kuromitz<br>beatmania IIDX is copyrighted by KONAMI<br><br>{% block etc %}{% endblock %}</div>
 
+		<!-- loading form and etc ... -->
+		<div id="loading_background" style="display:none;"></div>
+		<div id="loading_message" style="display:none;"></div>
+		<div id="message" style="display:none;"></div>
 
 <!-- google Analytics -->
 <script>
@@ -33,6 +37,5 @@
 
 </script>
 <!-- google Analytics end -->
-
 	</body>
 </html>

@@ -1,4 +1,4 @@
 *.db
 *.sql
-db.py
 *.png
+private.py

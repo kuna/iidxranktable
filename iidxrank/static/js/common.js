@@ -8,11 +8,6 @@ function openComment(url) {
 	return false;
 }
 
-/* alert message */
-setTimeout(function() {
-	$("#message").fadeOut(2000);
-}, 5000);
-
 /* load json (for datatable) */
 function loadJSON(json_url, processor, onload) {
 	$.getJSON(json_url, function(data) {
@@ -48,7 +43,9 @@ $(function() {
 		function conv_diff(s) {
 			if (s == "-")
 				return -999;
-			return parseFloat(s.toString().replace(/★/g, ""));
+			else if (s == "∞")
+				return 999;
+			return parseFloat(s.replace(/SP|DP/i,"").toString().replace(/★/g, ""));
 		}
 
 		function conv_target(s) {
@@ -111,13 +108,14 @@ function updateuser(iidxmeid) {
 			$("#loading_animation").show();
 			setInterval(function () {
 				$.getJSON("/iidx/update/user_status/" + iidxmeid, function (data) {
+					console.log(data.updating);
 					if (!data.updating) {
 						alert("업데이트 완료");
 						$("#loading_animation").hide();
 						window.location.reload();
 					}
 				});
-			}, 2000);
+			}, 3000);
 		} else {
 			alert(data['status']);
 		}
@@ -137,4 +135,67 @@ function updateSongRank(formobj) {
 				+"\nsongname:" + data.song);
 			window.location.reload()
 		});
+}
+
+/* process songlevel */
+function convertSongLevel(level) {
+	if (level > 17) {
+		return "∞";
+	} else if (level <= 0.1) {
+		return "-";
+	} else {
+		return "★"+level;
+	}
+}
+
+/* uses local storage for save/load settings */
+function loadSetting(key, def) {
+	if (typeof(Storage) !== "undefined") {
+		r = localStorage.getItem(key);
+		if (r == undefined) {
+			return def;
+		} else {
+			return r;
+		}
+	} else {
+		/* this browser doesn't support Local Storage Objects, sorry! */
+		return def;
+	}
+}
+function saveSetting(key, val) {
+	if (typeof(Storage) !== "undefined") {
+		localStorage.setItem(key, val);
+		return val;
+	} else {
+		/* this browser doesn't support Local Storage Objects, sorry! */
+		return undefined;
+	}
+}
+
+/*  loading screen */
+function showLoadingBackground() {
+	$("#loading_background").show();
+}
+function showLoading(message) {
+	$("#loading_message").text(message);
+	$("#loading_message").show();
+	showLoadingBackground();
+}
+function hideLoadingBackground() {
+	$("#loading_background").fadeOut(500);
+}
+function hideLoading(message) {
+	$("#loading_message").fadeOut(500);
+	hideLoadingBackground();
+}
+function showMessage(message) {
+	// temporarily message, so it'll fade out automatically.
+	$("#message").text(message);
+	$("#message").show();
+	if (typeof _tid !== 'undefined') {
+		clearTimeout(_tid);
+	}
+	_tid = setTimeout(function() {
+		$("#message").fadeOut(2000);
+	}, 5000);
 }

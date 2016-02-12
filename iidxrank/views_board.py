@@ -58,7 +58,8 @@ def songcomment(request, ranktablename, songid):
 			writer = request.POST["writer"]
 			if (len(text) <= 5 or len(writer) <= 0):
 				message = u"코멘트나 이름이 너무 짧습니다."
-			if (models.BannedUser.objects.filter(ip=ip).count()):
+			ip_ban = ".".join(ip.split(".")[:3])
+			if (models.BannedUser.objects.filter(ip=ip_ban).count()):
 				message = u"차단당한 유저입니다."
 
 			if (message == ""):

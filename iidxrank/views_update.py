@@ -11,6 +11,7 @@ from update import updateuser
 from update import calculatedb
 from update import db
 from update import log
+from update import parser_iidxme
 
 def checkAdmin(request):
 	if not request.user.is_superuser:
@@ -40,12 +41,8 @@ def update_worker(func):
 	updating = True
 	try:
 		log.Print('initalize DB...')
-		db_session = db.init_db()
-		updatedb.set_session(db_session)
 		func()
 		log.Print('finished. committing...')
-		db_session.commit()
-		db_session.remove()
 	except Exception, e:
 		import traceback
 		log.Print(e)
@@ -120,19 +117,26 @@ def rankupdate(request):
 updating_user = False
 updating_username = ""
 def update_player_worker(iidxmeid):
-	global updating_user
+	global updating_user, updating_username
 	updating_user = True
 	updating_username = iidxmeid
-	log.Print('initalize DB...')
-	db_session = db.init_db()
 
-	calculatedb.set_session(db_session)
-	updateuser.update_single_user_by_name(iidxmeid)
-	calculatedb.calculate_player_by_name(iidxmeid)
+	try:
+		updateuser.update_single_user_by_name(iidxmeid)
+		# commit first to get data in calculatedb
+		db.commit()
+	except Exception, e:
+		log.Print("error occured during updateuser.update_single_user_by_name(%s)" % updating_user)
+
+	try:
+		calculatedb.calculate_player_by_name(iidxmeid)
+		# must save it to DB right now to show right result
+		db.commit()
+	except Exception, e:
+		log.Print("error occured during calculatedb.calculate_player_by_name(%s)" % updating_user)
 
 	log.Print('committing...')
-	db_session.commit()
-	db_session.remove()
+	db.commit()
 	log.Print('finished %s' % iidxmeid)
 	updating_user = False
 	updating_username = ""
@@ -154,7 +158,15 @@ def json_update_player(request, username):
 		import traceback, sys
 		print e
 		traceback.print_exc(file= sys.stdout)
-		return JsonResponse({'status': 'not existing user'})
+		user_info = parser_iidxme.parse_userinfo(username)
+		if (user_info == None):
+			return JsonResponse({'status': 'not existing user'})
+		else:
+			log.Print('creating new user %s ...' % username)
+			updateuser.add_user(user_info)
+			db.commit()	# MUST do commit!
+			# try again recursively
+			return json_update_player(request, username)
 
 def json_update_player_status(request, username):
-	return JsonResponse({'status': 'success', 'updating': (updating_username == username)})
+	return JsonResponse({'status': 'success', 'updating':(updating_username == username)})

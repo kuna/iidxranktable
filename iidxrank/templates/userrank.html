@@ -1,4 +1,5 @@
 {% extends "common.html" %}
+{% block subtitle %} - userrank{% endblock %}
 {% block head %}
 
 {% load staticfiles %}
@@ -10,16 +11,6 @@
 function loadUserlist() {
 	var dataSet = []
 	function processor(row_json, idx) {
-		splevel = row_json.splevel;
-		if (splevel != 0)
-			splevel = "★"+splevel;
-		else
-			splevel = "-";
-		dplevel = row_json.dplevel;
-		if (dplevel != 0)
-			dplevel = "★"+dplevel;
-		else
-			dplevel = "-";
 		dataSet.push([
 			row_json.sprank,
 			row_json.dprank,
@@ -28,8 +19,8 @@ function loadUserlist() {
 			row_json.iidxmeid,
 			row_json.spdan,
 			row_json.dpdan,
-			splevel,
-			dplevel
+			convertSongLevel(row_json.splevel),
+			convertSongLevel(row_json.dplevel)
 		]);
 	}
 	function onload() {
@@ -44,7 +35,9 @@ function loadUserlist() {
 			iDisplayLength: 50,
 			destroy: true
 		});
+		hideLoading();
 	}
+	showLoading("please wait ...");
 	loadJSON("/iidx/json/userlist/", processor, onload);
 }
 
@@ -60,8 +53,13 @@ $(function() {
 <div id="container">
 	<div id="menu">
 		<!-- addon button -->
-		<div class="clear">
+		<div class="row">
 			<a href="../.."><button id="home" class="btn btn-default" style="float:left;">return</button></a>
+		</div>
+		<div class="row">
+			<ul>
+				<li>충분한 플레이 기록<i>(FAIL이 없거나 전부 HC~EXHC 이상이거나)</i>이 없을 경우에는 수치가 올바르게 표시되지 않을 수 있습니다.</li>
+				<li>익하작도 점수에 반영됩니다. 즉 아무리 실력이 좋아도 익하(풀콤)작을 하지 않으면 점수가 생각보다 낮게 나올 수 있습니다!</li>
 		</div>
 	</div>
 
@@ -90,4 +88,4 @@ $(function() {
 </div>
 
 {% endblock %}
-{% block etc %}updated {{ pageinfo.date|date:"ymd" }} / <a href="#">what is this?</a>{% endblock %}
+{% block etc %}{% include 'table_detail.html' %}{% endblock %}

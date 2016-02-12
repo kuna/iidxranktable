@@ -70,9 +70,16 @@ class RankTable(models.Model):
 	time = models.DateTimeField(default=now)		# db updated time
 	tablename = models.CharField(max_length=100)
 	tabletitle = models.CharField(max_length=100)
+	tabletitlehtml = models.CharField(max_length=200)
 	level = models.IntegerField(default=0)
 	type = models.CharField(max_length=100)
 	copyright = models.CharField(max_length=100)
+
+	def getTitleHTML(self):
+		if (self.tabletitlehtml == ""):
+			return self.tabletitle
+		else:
+			return self.tabletitlehtml
 
 	def __unicode__(self):
 		return self.tabletitle
@@ -80,6 +87,7 @@ class RankTable(models.Model):
 class RankCategory(models.Model):
 	ranktable = models.ForeignKey(RankTable, on_delete=models.CASCADE)
 	categoryname = models.CharField(max_length=20)
+	categorytype = models.IntegerField(default=0)
 	sortindex = models.FloatField(default=None, null=True, blank=True)
 
 	def get_sortindex(self):
