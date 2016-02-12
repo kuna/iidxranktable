@@ -12,6 +12,7 @@ from update import calculatedb
 from update import db
 from update import log
 from update import parser_iidxme
+from datetime import datetime
 
 def checkAdmin(request):
 	if not request.user.is_superuser:
@@ -116,6 +117,7 @@ def rankupdate(request):
 #
 updating_user = False
 updating_username = ""
+last_update_time = 0
 def update_player_worker(iidxmeid):
 	global updating_user, updating_username
 	updating_user = True
@@ -135,8 +137,6 @@ def update_player_worker(iidxmeid):
 	except Exception, e:
 		log.Print("error occured during calculatedb.calculate_player_by_name(%s)" % updating_user)
 
-	log.Print('committing...')
-	db.commit()
 	log.Print('finished %s' % iidxmeid)
 	updating_user = False
 	updating_username = ""
