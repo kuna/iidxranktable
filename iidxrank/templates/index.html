@@ -72,7 +72,7 @@ glyphicon glyphicon-home"></span></button></a></center>
 		</div>		
 		<div class="row" style="perspective: 300px; margin-top: -30px; overflow: hidden;">
 			<!-- <div class="userimage" style="text-align:center;"><img src="/iidx/qpro/{{ player.iidxid }}"></div> -->
-			<div style="background: url(/static/img/pillow2.png) no-repeat, url(/iidx/qpro/{{ player.iidxid }}) 50px 70px no-repeat; height:400px; display:block; margin-top:-200px; background-blend-mode: multiply; z-index:999; width:340px; transform: rotate3d(1, 0, -2, 50deg); margin: 0 auto;"></div>
+			<div style="background: url(/static/img/pillow2.png) no-repeat, url(/iidx/qpro/{{ player.iidxid }}) 50px 70px no-repeat; height:400px; display:block; margin-top:-200px; background-blend-mode: multiply; z-index:999; width:340px; transform: rotate3d(1, 0, -2, 50deg); margin: 0 auto 60px;"></div>
 			<h4 class="djname">DJ {{ player.username }}</h4>
 			<h4 class="level" onclick="if (confirm('점수를 갱신하시겠습니까?')) { updateuser('{{ player.userid }}'); }"><span class="label label-default">★{{ player.splevel }} / ★{{ player.dplevel }}</span>★{{ player.spclass }} / ★{{ player.dpclass }}<img src="{% static 'img/loading_small.gif' %}" width="20" id="loading_animation" style="display:none;"></h4>
 		</div>
