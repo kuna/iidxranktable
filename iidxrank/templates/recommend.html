@@ -64,7 +64,7 @@ function loadRecommend(user, type, level) {
 		hideLoading();
 	}
 	showLoading("please wait ...");
-	loadJSON("/iidx/json/recommend/" + user + "/" + type + "/" + level, processor, onload);
+	loadJSON("/json/recommend/" + user + "/" + type + "/" + level, processor, onload);
 }
 
 $(function() {

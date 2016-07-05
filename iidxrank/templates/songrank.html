@@ -49,7 +49,7 @@ function loadSonglist(type, lvl) {
 		hideLoading();
 	}
 	showLoading("please wait ...");
-	loadJSON("/iidx/json/musiclist/"+type+"/level/"+lvl, processor, onload);
+	loadJSON("/json/musiclist/"+type+"/level/"+lvl, processor, onload);
 }
 
 $(function() {

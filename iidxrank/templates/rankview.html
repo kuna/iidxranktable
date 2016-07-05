@@ -177,7 +177,7 @@ $(function () {
 		var b = png_base64.substring(22);
 		$("#send").button('loading');
 		$.ajax({
-			url: "/iidx/imgtl/",
+			url: "/imgtl/",
 			type: "POST",
 			data: { 
 				'name': fname.replace( /[^\x00-\x80]/g,'_'),
@@ -256,10 +256,10 @@ $(window).load(function () {
 
 	<!-- user image qpro -->
 	<div id="userimage">
-		<img src="/iidx/qpro/{{ user.iidxid }}/" width="170">
+		<img src="/qpro/{{ user.iidxid }}/" width="170">
 		<script language="javascript">
 			$(function() {
-				$('#container .inner').css('background', 'url("/iidx/qpro/{{ user.iidxid }}/") no-repeat -15px 0px');
+				$('#container .inner').css('background', 'url("/qpro/{{ user.iidxid }}/") no-repeat -15px 0px');
 			});
 		</script>
 	</div>
@@ -305,7 +305,7 @@ $(window).load(function () {
 				<div class="cell celltype{{ category.categorytype }}">
 					<ul class="songlist">
 						{% for song in category.songs %}
-						<a href="/iidx/songcomment/{{ pageinfo.tablename }}/{{ song.pkid }}/"
+						<a href="/songcomment/{{ pageinfo.tablename }}/{{ song.pkid }}/"
 							onclick="return openComment(this.href);"
 							target="_blank">
 							<li class="songli diff{{ song.data.diff }}" 

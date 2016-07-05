@@ -17,7 +17,7 @@ $(function () {
 {% if board.admin %}
 <!-- song difficulty change function -->
 <!-- NOTE: this function is only allowed to admin -->
-<form role="form" action="/iidx/update/rank/" method="POST" onsubmit="return confirm('continue?');">
+<form role="form" action="/update/rank/" method="POST" onsubmit="return confirm('continue?');">
 	{% csrf_token %}
 	<div class="form-group">
 		<input type="hidden" name="rankitem_id" value="{{ board.rankinfo.id }}">

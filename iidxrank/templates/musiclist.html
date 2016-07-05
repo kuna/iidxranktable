@@ -121,7 +121,7 @@ function addSeries(series) {
 	li_obj = $('<li>Beatmania ' + series + '</li>');
 	li_obj.attr('data', series);
 	li_obj.click(function (e) {
-		loadList("/iidx/json/musiclist/" + current_mode + "/series/" + series);
+		loadList("/json/musiclist/" + current_mode + "/series/" + series);
 	});
 	$("#category_lists").append(li_obj);
 }
@@ -130,7 +130,7 @@ function addLevel(level) {
 	li_obj = $('<li>Level ' + level + '</li>');
 	li_obj.attr('data', level);
 	li_obj.click(function (e) {
-		loadList("/iidx/json/musiclist/" + current_mode.substring(0, 2) + "/level/" + level);
+		loadList("/json/musiclist/" + current_mode.substring(0, 2) + "/level/" + level);
 	});
 	$("#category_lists").append(li_obj);
 }
