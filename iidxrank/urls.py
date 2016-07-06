@@ -70,7 +70,8 @@ urlpatterns = [
             # username
             url(r'^(?P<username>(\w|-)+)/', include([
                     url(r'^$', views.userpage),
-                    url(r'^recommend/$', views.recommend),
+                    url(r'^stat/recm/$', views.recommend),
+                    url(r'^stat/skill/$', views.skillrank),
                     url(r'^(?P<diff>\w+)/(?P<level>\w+)/$', views.rankpage, name="rankpage"),
             ])),
 	])),

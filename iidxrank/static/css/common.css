@@ -38,14 +38,14 @@ table .t0 { background-color:#fcfcfc; }
 table .t1 { background-color:#efefef; }
 table .loading { color:#999; text-align: center; padding:20px; }
 
-/* userpage */
+/* userpage (profile) */
 #goto { cursor:pointer; cursor:hand;/*fallback*/ }
 #container .notice_inner h4.djname { float:left; }
 #container .notice_inner h4.level { float:right; cursor:pointer; cursor:hand; }
 #container .notice_inner h4.level span { display:none; }
 #container .notice_inner h4.level:hover span { display:block; margin-top:-30px; position:absolute; }
 
-#header { width: 100%; height: 236px; background: #336699; margin-bottom: 80px; }
+#header { width: 100%; height: 236px; background: #336699; margin-bottom: 20px; }
 #header .inner { width: 1000px; margin: 0 auto; overflow:hidden; }
 .user { position:absolute; margin-top: 40px; }
 .user .userimage img { width:216px; height:216px; margin-top:0px; padding:20px; background-color:#444; }
@@ -57,11 +57,11 @@ table .loading { color:#999; text-align: center; padding:20px; }
 #sidemenu { position:absolute; margin-top: 40px; width: 1000px; }
 #sidemenu button { float:right; }
 #sidemenu #search { width:200px; margin-right:10px; float:right; }
-#menu { position:absolute; margin-top: 88px; margin-left: 240px; }
-#menu .list { list-style:none; margin-bottom:10px; clear:both; overflow:hidden; }
-#menu .list li { float:left; display:block; font-size:11px; padding:4px 6px; border:2px solid #036; border-right: none; }
-#menu .list a:last-child li { border-right: 2px solid #036; }
-#menu .list a { color:#FFF; }
+#header #menu { position:absolute; margin-top: 88px; margin-left: 240px; }
+#header #menu .list { list-style:none; margin-bottom:10px; clear:both; overflow:hidden; }
+#header #menu .list li { float:left; display:block; font-size:11px; padding:4px 6px; border:2px solid #036; border-right: none; }
+#header #menu .list a:last-child li { border-right: 2px solid #036; }
+#header #menu .list a { color:#FFF; }
 
 #menu .list li.sel { background-color:#036 !important; font-weight:bold; }
 #menu .list li { background-color:#69c; }
@@ -81,6 +81,7 @@ table .loading { color:#999; text-align: center; padding:20px; }
 
 /* others (common) */
 .clear { clear:both; }
+.right { float:right; }
 .center { text-align:center; }
 .row { clear:both; margin-bottom:10px; }
 .row button { margin-right:6px; margin-bottom:6px; }

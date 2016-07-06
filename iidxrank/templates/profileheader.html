@@ -1,0 +1,48 @@
+
+<div id="header"><div class="inner">
+  <div class="user">
+    <div class="userimage"><img src="/qpro/{{ userinfo.iidxid }}/"></div>
+    <div class="userinfo">
+      <h3 class="username">DJ {{ userinfo.name }}</h3> {{ userinfo.iidxid }}
+      <div class="usergrade">
+        <span class="label spdan dan{{ userinfo.spdannum }}">{{ userinfo.spdan }}</span><span class="label dpdan dan{{ userinfo.dpdannum }}">{{ userinfo.dpdan }}</span>
+      </div>
+      <div class="userlevel"></div>
+      <div id="update"></div>
+    </div>
+  </div>
+  <div id="sidemenu">
+    <div id="search" class="input-group">
+      <input type="text" class="form-control" id="searchuser" value="{{ userinfo.iidxmeid }}" />
+      <span class="input-group-addon" id="goto">iidx.me ID</span>
+    </div>
+  </div>
+  <div id="menu">
+    <ul class="list sp">
+      <a href="../../sp/12_7"><li>SP12.7</li></a>
+      <a href="../../sp/12"><li>SP12H</li></a>
+      <a href="../../sp/12N"><li>SP12N</li></a>
+      <a href="../../sp/11exh"><li>SP11EXH</li></a>
+      <a href="../../sp/11h"><li>SP11H</li></a>
+      <a href="../../sp/11N"><li>SP11N</li></a>
+      <a href="../../sp/10"><li>SP10</li></a>
+      <a href="../../sp/9"><li>SP9</li></a>
+      <a href="../../sp/8"><li>SP8</li></a>
+    </ul>
+    <ul class="list dp">
+      <a href="../../dp/12"><li>DP12</li></a>
+      <a href="../../dp/11"><li>DP11</li></a>
+      <a href="../../dp/10"><li>DP10</li></a>
+      <a href="../../dp/9"><li>DP9</li></a>
+      <a href="../../dp/8"><li>DP8</li></a>
+    </ul>
+    <ul class="list theme">
+      <a href="#"><li class="sel" data-value="clear">클리어</li></a>
+      <a href="#"><li data-value="score">점수</li></a>
+    </ul>
+    <ul class="list table">
+      <a href="../../stat/skill"><li>Best</li></a>
+      <a href="../../stat/recm"><li>Recommend</li></a>
+    </ul>
+  </div>
+</div></div>

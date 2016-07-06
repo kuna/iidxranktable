@@ -1,0 +1,34 @@
+{% extends "common.html" %}
+{% block subtitle %}- recommendation{% endblock %}
+{% block head %}
+
+{% load staticfiles %}
+<!-- datatables -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/s/dt/jq-2.1.4,dt-1.10.10/datatables.min.css"/>
+<script type="text/javascript" src="https://cdn.datatables.net/s/dt/jq-2.1.4,dt-1.10.10/datatables.min.js"></script>
+
+<style>
+.graph { height:20px; border: 1px solid #999; position:relative; border-radius: 2px; }
+.graph div { position:absolute; right:0; height:18px; }
+.graph .failed { background-color:#ccc; }
+.graph .easy { background-color:#cfc; }
+.graph .groove { background-color:#ccf; }
+.graph .hard { background-color:#fcc; }
+.graph .exhard { background-color:#ffc; }
+.graph .fc { background-color:#fcf; }
+</style>
+
+<script language="javascript">
+</script>
+
+{% endblock %}
+{% block body %}
+
+{% include "profileheader.html" %}
+
+<div id="container">
+  <h3>준비중이애오!</h3>
+</div>
+
+{% endblock %}
+{% block etc %}{% include 'table_detail.html' %}{% endblock %}
