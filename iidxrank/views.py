@@ -25,19 +25,13 @@ def checkValidPlayer(player):
 
 def mainpage(request):
   notices = models.Board.objects.filter(title='notice').first().boardcomment_set
-  return render_to_response('notice.html', {'notices': notices.order_by('-time')})
+  return render_to_response('index.html',
+    {'hidesearch': True, 'notices': notices.order_by('-time')})
 
 def userpage(request, username="!"):
   if (username == "!"):
     # make dummy data
-    player = {
-        'userdata': {
-          'djname': 'NONAME',
-          'iidxid': '0',
-          'spclass': 0,
-          'dpclass': 0,
-          }
-        }
+    player = None
   else:
     # check recent json to get player info
     userjson_url = "http://json.iidx.me/%s/recent/" % username
@@ -45,31 +39,7 @@ def userpage(request, username="!"):
     if (not checkValidPlayer(player)):
       # invalid user!
       raise Http404
-
-    # check is db exists
-    try:
-      player_obj = models.Player.objects.get(iidxid=player['userdata']['iidxid'])
-      splevel = round(player_obj.splevel, 2)
-      if (splevel == 0):
-        splevel = '-'
-      dplevel = round(player_obj.dplevel, 2)
-      if (dplevel == 0):
-        dplevel = '-'
-    except:
-      splevel = '-'
-      dplevel = '-'
-
-  playerinfo = {
-      'userid': username,
-      'username': player['userdata']['djname'],
-      'iidxid': player['userdata']['iidxid'].replace('-', ''),
-      'spclass': iidx.getdanstring(player['userdata']['spclass']),
-      'dpclass': iidx.getdanstring(player['userdata']['dpclass']),
-      'splevel': splevel, # estimated level
-      'dplevel': dplevel, # estimated level
-      }
-
-  # TODO: apart userpage from index. change index to search.
+  playerinfo = rp.getUserInfo(player, username)
   return render_to_response('userpage.html', {'userinfo': playerinfo})
 
 def rankpage(request, username="!", diff="SP", level=12):
@@ -95,6 +65,7 @@ def rankpage(request, username="!", diff="SP", level=12):
   # compile user data to render score
   userinfo, songdata, pageinfo = rp.compile_data(ranktable, player, models.Song.objects)
   userinfo['title'] = pageinfo['title']
+  userinfo['iidxmeid'] = username
   tabledata = {
       'info': userinfo,
       'categories': songdata
@@ -116,7 +87,7 @@ def songcomment_all(request, page=1):
     # invalid pagenation!
     raise Http404
 
-  return render_to_response('songcomment_all.html', {"comments": songcomments})
+  return render_to_response('recentcomment.html', {"comments": songcomments})
 
 
 # /iidx/musiclist
@@ -127,11 +98,21 @@ def musiclist(request):
 
 # /iidx/(username)/recommend/
 def recommend(request, username):
-  return render_to_response('recommend.html', {"username": username})
+  userjson_url = "http://json.iidx.me/%s/recent/" % username
+  player = jsondata.loadJSONurl(userjson_url)
+  if (not checkValidPlayer(player)):
+    raise Http404
+  userinfo = rp.getUserInfo(player, username)
+  return render_to_response('recommend.html', {"userinfo": userinfo})
 
 # /iidx/(username)/skillrank
 def skillrank(request, username):
-  return render_to_response('skillrank.html', {"username": username})
+  userjson_url = "http://json.iidx.me/%s/recent/" % username
+  player = jsondata.loadJSONurl(userjson_url)
+  if (not checkValidPlayer(player)):
+    raise Http404
+  userinfo = rp.getUserInfo(player, username)
+  return render_to_response('skillrank.html', {"userinfo": userinfo})
 
 # /iidx/!/songrank/
 def songrank(request):

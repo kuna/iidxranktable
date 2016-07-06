@@ -69,28 +69,26 @@ function loadRecommend(user, type, level) {
 
 $(function() {
 	$("#tabledata").html("<tr><td class='loading' colspan=6>Loading ...</td></tr>");
-	loadRecommend("{{ username }}", "SP", 12);
+	loadRecommend("{{ userinfo.iidxmeid }}", "SP", 12);
 });
 </script>
 
 {% endblock %}
 {% block body %}
 
+{% include "top.html" %}
 {% include "profileheader.html" %}
 
 <div id="container">
 	<div id="menu">
 		<!-- addon button -->
-		<div class="row">
-			<a href=".."><button id="home" class="btn btn-default" style="float:left;">return</button></a>
-		</div>
 		<div class="row" id="buttons">
-			<a href="#"><button class="btn btn-default" onclick='loadRecommend("{{ username }}", "SP", 12);'>SP12</button></a>
-			<a href="#"><button class="btn btn-default" onclick='loadRecommend("{{ username }}", "SP", 11);'>SP11</button></a>
-			<a href="#"><button class="btn btn-default" onclick='loadRecommend("{{ username }}", "SP", 10);'>SP10</button></a>
-			<a href="#"><button class="btn btn-default" onclick='loadRecommend("{{ username }}", "DP", 12);'>DP12</button></a>
-			<a href="#"><button class="btn btn-default" onclick='loadRecommend("{{ username }}", "DP", 11);'>DP11</button></a>
-			<a href="#"><button class="btn btn-default" onclick='loadRecommend("{{ username }}", "DP", 10);'>DP10</button></a>
+			<a href="#"><button class="btn btn-default" onclick='loadRecommend("{{ userinfo.iidxmeid }}", "SP", 12);'>SP12</button></a>
+			<a href="#"><button class="btn btn-default" onclick='loadRecommend("{{ userinfo.iidxmeid }}", "SP", 11);'>SP11</button></a>
+			<a href="#"><button class="btn btn-default" onclick='loadRecommend("{{ userinfo.iidxmeid }}", "SP", 10);'>SP10</button></a>
+			<a href="#"><button class="btn btn-default" onclick='loadRecommend("{{ userinfo.iidxmeid }}", "DP", 12);'>DP12</button></a>
+			<a href="#"><button class="btn btn-default" onclick='loadRecommend("{{ userinfo.iidxmeid }}", "DP", 11);'>DP11</button></a>
+			<a href="#"><button class="btn btn-default" onclick='loadRecommend("{{ userinfo.iidxmeid }}", "DP", 10);'>DP10</button></a>
 		</div>
 	</div>
 

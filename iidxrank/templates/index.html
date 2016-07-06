@@ -1,68 +1,11 @@
 {% extends "common.html" %}
 {% load staticfiles %}
 {% block head %}
-<script language="javascript">
-var dname = "http://" + window.location.host;
-
-function addSPbutton(text, url) {
-	url = url.replace("//", "/");
-	$("#spcontainer").append('<a href="' + url + '"><button type="button" class="btn btn-primary">' + text + '</button></a>');
-}
-
-function addDPbutton(text, url) {
-	url = url.replace("//", "/");
-	$("#dpcontainer").append('<a href="' + url + '"><button type="button" class="btn btn-danger">' + text + '</button></a>');
-}
-
-function moveUserpage() {
-	var username = $("#username").val();
-	saveSetting("username", username);
-	if (username == "") {
-		window.location.href = dname + "/";
-	} else {
-		window.location.href = dname + "/" + username;
-	}
-}
-
-$(document).ready(function () {
-	$("#goto").click(function () {
-		moveUserpage();
-	});
-
-	$("#username").keypress(function (e) {
-		if (e.which == 13) {
-			moveUserpage();
-			return false;
-		}
-	});
-
-	var username = "{{ player.userid }}";
-	if (username.length == 0) {
-		username = "!";
-		$("#username").val(loadSetting("username", ""));
-	}
-
-	addSPbutton("SP12.7", "/" + username + "/sp/12_7");
-	addSPbutton("SP12 (2ch)", "/" + username + "/sp/12");
-	addSPbutton("SP11", "/" + username + "/sp/11h");
-	addSPbutton("SP11EXH", "/" + username + "/sp/11exh");
-	addSPbutton("SP10", "/" + username + "/sp/10");
-	addSPbutton("SP9", "/" + username + "/sp/9");
-	addSPbutton("SP8", "/" + username + "/sp/8");
-
-	addSPbutton("SP12N", "/" + username + "/sp/12N");
-	addSPbutton("SP11N", "/" + username + "/sp/11N");
-
-	addDPbutton("DP12", "/" + username + "/dp/12");
-	addDPbutton("DP11", "/" + username + "/dp/11");
-	addDPbutton("DP10", "/" + username + "/dp/10");
-	addDPbutton("DP9", "/" + username + "/dp/9");
-	addDPbutton("DP8", "/" + username + "/dp/8");
-});
-</script>
-
 {% endblock %}
 {% block body %}
+
+{% include "top.html" %}
+
 <div id="container">
 	<div class="notice_inner">
 		{% if player %}
@@ -78,32 +21,31 @@ glyphicon glyphicon-home"></span></button></a></center>
 		{% endif %}
 
 		<div class="row input-group">
-			<input type="text" class="form-control" value="{{ player.userid }}" aria-describedby="basic-addon2" id="username">
+			<input type="text" class="form-control" value="{{ player.userid }}" aria-describedby="basic-addon2" id="searchuser">
 			<span class="input-group-addon" id="goto">iidx.me ID</span>
 		</div>
 
 		<div class="row input-group">
-			{% block notice %}
-				
-			{% endblock %}
+      <div class="panel panel-default">
+        <div class="panel-heading">Notice</div>
+        <div class="list-group" style="overflow-y:scroll; height:200px;">
+          {% for notice in notices.all %}
+            {% autoescape off %}
+            <div class="list-group-item">[{{ notice.time|date:"ymd" }}] {{ notice.text }}</div>
+            {% endautoescape %}
+          {% endfor %}
+        </div>
+      </div>
 		</div>
 	</div>
-
-	<div class="row center" id="spcontainer">
-	</div>
-
-	<div class="row center" id="dpcontainer">
-	</div>
 	
+  <!--
 	<div class="row center">
-		{% if player %}
-			<a href="/{{ player.userid }}/recommend/"><button type="button" class="btn btn-recommend">Recommend</button></a>
-		{% endif %}
 		<a href="/!/songrank/"><button type="button" class="btn btn-warning">Songs</button></a>
 		<a href="/!/userrank/"><button type="button" class="btn btn-warning">Players</button></a>
 		<a href="/songcomment/all/1/"><button type="button" class="btn btn-warning">Recent Comments</button></a>
-		<a href="/musiclist/"><button type="button" class="btn btn-warning">Musiclist</button></a>
-	</div>
+    <a href="/musiclist/"><button type="button" class="btn btn-warning">Musiclist</button></a>
+  </div>-->
 
 	<!--<div class="row center">
 		<a href="https://github.com/kuna/iidxme_chromeapp/blob/master/app.crx">크롬</a> / <a href="https://github.com/kuna/iidxme_android/blob/master/iidxme.apk">안드로이드</a> iidx.me 갱신 앱을 사용해 보세요.

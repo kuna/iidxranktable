@@ -61,12 +61,11 @@ $(function() {
 {% endblock %}
 {% block body %}
 
+{% include "top.html" %}
+
 <div id="container">
 	<div id="menu">
 		<!-- addon button -->
-		<div class="row">
-			<a href="../.."><button id="home" class="btn btn-default" style="float:left;">return</button></a>
-		</div>
 		<div class="row" id="buttons">
 			<a href="#"><button class="btn btn-default" onclick='loadSonglist("SP", 12);'>SP12</button></a>
 			<a href="#"><button class="btn btn-default" onclick='loadSonglist("SP", 11);'>SP11</button></a>
