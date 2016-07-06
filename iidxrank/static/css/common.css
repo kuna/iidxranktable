@@ -19,6 +19,8 @@ http://mplus.font-face.jp/#/
 #top { width:100%; background-color:#346; height:50px; padding: 16px 0; color:#fff; }
 #top .inner { width: 1000px; margin: 0 auto; }
 #top #logo { font-weight:bold; float:left; }
+#top #logo a { color:#ccc; }
+#top #logo a:hover { color:#fff; }
 #top #search { width:200px; margin-right:10px; margin-top:-5px; float:right; }
 
 /* container */
@@ -63,15 +65,16 @@ table .loading { color:#999; text-align: center; padding:20px; }
 #sidemenu button { float:right; }
 #sidemenu #search { width:200px; margin-right:10px; float:right; }
 #header #menu { position:absolute; margin-top: 88px; margin-left: 240px; }
-#header #menu .list { list-style:none; margin-bottom:10px; clear:both; overflow:hidden; }
-#header #menu .list li { float:left; display:block; font-size:11px; padding:4px 6px; border:2px solid #036; border-right: none; }
-#header #menu .list a:last-child li { border-right: 2px solid #036; }
-#header #menu .list a { color:#FFF; }
+.list { list-style:none; margin-bottom:10px; clear:both; overflow:hidden; }
+.list li { float:left; display:block; font-size:11px; padding:4px 6px; border:2px solid #036; border-right: none; }
+.list a:last-child li { border-right: 2px solid #036; }
+.list a { color:#FFF; }
 
-#menu .list li.sel { background-color:#036 !important; font-weight:bold; }
-#menu .list li { background-color:#69c; }
-#menu .list.theme li { background-color:#96c; }
-#menu .list.table li { background-color:#c69; }
+.list li.sel { background-color:#036 !important; font-weight:bold; }
+.list li { background-color:#69c; }
+.list.theme li { background-color:#96c; }
+.list.table li { background-color:#c69; }
+#container .list { float:left; margin-top:4px; margin-right:20px; }
 
 /* about difficulty color */
 .SPA, .DPA { color:#b33; }
@@ -85,7 +88,7 @@ table .loading { color:#999; text-align: center; padding:20px; }
 .SPN_s, .DPN_s { text-shadow: 0px 0px 3px #66f; }
 
 /* others (common) */
-.clear { clear:both; }
+.clear { clear:both; margin-bottom:10px; }
 .right { float:right; }
 .center { text-align:center; }
 .row { clear:both; margin-bottom:10px; }

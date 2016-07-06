@@ -217,7 +217,23 @@ $(function() {
 });
 
 /*
- * theme viewing
+ * download canvas
+ */
+function downloadCanvas(c, fn="download.png") {
+  console.log(c);
+  var link = document.createElement('a');
+  link.setAttribute('download', fn);
+  link.setAttribute('href', c.toDataURL("image/png").replace("image/png", "image/octet-stream"));
+  link.click();
+}
+$(function() {
+  $("#capture").click(function () {
+    downloadCanvas($("#rankimg canvas")[0]);
+  });
+});
+
+/*
+ * theme
  */
 $(function() {
   $(".list.theme li").each(function (i,obj) {

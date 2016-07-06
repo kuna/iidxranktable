@@ -85,7 +85,6 @@ var TableRenderer = function(renderer) {
     ctx.beginPath();
     // first render all of the items
     for (var i in data.items) {
-      console.log(i);
       self._x = self._margin + (i % self._itemcol) * self._itemwidth + self._colwidth;
       self._y = Math.floor(i / self._itemcol) * self._itemheight + _y_save;
       self.renderer.drawCell(data.items[i],self._x,self._y,self._itemwidth,self._itemheight);
@@ -102,6 +101,9 @@ var TableRenderer = function(renderer) {
     self._y += self.renderer.theme_cate_margin;
   };
   self.RenderTable = function(tdata) {
+    // check tdata validation
+    if (!('categories' in tdata) || !('info' in tdata))
+      return false;
     // calculate total table size at very first
     _Reset();
     _CalculateHeight(tdata.categories);
@@ -115,6 +117,7 @@ var TableRenderer = function(renderer) {
     // after rendering
     self.renderer.drawTableAfter(tdata.info,self._margin,self.renderer.margin_top,
       self._width-self._margin*2,self._height-self._margin-self.renderer.margin_top);
+    return true;
   }
   self.Clear = function() {
     // clear table inner position.

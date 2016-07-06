@@ -128,8 +128,6 @@ function DefaultScoreRenderer(ctx) {
           if (d.items[j].rate > ratecut[i]) ccnt++;
         }
         clearrate[i] = ccnt / totalcnt;
-        console.log(clearrate[i]);
-
         self.ctx.fillStyle=fillclr[i];
         self.ctx.fillRect(rx, ry, rw*clearrate[i], rh);
       }

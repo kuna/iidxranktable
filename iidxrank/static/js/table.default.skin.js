@@ -112,8 +112,6 @@ function DefaultRenderer(ctx) {
           if (d.items[j].clear >= i) ccnt++;
         }
         clearrate[i] = ccnt / totalcnt;
-        console.log(clearrate[i]);
-
         self.ctx.fillStyle=fillclr[i];
         self.ctx.fillRect(rx, ry, rw*clearrate[i], rh);
       }

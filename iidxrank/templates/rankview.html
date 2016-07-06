@@ -14,142 +14,66 @@
 <link href='https://fonts.googleapis.com/css?family=Comfortaa' rel='stylesheet' type='text/css'>
 <script language="javascript">
 
+/////////////////////////////////
+// django csrf token
+
+window.csrftoken="{{ csrf_token }}";
+var ftitle = "{{ pageinfo.title }} - DJ {{ userinfo.name }}"
+var fname = ftitle + ".png";
+
+
+
+
+
+/////////////////////////////////
+// table renderer code
+
 var tabledata = {{ tabledata_json|safe }};
+var tabledata_orig = tabledata;
+
 var ttheme = new DefaultRenderer();
 var t = new TableRenderer(ttheme);
-var dorender = function(rendermode) {
-  if (rendermode == "clear") {
-    ttheme = new DefaultRenderer();
-  } else if (rendermode == "score") {
-    ttheme = new DefaultScoreRenderer();
+var rendermode = "clear"
+var dorender = function(_rendermode) {
+  if (_rendermode) {
+    rendermode = _rendermode;
+    if (rendermode == "clear") {
+      ttheme = new DefaultRenderer();
+    } else if (rendermode == "score") {
+      ttheme = new DefaultScoreRenderer();
+    }
+    ttheme.ctx = t.getContext();
+    t.renderer = ttheme;
   }
-  ttheme.ctx = t.getContext();
-  t.renderer = ttheme;
   setTimeout(function() {
     if (!ttheme.isLoaded()) {
       dorender();
       return;
     }
-    t.RenderTable(tabledata);
+    if (!t.RenderTable(tabledata)) {
+      console.log("Error occured during rendering.");
+      return;
+    }
     var canvas = t.getCanvas();
-    $(canvas).click(function(e) {
-      var offset = $(this).offset();
-      var x = e.pageX - offset.left;
-      var y = e.pageY - offset.top;
-      item = t.Click(tabledata, x, y);
-      console.log(item);
-      if (item) {
-        console.log(item.data.title);
-      }
-    });
     $("#rankimg").append(canvas);
   }, 100)};
 
-$(function (){
-	dorender();
-});
 
-///////////////////////////////////
 
 
 
-// django csrf token
-window.csrftoken="{{ csrf_token }}";
+///////////////////////////////////
+// save & load script, in case of not-logged in user
 
-var png_base64 = "";
-var ftitle = "{{ pageinfo.title }} - DJ {{ userinfo.name }}"
-var fname = ftitle + ".png";
-var rankpage_style_arr = [
-"{% static 'css/rankpage_light3.css' %}",
-"{% static 'css/rankpage_light2.css' %}",
-"{% static 'css/rankpage_default.css' %}",
-"{% static 'css/rankpage_hard.css' %}",
-];
-var rankpage_style_idx = parseInt(loadSetting("rankpage_idx", 0));
-
-
-/* we need additional script to load & save rank page */
-function modifyClear(obj, new_clear) {
-	$(obj).attr("data-clear", new_clear);
-	$(obj).find(".lamp_clear").attr("class", "lamp_clear lamp_clear_"+new_clear);
-}
-function createSaveString(nick, iidxid, spdan, dpdan, objs) {
-	arr_songs = [];
-	objs.each( function (idx) {
-		song = {};
-		song['id'] = $(this).attr('data-id');
-		song['clear'] = $(this).attr('data-clear');
-		arr_songs.push(song);
-	})
-	return JSON.stringify({'nick': nick, 'iidxid': iidxid, 'spdan': spdan, 'dpdan': dpdan, 'songs': arr_songs});
+function createSaveString() {
+	return JSON.stringify(tabledata);
 }
 function loadSaveString(str) {
-	jsondata = JSON.parse(str);
-	$("#djname").text(jsondata.nick);
-	$("#iidxid").text(jsondata.iidxid);
-	for (var idx in jsondata.songs) {
-		var songobj = $("li.songli[data-id='" + jsondata.songs[idx].id + "']");
-		if (songobj) {
-			if (jsondata.songs[idx].clear > 0) {
-				console.log(jsondata.songs[idx]);
-				console.log(songobj);
-			}
-			modifyClear(songobj, jsondata.songs[idx].clear);
-		}
-	}
+	tabledata = JSON.parse(str);
+  // set some properties from tabledata (TODO)
 }
-/**/
 
 $(function () {
-	/**************************************
-	 * skin part 
-	 **************************************/
-	function changeSkin() {
-		$('#rankpage_style').attr("href", rankpage_style_arr[rankpage_style_idx]);
-		$('#change_rank_css').text('Skin ' + (rankpage_style_idx+1) + '/' + rankpage_style_arr.length);
-		saveSetting("rankpage_idx", rankpage_style_idx);
-	}
-	$('#change_rank_css').click(function () {
-		rankpage_style_idx = (rankpage_style_idx + 1) % rankpage_style_arr.length;
-		changeSkin();
-	});
-	changeSkin();
-
-	/**************************************
-	 * rank, rate
-	 **************************************/
-	$('#show_rank').click(function () {
-		$('.rank').toggle();
-	});
-	$('#order_rate').click(function () {
-		$('.songlist').each(function (e) {
-			$(this).find('li').sort(function (a, b) {
-			 	return $(b).attr('data-rate') - $(a).attr('data-rate');
-			})
-			.appendTo(this);
-		});
-	});
-	$('#order_clear').click(function () {
-		$('.songlist').each(function (e) {
-			$(this).find('li').sort(function (a, b) {
-				var as = $(a).attr('data-clear');
-				if (as == "None") as=0;
-				var bs = $(b).attr('data-clear');
-				if (bs == "None") bs=0;
-			 	return bs - as;
-			})
-			.appendTo(this);
-		});
-	});
-
-	/**************************************
-		saveload part 
-	 **************************************/
-	function getSaveState() {
-		nick = $("#djname").text();
-		iidxid = $("#iidxid").text();
-		return createSaveString(nick, iidxid, "8", "8", $("li.songli"));
-	}
 	// if not logined state then -
 	// activate function
 	// and load setting when page loads
@@ -158,121 +82,81 @@ $(function () {
 		$('#load_and_save').click(function () { 
 			$("#loading_background").toggle();
 			$("#container_saveload").toggle();
-			$("#json_code").val(getSaveState());
+			$("#json_code").val(createSaveString());
 		});
 		$(window).unload(function () {
-			saveSetting("{{ pageinfo.tablename }}_data", getSaveState());
+			saveSetting("{{ pageinfo.tablename }}_data", createSaveString());
 		});
 		var savedata = loadSetting("{{ pageinfo.tablename }}_data");
 		if (savedata)
 			loadSaveString(savedata);
 	} else {
-		$('#load_and_save').hide();
+    $('#edittool').hide();
 	}
 
-	/**************************************
-	 * clear modify part
-	 **************************************/
-	$("li.songli").bind('contextmenu', function (e) {
-		var new_clear = (parseInt($(this).attr("data-clear"))+1) % 8;
-		modifyClear($(this), new_clear);
-		e.preventDefault();
-		return false;
-	});
+  $('#edit_reset').click(function () {
+    if (confirm("정말로 모든 기록을 초기화 하시겠습니까?")) {
+      tabledata = tabledata_orig;
+      dorender();
+    }
+  });
 
-	/**************************************
-	 * image capture/send to twitter part 
-	 **************************************/
-	$("#pleaseWaitDialog").show();
-	$("#capture").show();
-	$("#send").hide();
-	$("#url").hide();
-	$("#twitter").hide();
-
-	$("#capture").click(function () {
-		$("#capture").button('loading');
-		html2canvas($("#container"), {
-			onrendered: function(canvas) {
-				png_base64 = canvas.toDataURL();
-				var href = $("<a>", {
-					href: png_base64,
-					download: fname
-				});
-				var img = $("<img>", {
-					src: png_base64
-				});
-				$("#container").hide();
-				href.append(img)
-				$("#rankimg").append(href);
-				$("#rankimg").show();
-
-				// button
-				$("#capture").button('reset');
-				$("#capture").hide();
-				$("#send").show();
-			}
-		});
-	});
-
-	$("#send").click(function () {
-		var b = png_base64.substring(22);
-		$("#send").button('loading');
-		$.ajax({
-			url: "/imgtl/",
-			type: "POST",
-			data: { 
-				'name': fname.replace( /[^\x00-\x80]/g,'_'),
-				'base64': b,
-				'csrfmiddlewaretoken': csrftoken
-			},
-			success: function (o) {
-				ret = JSON.parse(o);
-				if (ret.error) {
-					alert(ret.error);
-					return;
-				}
-
-				$("#url").val(ret.data.url.direct);
-				twitter_url = "http://twitter.com/share?text=" + ftitle + "&hashtags=iidx&url=" + ret.data.url.page;
-				//ret.data.url.page;
-				console.log(o);
-
-				$("#send").button('reset');
-				$("#send").hide();
-				$("#url").css('display', 'inline-block');	// block breaks layout
-				$("#twitter").css('display', 'inline-block');
-			}
-		});
-	});
-
-	twitter_url = "";
-	$("#twitter").click(function () {
-		// share twitter
-		if (twitter_url != "")
-			window.open(twitter_url, "share", "height=300,width=500");
-	});
-
-	// do auto kerning (not using currently)
-	//$("#ranktable").kerning();
+  // ***********************
+  // modify part
+  var item = undefined;
+  var canvas = t.getCanvas();
+  $(canvas).click(function(e) {
+    var offset = $(this).offset();
+    var x = e.pageX - offset.left;
+    var y = e.pageY - offset.top;
+    item = t.Click(tabledata, x, y);
+    console.log(item);
+    if (item) {
+      console.log(item.data.title);
+      $('#current_item').val(item.data.title);
+    }
+  });
+  function getRank(r) {
+    if (r > 88.88) return "AAA";
+    else if (r > 77.77) return "AA";
+    else if (r > 66.66) return "A";
+    else if (r > 55.55) return "B";
+    else if (r > 44.44) return "C";
+    else if (r > 33.33) return "D";
+    else if (r > 22.22) return "E";
+    else return "F";
+  }
+  $(document).keypress(function(e) {
+    if (item == undefined) return;
+    console.log(e.which);
+    if (e.which == 113) { // Q
+      item.clear--;
+      if (item.clear < 0) item.clear += 8;
+    }
+    else if (e.which == 119) { // W
+      item.clear++;
+      if (item.clear > 8) item.clear -= 8;
+    }
+    else if (e.which == 97) { // A
+      item.rate -= 10;
+      if (item.rate < 0) item.rate += 100;
+      item.rank = getRank(item.rate);
+    }
+    else if (e.which == 115) { // S
+      item.rate += 10;
+      if (item.rate > 100) item.rate -= 100;
+      item.rank = getRank(item.rate);
+    }
+    dorender();
+  });
 });
 
-/*
-//
-// update all text into canvas
-//
-$(window).load(function () {
-	$(".songlist .name").each(function (e) {
-		clr = "#000000";
-		if ($(this).attr("data-series") == "23") {
-			// text color is different if it's current series
-			clr = "#cc66cc";
-		}
-		var canvas = new ranklist(150, 20, $(this).text(), clr, 14);
-		$(this).empty();
-		$(this).append($(canvas.makeCanvas()));
-	});
+
+
+
+$(function (){
+	dorender();
 });
-*/
 
 </script>
 
@@ -283,13 +167,24 @@ $(window).load(function () {
 {% include "profileheader.html" %}
 
 <div id="container" class="fixed">
-  <div class="right">
+  <div class="right clear" id="edittool">
+    <input id="current_item" disabled="1" value="'~'"/>
+    <button id="edit_reset" class="btn btn-xs">reset</button>
+    <p>마우스로 곡 선택 후,<br>Q/W: 난이도 수정, A/S: 랭크 수정.</p>
+    <p>[:DJ명 수정.</p>
+    <p>페이지 이동시 자동으로 변경사항이 저장됩니다.</p>
+  </div>
+  <div class="right clear">
     <!--
     <button id="send" class="btn btn-default" data-loading-text="uploading..."><span class="glyphicon glyphicon-upload"></span> upload for url/twitter</button>
     <input type="text" id="url" value="" class="form-control" readonly>
     <button id="twitter" class="btn btn-info"><span class="glyphicon glyphicon-send"></span> twitter</button>
     -->
     <button id="capture" class="btn btn-default" data-loading-text="please wait..." ><span class="glyphicon glyphicon-camera"></span> download</button>
+    <ul class="list theme">
+      <a href="#"><li class="sel" data-value="clear">클리어</li></a>
+      <a href="#"><li data-value="score">점수</li></a>
+    </ul>
   </div>
   <div id="rankimg">
   </div>
