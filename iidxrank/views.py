@@ -18,10 +18,10 @@ import base64
 
 def checkValidPlayer(player):
   return not (player == None or 
-    'userdata' not in player or 
-    player['status'] != 'success')
+      'userdata' not in player or 
+      player['status'] != 'success')
 
-####
+  ####
 
 def mainpage(request):
   notices = models.Board.objects.filter(title='notice').first().boardcomment_set
@@ -31,13 +31,13 @@ def userpage(request, username="!"):
   if (username == "!"):
     # make dummy data
     player = {
-      'userdata': {
-        'djname': 'NONAME',
-        'iidxid': '0',
-        'spclass': 0,
-        'dpclass': 0,
-      }
-    }
+        'userdata': {
+          'djname': 'NONAME',
+          'iidxid': '0',
+          'spclass': 0,
+          'dpclass': 0,
+          }
+        }
   else:
     # check recent json to get player info
     userjson_url = "http://json.iidx.me/%s/recent/" % username
@@ -58,16 +58,16 @@ def userpage(request, username="!"):
     except:
       splevel = '-'
       dplevel = '-'
-  
+
   playerinfo = {
-    'userid': username,
-    'username': player['userdata']['djname'],
-    'iidxid': player['userdata']['iidxid'].replace('-', ''),
-    'spclass': iidx.getdanstring(player['userdata']['spclass']),
-    'dpclass': iidx.getdanstring(player['userdata']['dpclass']),
-    'splevel': splevel, # estimated level
-    'dplevel': dplevel, # estimated level
-  }
+      'userid': username,
+      'username': player['userdata']['djname'],
+      'iidxid': player['userdata']['iidxid'].replace('-', ''),
+      'spclass': iidx.getdanstring(player['userdata']['spclass']),
+      'dpclass': iidx.getdanstring(player['userdata']['dpclass']),
+      'splevel': splevel, # estimated level
+      'dplevel': dplevel, # estimated level
+      }
 
   # TODO: apart userpage from index. change index to search.
   return render_to_response('userpage.html', {'userinfo': playerinfo})
@@ -91,7 +91,7 @@ def rankpage(request, username="!", diff="SP", level=12):
     if (not checkValidPlayer(player)):
       # invalid user!
       raise Http404
-  
+
   # compile user data to render score
   userinfo, songdata, pageinfo = rp.compile_data(ranktable, player, models.Song.objects)
   userinfo['title'] = pageinfo['title']
@@ -109,7 +109,7 @@ def rankpage(request, username="!", diff="SP", level=12):
 def songcomment_all(request, page=1):
   songcomment_list = models.SongComment.objects.order_by('-time').all()
   paginator = Paginator(songcomment_list, 100)
-  
+
   try:
     songcomments = paginator.page(page)
   except:
@@ -157,20 +157,27 @@ def imgtl(request):
   import urllib2
   header = {'X-IMGTL-TOKEN': settings.imgtlkey}
   r = requests.post('https://api.img.tl/upload', data={'desc': '', 'filename': filename}, \
-    files={'file': (filename, pngdata, 'application/octet-stream')}, headers=header)
+      files={'file': (filename, pngdata, 'application/octet-stream')}, headers=header)
   return HttpResponse(r.text)
 
 # iidx/qpro/<iidxid>/
 @csrf_exempt
 def qpro(request, iidxid):
+  if (iidxid.isdigit() and int(iidxid) == 0):
+    with open('iidxrank/static/qpro/noname.png', 'r') as f:
+      img_blank = f.read()
+    return HttpResponse(img_blank, content_type="image/png")
+
   import urllib2
   qpro_url = 'http://iidx.me/userdata/copula/%s/qpro.png' % iidxid
-  resp = urllib2.urlopen(qpro_url)
-  if resp.info().maintype == "image":
-    return HttpResponse(resp.read(), content_type="image/png")
-  else:
-    # cannot found
-    f = open('iidxrank/static/qpro/blank.png', 'r')
+  try:
+    resp = urllib2.urlopen(qpro_url)
+    if (resp.info().maintype == "image"):
+      return HttpResponse(resp.read(), content_type="image/png")
+  except urllib2.HTTPError as e:
+    pass
+
+  # cannot found
+  with open('iidxrank/static/qpro/blank.png', 'r') as f:
     img_blank = f.read()
-    f.close()
-    return HttpResponse(img_blank)
+  return HttpResponse(img_blank, content_type="image/png")
