@@ -163,7 +163,7 @@ function DefaultScoreRenderer(ctx) {
     self.ctx.font = "bold 14px Arial";
     self.ctx.textAlign="left";
     self.ctx.fillStyle="#000";
-    self.ctx.fillText("DJ " + d.name, x + 12, 132);
+    self.ctx.fillText("DJ " + d.username, x + 12, 132);
 
     var gradecolor = [
       "#000000",
@@ -188,13 +188,13 @@ function DefaultScoreRenderer(ctx) {
       "#999999",  // 19
       "#DDDD33",  // 20
       ]
-    if (d.spdannum > 0) {
-      self.ctx.fillStyle=gradecolor[d.spdannum];
-      self.ctx.fillText("SP" + d.spdan, x+w-120, 132);
+    if (d.spclass > 0) {
+      self.ctx.fillStyle=gradecolor[d.spclass];
+      self.ctx.fillText("SP" + d.spclassstr, x+w-120, 132);
       self.ctx.fillStyle="#000";
       self.ctx.fillText("/", x+w-68, 132);
-      self.ctx.fillStyle=gradecolor[d.dpdannum];
-      self.ctx.fillText("DP" + d.dpdan, x+w-60, 132);
+      self.ctx.fillStyle=gradecolor[d.dpclass];
+      self.ctx.fillText("DP" + d.dpclassstr, x+w-60, 132);
     }
   }
 

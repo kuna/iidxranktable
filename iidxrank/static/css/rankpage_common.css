@@ -4,36 +4,6 @@
 body { font-family: 'M+ 1c medium', 'Malgun Gothic', NanumBarunGothicOTF,"Helvetica Neue",Arial,"Apple SD Gothic Neo",Dotum,"돋움",sans-serif; font-size: 14px; }
 #container .inner { padding:10px; overflow:hidden; }
 
-/*
- * outer table (category / level)
- */
-.outertable { width:100%; background-color:#fff; /* important! */ }
-.outertable div:first-child { width:120px; }
-.table { display:table; border-spacing: 0px; }
-.row { display:table-row; }
-.cell { display:table-cell; vertical-align: middle; }
-
-/* outer table border setting */
-.table:first-child { border-top: 2px solid #000; }
-.row { }
-.cell { border-color: #000; }
-.cell { border-left: 2px solid; }
-.cell:last-child { border-right: 2px solid; }
-.celltype0 { border-bottom: 2px solid; }
-.celltype1 { border-bottom: 1px solid #ccc; }
-
-/*
- * inner table (song list / name)
- */
-.songlist { list-style: none; overflow: hidden; margin:0; }
-.songlist li { float:left; display:block; padding:2px 0; width:20%; height: 27px; 
-		border-right:1px solid #ccc; border-bottom: 1px solid #ccc; 
-		overflow: hidden; position: relative; word-break: break-all; }
-.songlist li:hover { background:#fff;  }
-.songlist .name { padding:0 8px; /*letter-spacing: -0.5px*/ }
-.rowname { font-weight: bold; text-align: center; position: relative; }
-
-
 
 /* cell clear lamp */
 .lamp_category { display:block; height:20px; width:24px; background: url('../img/clearlamp.png') no-repeat; }

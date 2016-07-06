@@ -102,6 +102,9 @@ function update_json(url) {
 	});
 }
 function updateuser(iidxmeid) {
+  alert("Under construction");
+  return;
+
 	$.getJSON("/iidx/update/user/" + iidxmeid, function(data) {
 		if (data['status'] == "success") {
 			alert('업데이트가 진행중입니다. 잠시만 기다려주세요.');

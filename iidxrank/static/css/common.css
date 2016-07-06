@@ -58,11 +58,13 @@ table .loading { color:#999; text-align: center; padding:20px; }
 #header .inner { width: 1000px; margin: 0 auto; overflow:hidden; }
 .user { position:absolute; margin-top: 40px; }
 .user .userimage img { width:216px; height:216px; margin-top:0px; padding:20px; background-color:#444; }
-.user .userimage {  float:left; }
+.user .userimage { float:left; }
 .user .userinfo { float:left; margin-left: 28px; }
+.user .userid { float:left; margin-left:10px; color:#ccc; cursor:default; margin-top:2px; }
 .user .username {  float:left; color: #fff; margin:0; }
-.user .usergrade { float:left; margin-left: 10px; }
+.user .usergrade { float:left; margin-left: 50px; }
 .user .userlevel { float:left; margin-left: 10px; }
+.user .userlevel .level { cursor:pointer; margin:0; }
 #sidemenu { position:absolute; margin-top: 40px; width: 1000px; }
 #sidemenu button { float:right; }
 #sidemenu #search { width:200px; margin-right:10px; float:right; }

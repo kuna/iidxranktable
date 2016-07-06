@@ -1,6 +1,6 @@
 #-*- coding: utf-8 -*-
 import iidx
-
+import models
 
 def compile_data(ranktable, player, song_query):
   # get userinfo first
@@ -214,7 +214,8 @@ def getUserInfo(player, iidxmeid=''):
     dplevel = round(player_obj.dplevel, 2)
     if (dplevel == 0):
       dplevel = '-'
-  except:
+  except Exception as e:
+    #print e
     splevel = '-'
     dplevel = '-'
 
