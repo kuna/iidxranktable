@@ -8,22 +8,29 @@
 <link rel=stylesheet type=text/css href="{% static 'css/rankpage_common.css' %}">
 <link rel=stylesheet type=text/css id="rankpage_style" href="{% static 'css/rankpage_light3.css' %}">
 <script type="text/javascript" src="{% static 'js/table.default.skin.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/table.defscore.skin.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/table.js' %}"></script>
 
 <link href='https://fonts.googleapis.com/css?family=Comfortaa' rel='stylesheet' type='text/css'>
 <script language="javascript">
 
 var tabledata = {{ tabledata_json|safe }};
-
-$(function (){
-	var ttheme = new DefaultRenderer();
-	var t = new TableRenderer(ttheme);
-	var dorender = function() { setTimeout(function() {
-		if (!ttheme.isLoaded()) {
-			dorender();
-			return;
-		}
-		t.RenderTable(tabledata);
+var ttheme = new DefaultRenderer();
+var t = new TableRenderer(ttheme);
+var dorender = function(rendermode) {
+  if (rendermode == "clear") {
+    ttheme = new DefaultRenderer();
+  } else if (rendermode == "score") {
+    ttheme = new DefaultScoreRenderer();
+  }
+  ttheme.ctx = t.getContext();
+  t.renderer = ttheme;
+  setTimeout(function() {
+    if (!ttheme.isLoaded()) {
+      dorender();
+      return;
+    }
+    t.RenderTable(tabledata);
     var canvas = t.getCanvas();
     $(canvas).click(function(e) {
       var offset = $(this).offset();
@@ -35,10 +42,12 @@ $(function (){
         console.log(item.data.title);
       }
     });
-		$("#rankimg").append(canvas);
-	}, 100)};
+    $("#rankimg").append(canvas);
+  }, 100)};
+
+$(function (){
 	dorender();
-})
+});
 
 ///////////////////////////////////
 
@@ -282,34 +291,39 @@ $(window).load(function () {
     </div>
   </div>
   <div id="sidemenu">
-    <button id="capture" class="btn btn-default" data-loading-text="please wait..." ><span class="glyphicon glyphicon-camera"></span> capture</button>
+    <button id="capture" class="btn btn-default" data-loading-text="please wait..." ><span class="glyphicon glyphicon-camera"></span> download</button>
+    <!--
     <button id="send" class="btn btn-default" data-loading-text="uploading..."><span class="glyphicon glyphicon-upload"></span> upload for url/twitter</button>
     <input type="text" id="url" value="" class="form-control" readonly>
     <button id="twitter" class="btn btn-info"><span class="glyphicon glyphicon-send"></span> twitter</button>
+    -->
     <div id="search" class="input-group">
-      <input type="text" class="form-control"/>
+      <input type="text" class="form-control" id="searchuser" value="{{ userinfo.iidxmeid }}" />
       <span class="input-group-addon" id="goto">iidx.me ID</span>
     </div>
   </div>
   <div id="menu">
     <ul class="list sp">
+      <a href="#"><li>SP12.7</li></a>
       <a href="#"><li>SP12H</li></a>
       <a href="#"><li>SP12N</li></a>
+      <a href="#"><li>SP11EXH</li></a>
       <a href="#"><li>SP11H</li></a>
       <a href="#"><li>SP11N</li></a>
-      <a href="#"><li>SP10H</li></a>
-      <a href="#"><li>SP10N</li></a>
+      <a href="#"><li>SP10</li></a>
+      <a href="#"><li>SP9</li></a>
+      <a href="#"><li>SP8</li></a>
     </ul>
     <ul class="list dp">
-      <a href="#"><li>SP12H</li></a>
-      <a href="#"><li>SP12N</li></a>
-      <a href="#"><li>SP11H</li></a>
-      <a href="#"><li>SP11N</li></a>
-      <a href="#"><li>SP10H</li></a>
+      <a href="#"><li>DP12</li></a>
+      <a href="#"><li>DP11</li></a>
+      <a href="#"><li>DP10</li></a>
+      <a href="#"><li>DP9</li></a>
+      <a href="#"><li>DP8</li></a>
     </ul>
     <ul class="list theme">
-      <a href="#"><li class="sel">클리어</li></a>
-      <a href="#"><li>점수</li></a>
+      <a href="#"><li class="sel" data-value="clear">클리어</li></a>
+      <a href="#"><li data-value="score">점수</li></a>
     </ul>
     <ul class="list table">
       <a href="#"><li>SP Best</li></a>

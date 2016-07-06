@@ -199,3 +199,33 @@ function showMessage(message) {
 		$("#message").fadeOut(2000);
 	}, 5000);
 }
+
+
+
+/*
+ * for user page
+ */
+$(function() {
+  $('#goto').click(function (e) {
+    window.location.href = '/' + $('#searchuser').val();
+  });
+  $('#searchuser').keypress(function (e) {
+    if (e.which == 13) {
+      window.location.href = '/' + $('#searchuser').val();
+    }
+  });
+});
+
+/*
+ * theme viewing
+ */
+$(function() {
+  $(".list.theme li").each(function (i,obj) {
+    $(obj).click(function() {
+      $(".list.theme li").removeClass("sel");
+      $(this).addClass("sel");
+      // re-render table
+      dorender($(this).attr("data-value"));
+    });
+  });
+});
