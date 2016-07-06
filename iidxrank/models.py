@@ -175,3 +175,9 @@ class BannedUser(models.Model):
 
 	def __unicode__(self):
 		return self.ip
+
+class BannedWord(models.Model):
+	word = models.CharField(max_length=100)
+
+	def __unicode__(self):
+		return self.word
