@@ -12,6 +12,7 @@ import settings
 from update import jsondata
 import rankpage as rp
 import iidx
+import json
 
 import base64
 
@@ -93,7 +94,17 @@ def rankpage(request, username="!", diff="SP", level=12):
 	
 	# compile user data to render score
 	userinfo, songdata, pageinfo = rp.compile_data(ranktable, player, models.Song.objects)
-	return render_to_response('rankview.html', {'score': songdata, 'user': userinfo, 'pageinfo': pageinfo})
+        userinfo['title'] = pageinfo['title']
+        tabledata = {
+                'info': userinfo,
+                'categories': songdata
+                }
+	return render_to_response('rankview.html', 
+                {'score': songdata, 
+                    'tabledata_json': json.dumps(tabledata),
+                    'userinfo': userinfo, 
+                    'pageinfo': pageinfo}
+                )
 
 def songcomment_all(request, page=1):
 	songcomment_list = models.SongComment.objects.order_by('-time').all()

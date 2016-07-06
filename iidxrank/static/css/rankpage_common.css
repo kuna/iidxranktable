@@ -2,9 +2,6 @@
 
 * { padding:0; margin:0; }
 body { font-family: 'M+ 1c medium', 'Malgun Gothic', NanumBarunGothicOTF,"Helvetica Neue",Arial,"Apple SD Gothic Neo",Dotum,"돋움",sans-serif; font-size: 14px; }
-#rankimg,
-#menu,
-#container { width:1080px; margin: 0 auto 20px; clear: both; background-color:#fff; /* important! */ }
 #container .inner { padding:10px; overflow:hidden; }
 
 /*
@@ -134,7 +131,6 @@ body { font-family: 'M+ 1c medium', 'Malgun Gothic', NanumBarunGothicOTF,"Helvet
 .dan20 { background-color: #cc0 !important; }
 
 #url { width:200px; }
-#menu { padding: 20px; text-align: right; }
 
 
 #container_saveload { position:fixed; padding:20px; border-radius:10px; top:50%; left:50%;

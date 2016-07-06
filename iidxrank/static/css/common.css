@@ -10,13 +10,16 @@ http://mplus.font-face.jp/#/
     url('../fonts/mplus-1c-medium-sub.ttf') format('truetype');
 }
 
+* {
+  padding:0;
+  margin:0;
+}
+
 
 /* container */
-#container { max-width: 980px; margin:auto; padding:0 20px; }
-#container.fixed { max-width:1120px; width: 1120px; }
+#container { width: 1000px; margin:0 auto; }
 #container .notice_inner { max-width: 480px; margin: 100px auto 0; }
 #footer { font-size:11px; color:#ccc; text-align: center; width:100%;cursor:default; margin-top: 80px; }
-#menu { margin: 20px 0; }
 
 /* paging part (container) */
 #container .paging { font-size:9pt; overflow:hidden; color:#666; height:45px; }
@@ -41,6 +44,29 @@ table .loading { color:#999; text-align: center; padding:20px; }
 #container .notice_inner h4.level { float:right; cursor:pointer; cursor:hand; }
 #container .notice_inner h4.level span { display:none; }
 #container .notice_inner h4.level:hover span { display:block; margin-top:-30px; position:absolute; }
+
+#header { width: 100%; height: 236px; background: #336699; margin-bottom: 80px; }
+#header .inner { width: 1000px; margin: 0 auto; overflow:hidden; }
+.user { position:absolute; margin-top: 40px; }
+.user .userimage img { width:216px; height:216px; margin-top:0px; padding:20px; background-color:#444; }
+.user .userimage {  float:left; }
+.user .userinfo { float:left; margin-left: 28px; }
+.user .username {  float:left; color: #fff; margin:0; }
+.user .usergrade { float:left; margin-left: 10px; }
+.user .userlevel { float:left; margin-left: 10px; }
+#sidemenu { position:absolute; margin-top: 40px; width: 1000px; }
+#sidemenu button { float:right; }
+#sidemenu #search { width:200px; margin-right:10px; float:right; }
+#menu { position:absolute; margin-top: 88px; margin-left: 240px; }
+#menu .list { list-style:none; margin-bottom:10px; clear:both; overflow:hidden; }
+#menu .list li { float:left; display:block; font-size:11px; padding:4px 6px; border:2px solid #036; border-right: none; }
+#menu .list a:last-child li { border-right: 2px solid #036; }
+#menu .list a { color:#FFF; }
+
+#menu .list li.sel { background-color:#036 !important; font-weight:bold; }
+#menu .list li { background-color:#69c; }
+#menu .list.theme li { background-color:#96c; }
+#menu .list.table li { background-color:#c69; }
 
 /* about difficulty color */
 .SPA, .DPA { color:#b33; }

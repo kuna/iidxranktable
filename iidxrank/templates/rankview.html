@@ -7,16 +7,48 @@
 
 <link rel=stylesheet type=text/css href="{% static 'css/rankpage_common.css' %}">
 <link rel=stylesheet type=text/css id="rankpage_style" href="{% static 'css/rankpage_light3.css' %}">
-<script type="text/javascript" src="{% static 'js/html2canvas.min.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/ranklist.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/table.default.skin.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/table.js' %}"></script>
 
 <link href='https://fonts.googleapis.com/css?family=Comfortaa' rel='stylesheet' type='text/css'>
 <script language="javascript">
+
+var tabledata = {{ tabledata_json|safe }};
+
+$(function (){
+	var ttheme = new DefaultRenderer();
+	var t = new TableRenderer(ttheme);
+	var dorender = function() { setTimeout(function() {
+		if (!ttheme.isLoaded()) {
+			dorender();
+			return;
+		}
+		t.RenderTable(tabledata);
+    var canvas = t.getCanvas();
+    $(canvas).click(function(e) {
+      var offset = $(this).offset();
+      var x = e.pageX - offset.left;
+      var y = e.pageY - offset.top;
+      item = t.Click(tabledata, x, y);
+      console.log(item);
+      if (item) {
+        console.log(item.data.title);
+      }
+    });
+		$("#rankimg").append(canvas);
+	}, 100)};
+	dorender();
+})
+
+///////////////////////////////////
+
+
+
 // django csrf token
 window.csrftoken="{{ csrf_token }}";
 
 var png_base64 = "";
-var ftitle = "{{ pageinfo.title }} - DJ {{ user.name }}"
+var ftitle = "{{ pageinfo.title }} - DJ {{ userinfo.name }}"
 var fname = ftitle + ".png";
 var rankpage_style_arr = [
 "{% static 'css/rankpage_light3.css' %}",
@@ -113,7 +145,7 @@ $(function () {
 	// activate function
 	// and load setting when page loads
 	// and save setting when exit
-	if ({{user.iidxid}} == 0) {
+	if ({{userinfo.iidxid}} == 0) {
 		$('#load_and_save').click(function () { 
 			$("#loading_background").toggle();
 			$("#container_saveload").toggle();
@@ -215,6 +247,7 @@ $(function () {
 	//$("#ranktable").kerning();
 });
 
+/*
 //
 // update all text into canvas
 //
@@ -230,99 +263,64 @@ $(window).load(function () {
 		$(this).append($(canvas.makeCanvas()));
 	});
 });
+*/
 
 </script>
 
 {% endblock %}
 {% block body %}
-<div id="menu">
-	<!-- addon button -->
-	<a href="../.."><button id="home" class="btn btn-default" style="float:left;">return</button></a>
-	<button id="change_rank_css" class="btn btn-default">skin</button>
-	<button id="show_rank" class="btn btn-default">show rank</button>
-	<button id="order_rate" class="btn btn-default">order by rate</button>
-	<button id="order_clear" class="btn btn-default">order by clear</button>
-
-	<button id="load_and_save" class="btn btn-default"><span class="glyphicon glyphicon-file"></span></button>
-	<button id="capture" class="btn btn-default" data-loading-text="please wait..." ><span class="glyphicon glyphicon-camera"></span> capture</button>
-	<button id="send" class="btn btn-default" data-loading-text="uploading..."><span class="glyphicon glyphicon-upload"></span> upload for url/twitter</button>
-	<input type="text" id="url" value="" class="form-control" readonly>
-	<button id="twitter" class="btn btn-info"><span class="glyphicon glyphicon-send"></span> twitter</button>
-</div>
-
-<div id="container" class="fixed"><div class="inner">
-	<!-- table info -->
-	<h2 id="title">{{ pageinfo.titlehtml|safe }}</h2>
-
-	<!-- user image qpro -->
-	<div id="userimage">
-		<img src="/qpro/{{ user.iidxid }}/" width="170">
-		<script language="javascript">
-			$(function() {
-				$('#container .inner').css('background', 'url("/qpro/{{ user.iidxid }}/") no-repeat -15px 0px');
-			});
-		</script>
-	</div>
-
-	<!-- user info -->
-	<div id="info">
-		<p id="user">
-			<span class="label name"><span id="djname">DJ {{ user.name }}</span><span class="iidxid" id="iidxid">{{ user.iidxid }}</span></span>
-			<span class="label {{ pageinfo.type }} spdan dan{{ user.spdannum }}">{{ user.spdan }}</span><span class="label {{ pageinfo.type }} dpdan dan{{ user.dpdannum }}">{{ user.dpdan }}</span>
-		</p>
-
-		<!-- clear lamp info -->
-		<ul id="preview">
-			<li class="failed">{{ pageinfo.clearinfo.failed }}</li>
-			<li class="assist">{{ pageinfo.clearinfo.assist }}</li>
-			<li class="easy">{{ pageinfo.clearinfo.easy }}</li>
-			<li class="normal">{{ pageinfo.clearinfo.normal }}</li>
-			<li class="hard">{{ pageinfo.clearinfo.hard }}</li>
-			<li class="exh">{{ pageinfo.clearinfo.exhard }}</li>
-			<li class="fc">{{ pageinfo.clearinfo.fullcombo }}</li>
-		</ul>
-
-		<!--<ul id="rankinfo">
-			<li class="AAA">{{ pageinfo.rankinfo.AAA }}</li>
-			<li class="AA">{{ pageinfo.rankinfo.AA }}</li>
-			<li class="A">{{ pageinfo.rankinfo.A }}</li>
-			<li class="B">{{ pageinfo.rankinfo.B }}</li>
-			<li class="C">{{ pageinfo.rankinfo.C }}</li>
-			<li class="D">{{ pageinfo.rankinfo.D }}</li>
-			<li class="E">{{ pageinfo.rankinfo.E }}</li>
-			<li class="F">{{ pageinfo.rankinfo.F }}</li>
-		</ul>-->
-	</div>
-
-	<div id="ranktable">
-		<div class="table outertable">
-			{% for category in score %}
-			<div class="row">
-				<div class="cell celltype{{ category.categorytype }} rowname">
-					<span class="name">{{ category.category }}</span>
-					<div class="lamp_group {{ category.categoryclearstring }}"></div>
-				</div>
-				<div class="cell celltype{{ category.categorytype }}">
-					<ul class="songlist">
-						{% for song in category.songs %}
-						<a href="/songcomment/{{ pageinfo.tablename }}/{{ song.pkid }}/"
-							onclick="return openComment(this.href);"
-							target="_blank">
-							<li class="songli diff{{ song.data.diff }}" 
-								data-clear="{{ song.clear }}" data-rate="{{ song.rate }}" data-id="{{ song.pkid }}">
-								<span class="name" data-series="{{ song.data.version }}">{{ song.data.title }}</span>
-								<div class="lamp_clear lamp_clear_{{ song.clear }}"></div>
-								<div class="rank {{ song.rank }}"></div>
-							</li>
-						</a>
-						{% endfor %}
-					</ul>
-				</div>
-			</div>
-			{% endfor %}
-		</div>
-	</div>
+<div id="header"><div class="inner">
+  <div class="user">
+    <div class="userimage"><img src="/qpro/{{ userinfo.iidxid }}/"></div>
+    <div class="userinfo">
+      <h3 class="username">DJ {{ userinfo.name }}</h3> {{ userinfo.iidxid }}
+      <div class="usergrade">
+        <span class="label spdan dan{{ userinfo.spdannum }}">{{ userinfo.spdan }}</span><span class="label dpdan dan{{ userinfo.dpdannum }}">{{ userinfo.dpdan }}</span>
+      </div>
+      <div class="userlevel"></div>
+      <div id="update"></div>
+    </div>
+  </div>
+  <div id="sidemenu">
+    <button id="capture" class="btn btn-default" data-loading-text="please wait..." ><span class="glyphicon glyphicon-camera"></span> capture</button>
+    <button id="send" class="btn btn-default" data-loading-text="uploading..."><span class="glyphicon glyphicon-upload"></span> upload for url/twitter</button>
+    <input type="text" id="url" value="" class="form-control" readonly>
+    <button id="twitter" class="btn btn-info"><span class="glyphicon glyphicon-send"></span> twitter</button>
+    <div id="search" class="input-group">
+      <input type="text" class="form-control"/>
+      <span class="input-group-addon" id="goto">iidx.me ID</span>
+    </div>
+  </div>
+  <div id="menu">
+    <ul class="list sp">
+      <a href="#"><li>SP12H</li></a>
+      <a href="#"><li>SP12N</li></a>
+      <a href="#"><li>SP11H</li></a>
+      <a href="#"><li>SP11N</li></a>
+      <a href="#"><li>SP10H</li></a>
+      <a href="#"><li>SP10N</li></a>
+    </ul>
+    <ul class="list dp">
+      <a href="#"><li>SP12H</li></a>
+      <a href="#"><li>SP12N</li></a>
+      <a href="#"><li>SP11H</li></a>
+      <a href="#"><li>SP11N</li></a>
+      <a href="#"><li>SP10H</li></a>
+    </ul>
+    <ul class="list theme">
+      <a href="#"><li class="sel">클리어</li></a>
+      <a href="#"><li>점수</li></a>
+    </ul>
+    <ul class="list table">
+      <a href="#"><li>SP Best</li></a>
+      <a href="#"><li>DP Best</li></a>
+      <a href="#"><li>SP Recommend</li></a>
+      <a href="#"><li>DP Recommend</li></a>
+    </ul>
+  </div>
 </div></div>
+
+<div id="container" class="fixed">
 <div id="rankimg">
 </div>
 <div id="container_saveload" style="display:none;">

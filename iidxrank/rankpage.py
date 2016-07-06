@@ -34,7 +34,7 @@ def compile_data(ranktable, player, song_query):
 		'fullcombo': 0
 	}
 	for category in score:
-		for x in category['songs']:
+		for x in category['items']:
 			clearcount['noplay'] += (x['clear'] == 0)
 			clearcount['failed'] += (x['clear'] == 1)
 			clearcount['assist'] += (x['clear'] == 2)
@@ -56,7 +56,7 @@ def compile_data(ranktable, player, song_query):
 		'F': 0,
 	}
 	for category in score:
-		for x in category['songs']:
+		for x in category['items']:
 			for rank in rankcount:
 				rankcount[rank] += (x['rank'] == rank)
 
@@ -167,7 +167,7 @@ def addMetadata(musicdata, data, song_query):
 				return category
 		# if category is not exist, then make new one
 		category = { 'category': categoryname, 
-				'songs': [],
+				'items': [],
 				'sortindex': sortindex,
 				'categorytype': categorytype,
 				'categoryclearstring': u'FULL_COMBO',
@@ -187,15 +187,15 @@ def addMetadata(musicdata, data, song_query):
 	for music in musicdata:
 		category = getCategoryDB(music['pkid'])
 		if (category == None):
-			getCategoryProcessed()['songs'].append(music)
+			getCategoryProcessed()['items'].append(music)
 		else:
-			getCategoryProcessed(category)['songs'].append(music)
+			getCategoryProcessed(category)['items'].append(music)
 
 	#
 	# category lamp process
 	#
 	for catearray in categories:
-		for song in catearray['songs']:
+		for song in catearray['items']:
 			if (song['clear'] < catearray['categoryclear']):
 				catearray['categoryclear'] = song['clear']
 				catearray['categoryclearstring'] = song['clearstring']

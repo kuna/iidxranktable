@@ -63,7 +63,7 @@ urlpatterns = [
 
     # common urls (mainpage, userpage, rankpage)
             url(r'^$', views.mainpage),
-            url(r'^!/$', RedirectView.as_view(url='/iidx/')),
+            url(r'^!/$', RedirectView.as_view(url='/')),
             url(r'^!/songrank/$', views.songrank),
             url(r'^!/userrank/$', views.userrank),
             url(r'^!/(?P<diff>\w+)/(?P<level>\w+)/$', views.rankpage, name="rankpage"),
