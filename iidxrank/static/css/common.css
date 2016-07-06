@@ -15,6 +15,11 @@ http://mplus.font-face.jp/#/
   margin:0;
 }
 
+/* top */
+#top { width:100%; background-color:#346; height:50px; padding: 16px 0; color:#fff; }
+#top .inner { width: 1000px; margin: 0 auto; }
+#top #logo { font-weight:bold; float:left; }
+#top #search { width:200px; margin-right:10px; margin-top:-5px; float:right; }
 
 /* container */
 #container { width: 1000px; margin:0 auto; }

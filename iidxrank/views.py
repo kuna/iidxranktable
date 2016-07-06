@@ -70,7 +70,7 @@ def userpage(request, username="!"):
   }
 
   # TODO: apart userpage from index. change index to search.
-  return render_to_response('index.html', {'player': playerinfo})
+  return render_to_response('userpage.html', {'userinfo': playerinfo})
 
 def rankpage(request, username="!", diff="SP", level=12):
   # check is argument valid
