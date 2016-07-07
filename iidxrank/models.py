@@ -158,14 +158,29 @@ class Board(models.Model):
 	def __unicode__(self):
 		return self.title
 
+class BoardPost(models.Model):
+	time = models.DateTimeField(default=now)		# db updated time
+	title = models.CharField(max_length=100)
+	text = models.CharField(max_length=1000)
+	writer = models.CharField(max_length=100)
+	tag = models.CharField(max_length=100)
+	ip = models.CharField(max_length=100)
+	attr = models.IntegerField(default=0)
+	password = models.CharField(max_length=100)
+
+	def __unicode__(self):
+		return self.title
+
 class BoardComment(models.Model):
 	time = models.DateTimeField(default=now)		# db updated time
-	board = models.ForeignKey(Board, on_delete=CASCADE)
+	board = models.ForeignKey(Board, on_delete=CASCADE)     # (dummy)
+	#post = models.ForeignKey(BoardPost, on_delete=CASCADE)
+        parent = models.ForeignKey("self", null=True)
 	text = models.CharField(max_length=1000)
 	writer = models.CharField(max_length=100)
 	ip = models.CharField(max_length=100)
 	attr = models.IntegerField(default=0)
-	password = models.CharField(max_length=100)
+        password = models.CharField(max_length=100)
 
 	def get_boardtitle(self):
 		return self.board.title
