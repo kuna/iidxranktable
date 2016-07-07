@@ -26,7 +26,7 @@ def checkValidPlayer(player):
 def mainpage(request):
   notices = models.Board.objects.filter(title='notice').first().boardcomment_set
   return render_to_response('index.html',
-    {'hidesearch': True, 'notices': notices.order_by('-time')})
+          {'hidesearch': True, 'mobileview':True, 'notices': notices.order_by('-time')})
 
 def userpage(request, username="!"):
   if (username == "!"):

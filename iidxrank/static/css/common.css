@@ -80,6 +80,15 @@ table .loading { color:#999; text-align: center; padding:20px; }
 .list.table li { background-color:#c69; }
 #container .list { float:left; margin-top:4px; margin-right:20px; }
 
+/* in case of mobile */
+@media screen and (max-width: 768px) {
+  #top { height: auto; }
+  #top .inner { width: 100%; margin: 0; padding:5px 20px; }
+  #topmenu li { margin-top: 10px; float:none; clear:both; overflow:hidden; }
+  #header .inner { width: 100%; margin: 0; }
+  #container { width:100%; }
+}
+
 /* about difficulty color */
 .SPA, .DPA { color:#b33; }
 .SPH, .DPH { color:#bb3; }

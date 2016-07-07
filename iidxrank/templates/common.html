@@ -3,7 +3,11 @@
 	<head>
 		<title>{% block title %}iidx.me table rank{% endblock %}{% block subtitle %}{% endblock %}</title>
 		<meta charset="utf-8" />
+    {% if mobileview %}
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=1" />
+    {% else %}
+    <meta name="viewport" content="width=1080, user-scalable=1">
+    {% endif %}
         <meta name="description" content="Beatmania IIDX SP/DP 서열표 검색 사이트입니다. 配列表を検索ができます。">
         <meta name="author" content="@lazykuna">
 

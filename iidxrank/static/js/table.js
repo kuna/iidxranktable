@@ -159,7 +159,10 @@ function RoundRect(ctx, x, y, w, h, color, stroke) {
 
 }
 
-function TextDrawer(ctx, fnt, fntsub, color="#000") {
+function TextDrawer(ctx, fnt, fntsub, color) {
+  // default argument
+  color = color !== undefined ? color : "#000";
+
   // regex used to catch subtitle
   var reg = /\(.+?\).*$|-.+?-.*$|~.+?~.*$|～.+?～.*$|”.+?”.*$|feat\..+$/g;
   var self = this;

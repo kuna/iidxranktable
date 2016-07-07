@@ -222,7 +222,8 @@ $(function() {
 /*
  * download canvas
  */
-function downloadCanvas(c, fn="download.png") {
+function downloadCanvas(c, fn) {
+  fn = fn !== undefined ? fn : "download.png";
   console.log(c);
   var link = document.createElement('a');
   link.setAttribute('download', fn);
