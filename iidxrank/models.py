@@ -175,7 +175,7 @@ class BoardComment(models.Model):
 	time = models.DateTimeField(default=now)		# db updated time
 	board = models.ForeignKey(Board, on_delete=CASCADE)     # (dummy)
 	#post = models.ForeignKey(BoardPost, on_delete=CASCADE)
-        parent = models.ForeignKey("self", null=True)
+        parent = models.ForeignKey("self", null=True, blank=True)
 	text = models.CharField(max_length=1000)
 	writer = models.CharField(max_length=100)
 	ip = models.CharField(max_length=100)
