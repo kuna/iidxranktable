@@ -87,6 +87,7 @@ table .loading { color:#999; text-align: center; padding:20px; }
   #topmenu li { margin-top: 10px; float:none; clear:both; overflow:hidden; }
   #header .inner { width: 100%; margin: 0; }
   #container { width:100%; }
+  #container .notice_inner { max-width: 80%; margin: 50px auto 0; }
 }
 
 /* about difficulty color */
