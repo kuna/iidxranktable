@@ -103,7 +103,7 @@ def songcomment(request, ranktablename, songid):
 	# clear message
 	request.session['message'] = ''
 
-	return render(request, 'songcomment.html', {'comments': comments.order_by('-time'), 'board': boardinfo})
+	return render(request, 'board/songcomment.html', {'comments': comments.order_by('-time'), 'board': boardinfo})
 
 # /iidx/board/<boardid>/<boardpage>
 def board(request, boardid, boardpage=1):
@@ -187,4 +187,4 @@ def board(request, boardid, boardpage=1):
 	# clear message
 	request.session['message'] = ''
 
-	return render(request, 'board.html', {'comments': comments_page, 'board': board, 'status': status})
+	return render(request, 'board/board.html', {'comments': comments_page, 'board': board, 'status': status})

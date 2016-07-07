@@ -40,7 +40,7 @@ def userpage(request, username="!"):
       # invalid user!
       raise Http404
   playerinfo = rp.getUserInfo(player, username)
-  return render_to_response('userpage.html', {'userinfo': playerinfo})
+  return render_to_response('user/userpage.html', {'userinfo': playerinfo})
 
 def rankpage(request, username="!", diff="SP", level=12):
   # check is argument valid
@@ -70,7 +70,7 @@ def rankpage(request, username="!", diff="SP", level=12):
       'info': userinfo,
       'categories': songdata
       }
-  return render_to_response('rankview.html', 
+  return render_to_response('user/rankview.html', 
       {'score': songdata, 
         'tabledata_json': json.dumps(tabledata),
         'userinfo': userinfo, 
@@ -103,7 +103,7 @@ def recommend(request, username):
   if (not checkValidPlayer(player)):
     raise Http404
   userinfo = rp.getUserInfo(player, username)
-  return render_to_response('recommend.html', {"userinfo": userinfo})
+  return render_to_response('user/recommend.html', {"userinfo": userinfo})
 
 # /iidx/(username)/skillrank
 def skillrank(request, username):
@@ -112,7 +112,7 @@ def skillrank(request, username):
   if (not checkValidPlayer(player)):
     raise Http404
   userinfo = rp.getUserInfo(player, username)
-  return render_to_response('skillrank.html', {"userinfo": userinfo})
+  return render_to_response('user/skillrank.html', {"userinfo": userinfo})
 
 # /iidx/!/songrank/
 def songrank(request):
