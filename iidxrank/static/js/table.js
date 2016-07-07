@@ -14,6 +14,7 @@ function DummyRenderer(ctx) {
   /** Theme Constants */
   self.theme_cate_margin = 0;
   self.margin_top = 20;
+  self.margin_bottom = 20;
 
   self.drawCell = function(d,x,y,w,h) {
   }
@@ -46,7 +47,7 @@ var TableRenderer = function(renderer) {
   self._itemwidth = 200;  // will be recalculated automatically
   function _CalculateHeight(t) {
     // calculate total table size
-    var _h = self._margin + self.renderer.margin_top;
+    var _h = self.renderer.margin_bottom + self.renderer.margin_top;
     for (var i in t) {
       _h += self._itemheight * Math.floor((t[i].items.length - 1) / self._itemcol + 1);
       _h += self.renderer.theme_cate_margin;
@@ -109,14 +110,14 @@ var TableRenderer = function(renderer) {
     _CalculateHeight(tdata.categories);
     // before rendering
     self.renderer.drawTableBefore(tdata.info,self._margin,self._margin_top,
-      self._width-self._margin*2,self._height-self._margin-self._margin_top);
+      self._width-self._margin*2,self._height-self.renderer.margin_bottom-self._margin_top);
     // render table
     for (var i in tdata.categories) {
       self.RenderColumn(tdata.categories[i]);
     }
     // after rendering
     self.renderer.drawTableAfter(tdata.info,self._margin,self.renderer.margin_top,
-      self._width-self._margin*2,self._height-self._margin-self.renderer.margin_top);
+      self._width-self._margin*2,self._height-self.renderer.margin_bottom-self.renderer.margin_top);
     return true;
   }
   self.Clear = function() {

@@ -1,6 +1,7 @@
 #-*- coding: utf-8 -*-
 import iidx
 import models
+import time
 
 def compile_data(ranktable, player, song_query):
   # get userinfo first
@@ -51,7 +52,7 @@ def compile_data(ranktable, player, song_query):
       for rank in rankcount:
         rankcount[rank] += (x['rank'] == rank)
 
-  # make information for return
+  # make information for page/table
   pageinfo = {
     'title': ranktable.tabletitle,
     'titlehtml': ranktable.getTitleHTML(),
@@ -62,6 +63,8 @@ def compile_data(ranktable, player, song_query):
     'copyright': ranktable.copyright,
     'date': ranktable.time,
   }
+  userinfo['tabletime'] = time.mktime(ranktable.time.timetuple())
+  userinfo['copyright'] = ranktable.copyright
   return userinfo, score, pageinfo
 
 

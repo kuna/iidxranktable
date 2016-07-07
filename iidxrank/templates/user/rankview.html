@@ -174,13 +174,39 @@ $(function (){
 {% include "profileheader.html" %}
 
 <div id="container" class="fixed">
+  <!-- edit tool for guest -->
   <div class="right clear" id="edittool">
-    <input id="current_item" disabled="1" value="'~'"/>
-    <button id="edit_reset" class="btn btn-xs">reset</button>
-    <p>마우스로 곡 선택 후,<br>Q/W: 난이도 수정, A/S: 랭크 수정.</p>
+    <h4><b>서열표 편집기</b></h4>
+    <div class="clear">
+      <input id="current_item" disabled="1" value="(곡을 선택해 주세요)"/>
+    </div>
+    <div class="clear">
+      <button data-value="0" class="btn btn-xs edit_clear">X</button>
+      <button data-value="1" class="btn btn-xs edit_clear">EASY</button>
+      <button data-value="2" class="btn btn-xs edit_clear">EASY</button>
+      <button data-value="3" class="btn btn-xs edit_clear">GROOVE</button>
+      <button data-value="4" class="btn btn-xs edit_clear">HARD</button>
+      <button data-value="5" class="btn btn-xs edit_clear">EXH</button>
+      <button data-value="6" class="btn btn-xs edit_clear">FC</button>
+    </div>
+    <div class="clear">
+      <button data-value="0" class="btn btn-xs edit_rank">F</button>
+      <button data-value="20" class="btn btn-xs edit_rank">E</button>
+      <button data-value="30" class="btn btn-xs edit_rank">D</button>
+      <button data-value="40" class="btn btn-xs edit_rank">C</button>
+      <button data-value="50" class="btn btn-xs edit_rank">B</button>
+      <button data-value="60" class="btn btn-xs edit_rank">A</button>
+      <button data-value="70" class="btn btn-xs edit_rank">AA</button>
+      <button data-value="80" class="btn btn-xs edit_rank">AAA</button>
+    </div>
+    <p>마우스로 곡 선택 후,<br>Q/W: 난이도 수정, A/S: 랭크 수정 으로도 변경 가능.</p>
     <!--<p>[:DJ명 수정.</p>-->
     <p>페이지 이동시 자동으로 변경사항이 저장됩니다.</p>
+    <div class="clear"></div>
+    <button id="edit_reset" class="btn btn-xs">reset</button>
   </div>
+  <!-- edit tool end -->
+
   <div class="right clear">
     <!--
     <button id="send" class="btn btn-default" data-loading-text="uploading..."><span class="glyphicon glyphicon-upload"></span> upload for url/twitter</button>

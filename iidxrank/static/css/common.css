@@ -74,6 +74,8 @@ table .loading { color:#999; text-align: center; padding:20px; }
 .list a:last-child li { border-right: 2px solid #036; }
 .list a { color:#FFF; }
 
+#edittool { float:left; border-radius:5px; background-color:#f0f0f0; padding: 10px 20px; width: 450px; }
+
 .list li.sel { background-color:#036 !important; font-weight:bold; }
 .list li { background-color:#69c; }
 .list.theme li { background-color:#96c; }

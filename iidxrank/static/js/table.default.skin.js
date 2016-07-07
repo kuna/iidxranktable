@@ -39,6 +39,7 @@ function DefaultRenderer(ctx) {
 
   /** Theme Constants */
   self.margin_top = 150;
+  self.margin_bottom = 50;
   self.theme_cate_margin = 0;
   self.drawscore = false;
   self.renderforprint = false;
@@ -182,10 +183,32 @@ function DefaultRenderer(ctx) {
     }
   }
 
+  function formatDate(d) {
+    var month = '' + (d.getMonth()+1);
+    var day = '' + d.getDate();
+    var year = d.getFullYear();
+    if (month.length < 2) month = '0'+month;
+    if (day.length < 2) day = '0'+day;
+    return [year, month, day].join('-');
+  }
+
   self.drawTableAfter = function(d,x,y,w,h) {
     // very bottom line
     self.ctx.beginPath();
     drawBLine(x, y+h, x+w, y+h);
     self.ctx.closePath();
+    // date
+    self.ctx.fillStyle="#999";
+    self.ctx.font = "13px Arial";
+    self.ctx.textAlign="right";
+    console.log(d);
+    var tdate = new Date(d.tabletime * 1000);
+    self.ctx.fillText("Today: " + formatDate(new Date()) + " / Updated: " + formatDate(tdate),
+        x+w, y+h+20);
+    // copyright
+    if (d.copyright) {
+      self.ctx.textAlign="left";
+      self.ctx.fillText(d.copyright, x, y+h+20);
+    }
   }
 }
