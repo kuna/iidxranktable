@@ -136,7 +136,7 @@ def addMetadata(musicdata, data, song_query):
     # none model means, '-'(no category)
     if (category_model == None):
       categoryname = '-'
-      categorytype = 0
+      categorytype = 1      # big category
       sortindex = 0
     else:
       categoryname = category_model.categoryname
@@ -201,9 +201,9 @@ def getUserInfo(player, iidxmeid=''):
     player['musicdata'] = None
     player['userdata'] = {}
     player['userdata']['djname'] = 'NONAME'
-    player['userdata']['spclass'] = 0
-    player['userdata']['dpclass'] = 0
-    player['userdata']['iidxid'] = '0'
+    player['userdata']['spclass'] = 1
+    player['userdata']['dpclass'] = 1
+    player['userdata']['iidxid'] = '00000000'
 
   # check is db exists
   try:
