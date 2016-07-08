@@ -177,23 +177,26 @@ function saveSetting(key, val) {
 
 function registerRecentuser(username) {
   var users = getRecentusers();
-  if (username in users) {
-    var idx = array.indexOf(username);
+  var idx = users.indexOf(username);
+  if (idx >= 0) {
+    console.log(users);
     users.splice(idx, 1);
+    console.log(users);
   }
   if (users.length > 5)
     users.pop();
   users.unshift(username);
-  saveSetting(JSON.stringify(users));
+  console.log(users);
+  saveSetting("recentuser", JSON.stringify(users));
 }
 
 function removeRecentuser(username) {
   var users = getRecentusers();
-  if (username in users) {
-    var idx = array.indexOf(username);
+  var idx = users.indexOf(username);
+  if (idx >= 0) {
     users.splice(idx, 1);
   }
-  saveSetting(JSON.stringify(users));
+  saveSetting("recentuser", JSON.stringify(users));
 }
 
 function getRecentusers() {

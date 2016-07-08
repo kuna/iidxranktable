@@ -130,13 +130,9 @@ $(function () {
 	// and load setting when page loads
 	// and save setting when exit
 	if ({{userinfo.iidxid}} == 0) {
-		$('#load_and_save').click(function () { 
-			$("#loading_background").toggle();
-			$("#container_saveload").toggle();
-			$("#json_code").val(createSaveString());
-		});
+    // clone data
+    tabledata_orig = jQuery.extend(true, {}, tabledata);
 		$(window).on('beforeunload', function () {
-      console.log("do save");
 			saveSetting("{{ pageinfo.tablename }}_data", createSaveString(tabledata));
 		});
 		var savedata = loadSetting("{{ pageinfo.tablename }}_data");
@@ -147,6 +143,8 @@ $(function () {
     }
 	} else {
     $('#edittool').hide();
+    // register to recent user
+    registerRecentuser("{{ userinfo.iidxmeid }}");
 	}
 
   $('#edit_reset').click(function () {
@@ -253,8 +251,41 @@ $(function (){
     <p>마우스로 곡 선택 후,<br>Q/W: 난이도 수정, A/S: 랭크 수정 으로도 변경 가능.</p>
     <!--<p>[:DJ명 수정.</p>-->
     <p>페이지 이동시 자동으로 변경사항이 저장됩니다.</p>
-    <div class="clear"></div>
-    <button id="edit_reset" class="btn btn-xs">reset</button>
+    <div class="clear">
+      <button id="edit_djname" class="btn btn-xs">DJ name</button>
+      <button id="edit_spclass" class="btn btn-xs">SP class</button>
+      <button id="edit_dpclass" class="btn btn-xs">DP class</button>
+    </div>
+    <script language="javascript">
+      $('#edit_djname').click(function () {
+        var s = prompt("새 DJ명을 입력해 주세요");
+        if (s.length) {
+          tabledata.info.username = s;
+          dorender();
+        }
+      });
+      $('#edit_spclass').click(function () {
+        var s = prompt("숫자를 입력하세요 (미취득(1), 7級(2)~1級(8), 初段(9)~十段(18), 中伝(19), 皆伝(20))");
+        if (s.length) {
+          var i = parseInt(s);
+          tabledata.info.spclass = i;
+          tabledata.info.spclassstr = getClassstr(i);
+          dorender();
+        }
+      });
+      $('#edit_dpclass').click(function () {
+        var s = prompt("숫자를 입력하세요 (미취득(1), 7級(2)~1級(8), 初段(9)~十段(18), 中伝(19), 皆伝(20))");
+        if (s.length) {
+          var i = parseInt(s);
+          tabledata.info.dpclass = i;
+          tabledata.info.dpclassstr = getClassstr(i);
+          dorender();
+        }
+      });
+    </script>
+    <div class="clear">
+      <button id="edit_reset" class="btn btn-xs">reset</button>
+    </div>
   </div>
   <!-- edit tool end -->
 

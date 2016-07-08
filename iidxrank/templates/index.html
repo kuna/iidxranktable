@@ -1,6 +1,7 @@
 {% extends "common.html" %}
 {% load staticfiles %}
 {% block head %}
+
 {% endblock %}
 {% block body %}
 
@@ -24,6 +25,34 @@ glyphicon glyphicon-home"></span></button></a></center>
 			<input type="text" class="form-control" value="{{ player.userid }}" aria-describedby="basic-addon2" id="searchuser">
 			<span class="input-group-addon" id="goto">iidx.me ID</span>
 		</div>
+
+    <div class="row recentuser">
+      <ul id="recentusers">
+        <li class="info">(최근 검색한 유저가 없습니다)</li>
+      </ul>
+      <script language="javascript">
+        $(function () {
+          var users = getRecentusers();
+          console.log(users);
+          if (users.length > 0) {
+            $("#recentusers").empty();
+            for (var i in users) {
+              var uname = users[i];
+              var uname_link = "<a href='/" + uname + "/'>" + uname + "</a>";
+              var uname_rmlink = "<a href='#' class='rmlink' data-value='" + uname + "'>Χ</a>";
+              var obj = $("<li>" + uname_link + uname_rmlink + "</li>");
+              $("#recentusers").append(obj);
+            }
+          }
+          // register delete handler
+          $("a.rmlink").click(function () {
+            var uname = $(this).attr('data-value');
+            removeRecentuser(uname);
+            $(this).parent().remove();
+          });
+        });
+      </script>
+    </div>
 
 		<div class="row input-group">
       <div class="panel panel-default">
