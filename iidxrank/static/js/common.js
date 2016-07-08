@@ -364,12 +364,17 @@ function showMessage(message) {
  * for user page
  */
 $(function() {
+  function moveUserpage(username) {
+    window.location.href = '/' + username;
+    // register to recent user
+    registerRecentuser(username);
+  }
   $('#goto').click(function (e) {
-    window.location.href = '/' + $('#searchuser').val();
+    moveUserpage($('#searchuser').val());
   });
   $('#searchuser').keypress(function (e) {
     if (e.which == 13) {
-      window.location.href = '/' + $('#searchuser').val();
+      moveUserpage($('#searchuser').val());
     }
   });
 });
