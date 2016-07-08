@@ -22,12 +22,64 @@ var fname = ftitle + ".png";
 
 
 
+////////////////////////////////
+// table data & sort
+
+var tabledata = {{ tabledata_json|safe }};
+var tabledata_orig = tabledata;
+
+function sortTabledata(type) {
+  type = type !== undefined ? type : "name";
+  // type: clear, rate, name
+  console.log(type);
+
+  for (var i in tabledata.categories) {
+    cate = tabledata.categories[i];
+    cate.items.sort(function (a,b) {
+      if (type == "name") {
+        var str1 = a.data.title.toLowerCase();
+        var str2 = b.data.title.toLowerCase();
+        return ( ( str1 == str2 ) ? 0 : ( ( str1 > str2 ) ? 1 : -1 ) );
+        //return str1.localeCompare(str2);
+      } else if (type == "rate") {
+        return ( b.rate - a.rate );
+      } else if (type == "clear") {
+        return ( b.clear - a.clear );
+      } else {
+        return 0;
+      }
+    });
+  }
+}
+
+$(function () {
+  $("#ranksort_clear").click(function () {
+    sortTabledata("clear");
+    dorender();
+  });
+
+  $("#ranksort_rate").click(function () {
+    sortTabledata("rate");
+    dorender();
+  });
+
+  $("#ranksort_name").click(function () {
+    sortTabledata("name");
+    dorender();
+  });
+});
+
+// sort by name, basically.
+sortTabledata();
+
+
+
+
+
 
 /////////////////////////////////
 // table renderer code
 
-var tabledata = {{ tabledata_json|safe }};
-var tabledata_orig = tabledata;
 
 var ttheme = new DefaultRenderer();
 var t = new TableRenderer(ttheme);
@@ -64,6 +116,7 @@ var dorender = function(_rendermode) {
     });
     $("#rankimg").append(canvas);
   }, 100)};
+
 
 
 
@@ -213,6 +266,11 @@ $(function (){
     <input type="text" id="url" value="" class="form-control" readonly>
     <button id="twitter" class="btn btn-info"><span class="glyphicon glyphicon-send"></span> twitter</button>
     -->
+    <div class="btn-group btn-group-sm">
+      <button id="ranksort_clear" class="btn btn-default">sort by clear</button>
+      <button id="ranksort_rate" class="btn btn-default">rate</button>
+      <button id="ranksort_name" class="btn btn-default">name</button>
+    </div>
     <button id="capture" class="btn btn-default" data-loading-text="please wait..." ><span class="glyphicon glyphicon-camera"></span> download</button>
     <ul class="list theme">
       <a href="#"><li class="sel" data-value="clear">클리어</li></a>
