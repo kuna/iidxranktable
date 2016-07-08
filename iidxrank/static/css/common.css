@@ -28,7 +28,7 @@ http://mplus.font-face.jp/#/
 /* container */
 #container { width: 1000px; margin:0 auto; padding-top:40px; }
 #container .notice_inner { max-width: 480px; margin: 100px auto 0; }
-#footer { font-size:11px; color:#ccc; text-align: center; width:100%;cursor:default; margin-top: 80px; }
+#footer { font-size:11px; color:#ccc; text-align: center; width:100%;cursor:default; margin-top: 80px; clear:both; }
 
 /* paging part (container) */
 #container .paging { font-size:9pt; overflow:hidden; color:#666; height:45px; }
@@ -74,7 +74,7 @@ table .loading { color:#999; text-align: center; padding:20px; }
 .list a:last-child li { border-right: 2px solid #036; }
 .list a { color:#FFF; }
 
-#edittool { float:left; border-radius:5px; background-color:#f0f0f0; padding: 10px 20px; width: 450px; }
+#edittool { border-radius:5px; background-color:#fff; border:1px solid #999; padding: 10px 20px; width: 450px; position:fixed; opacity:0.8; right:50px; bottom:100px; }
 
 .list li.sel { background-color:#036 !important; font-weight:bold; }
 .list li { background-color:#69c; }
