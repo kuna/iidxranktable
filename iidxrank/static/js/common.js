@@ -175,6 +175,158 @@ function saveSetting(key, val) {
 	}
 }
 
+function registerRecentuser(username) {
+  var users = getRecentusers();
+  if (username in users) {
+    var idx = array.indexOf(username);
+    users.splice(idx, 1);
+  }
+  if (users.length > 5)
+    users.pop();
+  users.unshift(username);
+  saveSetting(JSON.stringify(users));
+}
+
+function removeRecentuser(username) {
+  var users = getRecentusers();
+  if (username in users) {
+    var idx = array.indexOf(username);
+    users.splice(idx, 1);
+  }
+  saveSetting(JSON.stringify(users));
+}
+
+function getRecentusers() {
+  var json = loadSetting("recentuser");
+  var users = []
+  if (json) {
+    users = JSON.parse(json);
+  }
+  return users;
+}
+
+function createSaveString(tabledata) {
+  savedata = {}
+  savedata['savedata_version'] = 1.0;
+  savedata['info'] = {};
+  savedata['songs'] = {};
+
+  savedata['info']['username'] = tabledata.info.username;
+  savedata['info']['spclass'] = tabledata.info.spclass;
+  savedata['info']['dpclass'] = tabledata.info.dpclass;
+  savedata['info']['iidxid'] = tabledata.info.iidxid;
+
+  for (var i in tabledata.categories) {
+    var cate = tabledata.categories[i];
+    for (var j in cate.items) {
+      var item = cate.items[j];
+      savedata['songs'][item.pkid] = {
+        'clear': item.clear,
+        'rate': item.rate
+      };
+    }
+  }
+	return JSON.stringify(savedata);
+}
+
+function loadSaveString(str, tabledata) {
+  var savedata = JSON.parse(str);
+  if (savedata.savedata_version == 1.0) {
+    tabledata.info.username = savedata.info.username;
+    tabledata.info.spclass = savedata.info.spclass;
+    tabledata.info.dpclass = savedata.info.dpclass;
+    tabledata.info.spclassstr = getClassstr(savedata.info.spclass);
+    tabledata.info.dpclassstr = getClassstr(savedata.info.dpclass);
+    tabledata.info.iidxid = savedata.info.iidxid;
+
+    for (var i in tabledata.categories) {
+      var cate = tabledata.categories[i];
+      for (var j in cate.items) {
+        var item = cate.items[j];
+        if (item.pkid in savedata.songs) {
+          var sitem = savedata.songs[item.pkid];
+          item.clear = sitem.clear;
+          item.rate = sitem.rate;
+          item.rank = getRank(sitem.rate);
+        }
+      }
+    }
+
+    // set some properties from tabledata (TODO)
+    return true;
+  } else {
+    console.log("invalid save data");
+    return false;
+  }
+}
+
+
+/* class string & rank string */
+function getClassstr(cls) {
+  switch (cls) {
+    case 1:
+      return "-";
+    case 2:
+      return "七級";
+    case 3:
+      return "六級";
+    case 4:
+      return "五級";
+    case 5:
+      return "四級";
+    case 6:
+      return "三級";
+    case 7:
+      return "二級";
+    case 8:
+      return "一級";
+    case 9:
+      return "初段";
+    case 10:
+      return "二段";
+    case 11:
+      return "三段";
+    case 12:
+      return "四段";
+    case 13:
+      return "五段";
+    case 14:
+      return "六段";
+    case 15:
+      return "七段";
+    case 16:
+      return "八段";
+    case 17:
+      return "九段";
+    case 18:
+      return "十段";
+    case 19:
+      return "中伝";
+    case 20:
+      return "皆伝";
+  }
+}
+
+function getRank(rate) {
+  if (rate > 800.0/9.0)
+    return "AAA";
+  else if (rate > 700.0/9.0)
+    return "AA";
+  else if (rate > 600.0/9.0)
+    return "A";
+  else if (rate > 500.0/9.0)
+    return "B";
+  else if (rate > 400.0/9.0)
+    return "C";
+  else if (rate > 300.0/9.0)
+    return "D";
+  else if (rate > 200.0/9.0)
+    return "E";
+  else
+    return "F";
+}
+
+
 /*  loading screen */
 function showLoadingBackground() {
 	$("#loading_background").show();
