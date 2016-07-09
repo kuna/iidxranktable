@@ -26,20 +26,32 @@ $(function () {
 		<div class="list-group">
 			<!-- form -->
 			<div class="list-group-item" id="writeform">
-				<form role="form" class="form-horizontal" action="./" method="post">
+				<form role="form" class="form-horizontal" 
+          {% if edit %}
+          action="./"
+          {% else %}
+          action="/board/modify/{{ post.id }}/"
+          {% endif %}
+          method="post">
 					{% csrf_token %}
+
+          {% if edit %}
+					<input type="hidden" name="mode" value="modify">
+          [편집중]
+          {% else %}
 					<input type="hidden" name="mode" value="add">
+          {% endif %}
 
 					<div class="form-group">
 						<label for="title" class="col-xs-4 control-label">title</label>
 						<div class="col-xs-8">
-						<input type="text" id="title" name="title" class="form-control input-sm" value="">
+              <input type="text" id="title" name="title" class="form-control input-sm" value="{{ post.title }}">
 						</div>
 					</div>
 					<div class="form-group">
 						<label for="writer" class="col-xs-4 control-label">name</label>
 						<div class="col-xs-8">
-						<input type="text" id="writer" name="writer" class="form-control input-sm" value="{{ status.writer }}">
+						<input type="text" id="writer" name="writer" class="form-control input-sm" value="{{ post.writer }}">
 						</div>
 					</div>
 					<div class="form-group">
@@ -51,13 +63,13 @@ $(function () {
 					<div class="form-group">
 						<label for="tag" class="col-xs-4 control-label">tag (관리자용)</label>
 						<div class="col-xs-8">
-						<input type="text" id="tag" name="tag" class="form-control input-sm" value="">
+              <input type="text" id="tag" name="tag" class="form-control input-sm" value="{{ post.tag }}">
 						</div>
 					</div>
 
 					<div class="form-group">
 						<div class="col-xs-12">
-              <textarea id="richedit" class="form-control" name="text" placeholder="내용을 입력하세요" rows=4 cols=50></textarea>
+              <textarea id="richedit" class="form-control" name="text" placeholder="내용을 입력하세요" rows=4 cols=50>{{ post.text }}</textarea>
               <script language="javascript">
                 $(function () {
                   richedit = new MooEditable(document.getElementById("richedit"));
@@ -67,7 +79,7 @@ $(function () {
 					</div>
 					<div class="form-group">
 						<div class="col-xs-12 navigation">
-              <a class="btn btn-default" href="../">cancel</a>
+              <a class="btn btn-default" href="/board/{{ board.title }}/">cancel</a>
               <input class="btn btn-default" type="submit" value="submit">
 						</div>
             <script language="javascript">

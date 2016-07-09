@@ -89,21 +89,7 @@ def write(request, boardname):
         if (password == ""):
             password = ip
 
-        if (request.POST["mode"] == "delete"):
-            # delete comment
-            comment_id = request.POST["id"]
-            if (status['attr'] == 2):
-                # admin can delete any comment
-                comment = models.BoardComment.objects.filter(id=comment_id).first()
-            else:
-                comment = models.BoardComment.objects.filter(id=comment_id, password=password).first()
-
-            if (not comment):
-                message = "Wrong password"
-            else:
-                comment.delete()
-                message = "Removed Comment"
-        elif (request.POST["mode"] == "add"):
+        if (request.POST["mode"] == "add"):
             # check argument is valid
             title = request.POST["title"]
             text = request.POST["text"]
@@ -133,14 +119,60 @@ def write(request, boardname):
         # (prevent sending same request)
         return HttpResponseRedirect(reverse("postlist", args=[boardname, 1]))
     else:
+        post = {
+                'title': '',
+                'writer': '',
+                'tag': '',
+                'text': '',
+                }
         r = render(request, 'edit.html',
-                {'board': board, 'status': status})
+                {'board': board, 'status': status, 'post': post})
         clearMessage(request)
         return r
 
 # /board/modify/<postid>/
 def modify(request, postid):
-    pass
+    post = models.BoardPost.objects.filter(id=postid).first()
+    if (post == None):
+        raise Http404
+    status = getBasicStatus(request)
+    board = post.board
+
+    if (request.method == "POST"):
+        if (request.POST["mode"] == "delete"):
+            password = request.POST["password"]
+            if (post.password == password or status['attr'] == 2):
+                post.delete()
+                message = "Removed Post"
+            else:
+                message = "Wrong password"
+            return HttpResponseRedirect(reverse("postlist", args=[board.title, 1]))
+        elif (request.POST["mode"] == "modify"):
+            password = request.POST["password"]
+            writer = request.POST["writer"]
+            text = request.POST["text"]
+            v = checkValidation(ip, writer, text)
+
+            # to stay data remaining
+            post.title = request.POST["title"]
+            post.text = request.POST["text"]
+            post.tag = request.POST["tag"]
+            post.writer = request.POST["writer"]
+            if (v[0]):
+                if (post.password == password or status['attr'] == 2):
+                    post.save()
+                    message = "Modified Post"
+                    return HttpResponseRedirect(reverse("postview", args=[post.id,]))
+                else:
+                    post. 
+                    message = "Wrong password"
+            else:
+                message = v[1]
+
+    # failed to edit, or normal edit window
+    r = render(request, 'edit.html',
+            {'board': board, 'status': status, 'post': post, 'edit': True})
+    return r
 
 
 # /board/view/<postid>/
@@ -209,7 +241,7 @@ def comment(request, postid):
             if (password == ""):
                 password = ip
             cmtobj = models.BoardComment.objects.get(id=cmtid)
-            if (cmtobj.password == password):
+            if (cmtobj.password == password or status['attr'] == 2):
                 cmtobj.delete()
                 request.session['message'] = u"댓글을 삭제하였습니다."
             else:

@@ -15,6 +15,7 @@
 .comment .info .ip { color:#999; font-size:9pt; }
 
 .navigation { text-align: right; overflow:hidden; margin-bottom: 20px; }
+.navigation .right .btn { margin-left:10px; float:right; }
 
 .board .postlist { list-style:none; padding: 0 20px; }
 .board .postlist a { color: #333; }
