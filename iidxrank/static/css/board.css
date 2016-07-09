@@ -1,4 +1,5 @@
 /* comment part */
+.comment.child { margin-top: 10px; padding-top:10px; }
 .comment .writer { font-weight:bold; }
 .comment .admin { color:#933; }
 .comment .title { clear:both; font-weight:bold; margin-bottom:5px; border-bottom:1px solid #ccc; padding-bottom:5px; font-size:9pt; }
@@ -6,14 +7,39 @@
 .comment .info { padding-bottom:8px; overflow:hidden; }
 .comment .info .detail { font-size: 9pt; display:inline; }
 .comment .info .left { float:left; }	/* writer, etc... */
-.comment .info .right {float:right; width:100px; text-align: right; } /* password to remove */
-.comment .info .right .input-group { margin-top:-3px; }
-.comment .info .right .input-group input { padding: 0 12px; height:18px; border:0 none; border-radius:0; border-bottom:1px solid #ccc; }
-.comment .info .right .input-group .btn { font-size:5px; }
+.comment .info .right .input-group { width: 120px; } /* password to remove */
+.comment .info .right .input-group input { padding: 0 12px; height:18px; border:0 none; border-radius:0; border-bottom:1px solid #ccc; box-shadow: none; float: left; width: 60px; }
+.comment .info .right .input-group .btn { font-size:5px; float:right; }
 .comment .info .date { color:#666; }
 .comment .info .score { margin-left:5px; }
 .comment .info .ip { color:#999; font-size:9pt; }
 
+.navigation { text-align: right; overflow:hidden; margin-bottom: 20px; }
+
+.board .postlist { list-style:none; padding: 0 20px; }
+.board .postlist a { color: #333; }
+.board .postlist a:hover { text-decoration: underline; }
+.board .postlist li { padding: 10px 10px; border-bottom: 1px solid #ccc; overflow:hidden; }
+.board .postlist li:last-child { border-bottom: none; padding-bottom: 0; }
+.board .postlist li div { float:left; padding: 0 10px; }
+.board .postlist li .no { width:50px; text-align: center; }
+.board .postlist li .title { width: 600px; }
+.board .postlist li .writer { float: right; width: 100px; }
+.board .postlist li .date { float: right; width: 150px; }
+
+.post .info { overflow: hidden; padding-bottom: 10px; border-bottom: 1px solid #999; margin-bottom:20px; }
+.post .info .title {  }
+.post .info .writer { float: left; }
+.post .info .detail { float: right; color: #999; }
+.post .body { margin-bottom: 20px; }
+.admin { font-weight:bold; color:#933; }
+
 /* writeform part */
-#writeform { background-color:#f0f0f0; font-size:9pt; }
-#writeform .label { width:120px; }
+.writeform { background-color:#f0f0f0; font-size:9pt; overflow:hidden; }
+.writeform .writer { width: 300px; float: left; }
+.writeform .password { width: 300px; float: left; margin-left: 20px; }
+.writeform .text { width: 620px; float: left;}
+.writeform textarea { height: 60px; }
+.writeform .submit { width: 100px; float: right; }
+#richedit { height:280px; }
+.mooeditable-container { background-color:#fff; }

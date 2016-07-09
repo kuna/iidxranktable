@@ -51,11 +51,6 @@ body { font-family: 'M+ 1c medium', 'Malgun Gothic', NanumBarunGothicOTF,"Helvet
 .gAA { left:77.77%; }
 .gAAA { left:88.88%; }
 
-/* header part */
-#title { font-family: 'Comfortaa'; text-align: center; margin-bottom:100px; color:#999; }
-#title .detail { color: #000; }
-#info { clear:both; height:30px; overflow:hidden; margin-bottom:10px; }
-
 /* user pic */
 #userimage { display:none; }
 

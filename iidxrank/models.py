@@ -122,6 +122,7 @@ class RankItem(models.Model):
 
 
 # newly added comment system
+# (depreciated)
 class SongComment(models.Model):
 	time = models.DateTimeField(default=now)		# db updated time
 	# we'd better to identify song with: ranktable, song
@@ -160,24 +161,29 @@ class Board(models.Model):
 
 class BoardPost(models.Model):
 	time = models.DateTimeField(default=now)		# db updated time
+	board = models.ForeignKey(Board, on_delete=CASCADE, null=True)
 	title = models.CharField(max_length=100)
 	text = models.CharField(max_length=1000)
 	writer = models.CharField(max_length=100)
-	tag = models.CharField(max_length=100)
+	tag = models.CharField(max_length=100, default="")
 	ip = models.CharField(max_length=100)
 	attr = models.IntegerField(default=0)
 	password = models.CharField(max_length=100)
+        permission = models.IntegerField(default=0)
+
+	def get_boardtitle(self):
+		return self.board.title
 
 	def __unicode__(self):
 		return self.title
 
 class BoardComment(models.Model):
 	time = models.DateTimeField(default=now)		# db updated time
-	board = models.ForeignKey(Board, on_delete=CASCADE)     # (dummy)
-	#post = models.ForeignKey(BoardPost, on_delete=CASCADE)
+	post = models.ForeignKey(BoardPost, on_delete=CASCADE, null=True)
         parent = models.ForeignKey("self", null=True, blank=True)
 	text = models.CharField(max_length=1000)
 	writer = models.CharField(max_length=100)
+	tag = models.CharField(max_length=100, default="")
 	ip = models.CharField(max_length=100)
 	attr = models.IntegerField(default=0)
         password = models.CharField(max_length=100)

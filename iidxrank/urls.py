@@ -16,9 +16,10 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic import RedirectView
-import views, views_board
+import views
 import views_update
 import views_json
+import board.views as views_board
 
 urlpatterns = [
 	url(r'', include([
@@ -40,17 +41,16 @@ urlpatterns = [
             ])),
 
     # comment, board
-            url(r'^songcomment/', include([
-                    url(r'^all/$', views.songcomment_all),
-                    url(r'^all/(?P<page>[0-9]+)/$', views.songcomment_all),
-                    url(r'^(?P<ranktablename>\w+)/(?P<songid>[0-9]+)/$', views_board.songcomment, name="songcomment"),
-            ])),
             url(r'^board/', include([
-                    url(r'^(?P<boardid>[0-9]+)/$', views_board.board),
-                    url(r'^(?P<boardid>[0-9]+)/(?P<boardpage>[0-9]+)/$', views_board.board, name="board"),
+                    url(r'^comment/(?P<postid>[0-9]+)/$', views_board.comment, name="postcomment"),
+                    url(r'^view/(?P<postid>[0-9]+)/$', views_board.view, name="postview"),
+                    url(r'^modify/(?P<postid>[0-9]+)/$', views_board.modify, name="postmodify"),
+                    url(r'^(?P<boardname>\w+)/$', views_board.list),
+                    url(r'^(?P<boardname>\w+)/(?P<page>[0-9]+)/$', views_board.list, name="postlist"),
+                    url(r'^(?P<boardname>\w+)/write/$', views_board.write, name="postwrite"),
             ])),
 
-    # select music
+            # select music
             url(r'^musiclist/$', views.musiclist),
             url(r'^json/', include([
                     url(r'^musiclist/(?P<type>\w+)/level/(?P<level>[0-9]+)/$', views_json.json_level),

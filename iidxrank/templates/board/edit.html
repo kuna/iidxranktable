@@ -1,0 +1,90 @@
+{% extends "index.html" %}
+{% block subtitle %} - board{% endblock %}
+{% block head %}
+{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/board.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'MooEditable/MooEditable.css' %}">
+<script language="javascript" src="{% static 'js/mootools.js' %}"></script>
+<script language="javascript" src="{% static 'js/MooEditable.js' %}"></script>
+{% endblock %}
+
+{% block body %}
+{% if status.message %}
+<script language="javascript">
+$(function () {
+	showMessage("{{ status.message }}");
+})
+</script>
+{% endif %}
+
+{% include 'top.html' %}
+
+<!-- board list -->
+<div id="container"><div class="inner board">
+	<div class="panel panel-default">
+		<div class="panel-heading">{{ board.title }}</div>
+		<div class="list-group">
+			<!-- form -->
+			<div class="list-group-item" id="writeform">
+				<form role="form" class="form-horizontal" action="./" method="post">
+					{% csrf_token %}
+					<input type="hidden" name="mode" value="add">
+
+					<div class="form-group">
+						<label for="title" class="col-xs-4 control-label">title</label>
+						<div class="col-xs-8">
+						<input type="text" id="title" name="title" class="form-control input-sm" value="">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="writer" class="col-xs-4 control-label">name</label>
+						<div class="col-xs-8">
+						<input type="text" id="writer" name="writer" class="form-control input-sm" value="{{ status.writer }}">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="password" class="col-xs-4 control-label">password (비우면 ip로 인증됩니다)</label>
+						<div class="col-xs-8">
+						<input type="password" id="password" name="password" class="form-control input-sm" value="">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="tag" class="col-xs-4 control-label">tag (관리자용)</label>
+						<div class="col-xs-8">
+						<input type="text" id="tag" name="tag" class="form-control input-sm" value="">
+						</div>
+					</div>
+
+					<div class="form-group">
+						<div class="col-xs-12">
+              <textarea id="richedit" class="form-control" name="text" placeholder="내용을 입력하세요" rows=4 cols=50></textarea>
+              <script language="javascript">
+                $(function () {
+                  richedit = new MooEditable(document.getElementById("richedit"));
+                });
+              </script>
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-xs-12 navigation">
+              <a class="btn btn-default" href="../">cancel</a>
+              <input class="btn btn-default" type="submit" value="submit">
+						</div>
+            <script language="javascript">
+              $(function () {
+                $("#writeform").on('submit', function(e) {
+                  // WSYWSIG editor to textarea
+                  $("#richedit").val(richedit.getContent());
+                  return true;
+                });
+              });
+            </script>
+					</div>
+				</form>
+			</div>
+			<!-- form end -->
+		</div>
+	</div>
+	<!-- board body ends -->
+  </div></div>
+{% endblock %}

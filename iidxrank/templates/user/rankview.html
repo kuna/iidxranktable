@@ -141,67 +141,69 @@ $(function () {
         alert("저장된 데이터 불러오기에 실패하였습니다.\n기존작 저장 정보가 새 서열표 시스템과 호환되지 않습니다.");
       }
     }
+
+    // ***********************
+    // modify part
+
+    $('#edit_reset').click(function () {
+      if (confirm("정말로 모든 기록을 초기화 하시겠습니까?")) {
+        tabledata = tabledata_orig;
+        dorender();
+      }
+    });
+
+    var item = undefined;
+    var canvas = t.getCanvas();
+    $(canvas).click(function(e) {
+      var offset = $(this).offset();
+      var x = e.pageX - offset.left;
+      var y = e.pageY - offset.top;
+      item = t.Click(tabledata, x, y);
+      console.log(item);
+      if (item) {
+        console.log(item.data.title);
+        $('#current_item').val(item.data.title);
+        $('#edittool').show();
+      } else {
+        $('#edittool').hide();
+      }
+    });
+    $('.edit_clear').click(function (e) {
+      item.clear = parseInt($(this).attr('data-value'));
+      dorender();
+    });
+    $('.edit_rank').click(function (e) {
+      item.rate = parseInt($(this).attr('data-value'));
+      item.rank = getRank(item.rate);
+      dorender();
+    });
+    $(document).keypress(function(e) {
+      if (item == undefined) return;
+      console.log(e.which);
+      if (e.which == 113) { // Q
+        item.clear--;
+        if (item.clear < 0) item.clear += 8;
+      }
+      else if (e.which == 119) { // W
+        item.clear++;
+        if (item.clear > 8) item.clear -= 8;
+      }
+      else if (e.which == 97) { // A
+        item.rate -= 10;
+        if (item.rate < 0) item.rate += 100;
+        item.rank = getRank(item.rate);
+      }
+      else if (e.which == 115) { // S
+        item.rate += 10;
+        if (item.rate > 100) item.rate -= 100;
+        item.rank = getRank(item.rate);
+      }
+      dorender();
+    });
 	} else {
     $('#edittool').hide();
 	}
 
-  $('#edit_reset').click(function () {
-    if (confirm("정말로 모든 기록을 초기화 하시겠습니까?")) {
-      tabledata = tabledata_orig;
-      dorender();
-    }
-  });
-
-  // ***********************
-  // modify part
-  var item = undefined;
-  var canvas = t.getCanvas();
-  $(canvas).click(function(e) {
-    var offset = $(this).offset();
-    var x = e.pageX - offset.left;
-    var y = e.pageY - offset.top;
-    item = t.Click(tabledata, x, y);
-    console.log(item);
-    if (item) {
-      console.log(item.data.title);
-      $('#current_item').val(item.data.title);
-      $('#edittool').show();
-    } else {
-      $('#edittool').hide();
-    }
-  });
-  $('.edit_clear').click(function (e) {
-    item.clear = parseInt($(this).attr('data-value'));
-    dorender();
-  });
-  $('.edit_rank').click(function (e) {
-    item.rate = parseInt($(this).attr('data-value'));
-    item.rank = getRank(item.rate);
-    dorender();
-  });
-  $(document).keypress(function(e) {
-    if (item == undefined) return;
-    console.log(e.which);
-    if (e.which == 113) { // Q
-      item.clear--;
-      if (item.clear < 0) item.clear += 8;
-    }
-    else if (e.which == 119) { // W
-      item.clear++;
-      if (item.clear > 8) item.clear -= 8;
-    }
-    else if (e.which == 97) { // A
-      item.rate -= 10;
-      if (item.rate < 0) item.rate += 100;
-      item.rank = getRank(item.rate);
-    }
-    else if (e.which == 115) { // S
-      item.rate += 10;
-      if (item.rate > 100) item.rate -= 100;
-      item.rank = getRank(item.rate);
-    }
-    dorender();
-  });
 });
 
 

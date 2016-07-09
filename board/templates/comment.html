@@ -1,0 +1,102 @@
+{% if request.session.message %}
+<script language="javascript">
+$(function () {
+	showMessage("{{ request.session.message }}");
+})
+</script>
+{% endif %}
+<script language="javascript">
+function childComment(id) {
+  $("#cmt_parent").val(id);
+  $("#text").focus();
+}
+</script>
+
+
+  <!-- comments -->
+  <div class="comments">
+		<div class="list-group-item writeform">
+      <form role="form" action="/board/comment/{{ post.id }}/" method="post">
+				{% csrf_token %}
+				<input type="hidden" name="mode" value="add">
+				<input type="hidden" id="cmt_parent" name="parent" value="-1">
+
+				<div class="writer">
+					<label for="writer" class="control-label">name</label>
+					<input type="text" id="writer" name="writer" class="form-control input-sm" value="{{ request.session.writer }}">
+				</div>
+				<div class="password">
+					<label for="password" class="control-label">password (비우면 ip로 인증됩니다)</label>
+					<input type="password" id="password" name="password" class="form-control input-sm" value="">
+				</div>
+        <div class="clear"></div>
+				<div class="text">
+					<textarea class="form-control" id="text" name="text" placeholder="댓글을 입력하세요" rows=4 cols=50></textarea>
+				</div>
+				<div class="submit">
+					<input class="form-control btn-default" type="submit" value="OK">
+				</div>
+			</form>
+		</div>
+
+    <div class="clear"></div>
+
+    {% for comment in comments %}
+    <div class="list-group-item">
+      <div class="comment">
+        <div class="clear info">
+          <div class="left">
+            <span class="writer{% if comment.attr == 2 %} admin{% endif %}">{{ comment.writer }}</span>
+            <div class="detail">
+              <span class="date">[{{ comment.time|date:"y-m-d H:i:s" }}]</span>
+              <span class="ip">{{ comment.ip_public }}</span>
+            </div>
+          </div>
+          <div class="right">
+            <form role="form" action="/board/comment/{{ post.id }}/" method="post">
+              {% csrf_token %}
+              <input id="mode" type="hidden" name="mode" value="delete">
+              <input id="id" type="hidden" name="id" value="{{ comment.id }}">
+              <div class="input-group">
+                  <input id="password" type="password" name="password" value="" class="form-control">
+                  <button type="submit" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span></button>
+                  <button type="button" class="btn btn-default btn-xs" onclick="childComment({{ comment.id }}); return false;"><span class="glyphicon glyphicon glyphicon-registration-mark"></span></button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="clear">
+          <span class="text">{{ comment.text }}</span>
+        </div>
+      </div>
+      {% for comment in comment.childs.all %}
+      <div class="comment child">
+        <div class="clear info">
+          <div class="left">
+            <span class="writer{% if comment.attr == 2 %} admin{% endif %}">{{ comment.writer }}</span>
+            <div class="detail">
+              <span class="date">[{{ comment.time|date:"y-m-d H:i:s" }}]</span>
+              <span class="ip">{{ comment.ip_public }}</span>
+            </div>
+          </div>
+          <div class="right">
+            <form role="form" action="/board/comment/{{ post.id }}/" method="post">
+              {% csrf_token %}
+              <input id="mode" type="hidden" name="mode" value="delete">
+              <input id="id" type="hidden" name="id" value="{{ comment.id }}">
+              <div class="input-group">
+                  <input id="password" type="password" name="password" value="" class="form-control">
+                  <button type="submit" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span></button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="clear">
+          <span class="text">{{ comment.text }}</span>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+  <!-- end comments -->

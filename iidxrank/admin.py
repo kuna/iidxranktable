@@ -31,8 +31,10 @@ class SongAdmin(admin.ModelAdmin):
 
 class BoardAdmin(admin.ModelAdmin):
 	list_display = ('title',)
+class BoardPostAdmin(admin.ModelAdmin):
+	list_display = ('writer', 'ip', 'get_boardtitle', 'title', 'tag')
 class BoardCommentAdmin(admin.ModelAdmin):
-	list_display = ('writer', 'ip', 'get_boardtitle', 'text')
+	list_display = ('writer', 'ip', 'text', 'tag')
 	form = BoardCommentForm
 class SongCommentAdmin(admin.ModelAdmin):
 	list_display = ('writer', 'ip', 'get_songinfo', 'get_ranktableinfo',  'text')
@@ -43,8 +45,10 @@ admin.site.register(models.RankCategory, RankCategoryAdmin)
 admin.site.register(models.RankItem, RankItemAdmin)
 admin.site.register(models.Player, PlayerAdmin)
 admin.site.register(models.Song, SongAdmin)
-admin.site.register(models.Board, BoardAdmin)
-admin.site.register(models.BoardComment, BoardCommentAdmin)
 admin.site.register(models.SongComment, SongCommentAdmin)
+
+admin.site.register(models.Board, BoardAdmin)
+admin.site.register(models.BoardPost, BoardPostAdmin)
+admin.site.register(models.BoardComment, BoardCommentAdmin)
 admin.site.register(models.BannedUser)
 admin.site.register(models.BannedWord)

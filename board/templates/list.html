@@ -1,0 +1,72 @@
+{% extends "index.html" %}
+{% block subtitle %} - board{% endblock %}
+{% block head %}
+{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/board.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'MooEditable/MooEditable.css' %}">
+<script language="javascript" src="{% static 'js/mootools.js' %}"></script>
+<script language="javascript" src="{% static 'js/MooEditable.js' %}"></script>
+{% endblock %}
+
+{% block body %}
+{% if status.message %}
+<script language="javascript">
+$(function () {
+	showMessage("{{ status.message }}");
+})
+</script>
+{% endif %}
+
+{% include 'top.html' %}
+
+<!-- board list -->
+<div id="container"><div class="inner board">
+  <!-- posts -->
+	<div class="panel panel-default">
+		<div class="panel-heading">{{ board.title }}</div>
+		<div class="list-group">
+      <ul class="postlist">
+			{% for post in posts %}
+      <li>
+        <div class="no">{{ post.id }}</div>
+        <a href="/board/view/{{ post.id }}">
+        <div class="title">{{ post.title }}</div>
+        </a>
+        <div class="writer{% if comment.attr == 2 %} admin{% endif %}">{{ post.writer }}</div>
+        <div class="date">{{ post.time|date:"m-d H:i" }}</div>
+      </li>
+			{% endfor %}
+      </ul>
+		</div>
+	</div>
+	<!-- posts ends -->
+
+  <!-- navigation -->
+  <div class="navigation clear">
+    <a href="/board/{{ board.title }}/write/"><button class="btn btn-default">Write</button></a>
+  </div>
+  <!-- navigation ends -->
+
+	<!-- pagination -->
+	<div class="paging">
+		<div class="prev">
+		{% if comments.has_previous %}
+			<a href="../{{ comments.previous_page_number }}/">
+			<span class="glyphicon glyphicon-chevron-left"></span>
+			</a>
+		{% endif %}
+		</div>
+		<div class="next">
+		{% if comments.has_next %}
+			<a href="../{{ comments.next_page_number }}/">
+			<span class="glyphicon glyphicon-chevron-right"></span>
+			</a>
+		{% endif %}
+		</div>
+		<div class="center">
+			Page {{ comments.number }} of {{ comments.paginator.num_pages }}
+		</div>
+	</div>
+  <!-- pagination end -->
+  </div></div>
+{% endblock %}
