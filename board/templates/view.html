@@ -9,10 +9,10 @@
 {% endblock %}
 
 {% block body %}
-{% if status.message %}
+{% if request.session.message %}
 <script language="javascript">
 $(function () {
-	showMessage("{{ status.message }}");
+	showMessage("{{ request.session.message }}");
 })
 </script>
 {% endif %}
@@ -50,9 +50,9 @@ function doDelete() {
       <div class="right">
         <form class="right" action="/board/modify/{{ post.id }}/" method="post" id="del">
           {% csrf_token %}
-          <input type="hidden" name="mode" val="delete">
-          <input type="hidden" name="id" val="{{ post.id }}">
-          <input type="hidden" name="password" id="password" val="">
+          <input type="hidden" name="mode" value="delete">
+          <input type="hidden" name="id" value="{{ post.id }}">
+          <input type="hidden" name="password" id="password" value="">
           <button type="button" class="btn btn-default"
             onclick="doDelete(); return false;">삭제</button>
         </form>

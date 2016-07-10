@@ -9,10 +9,10 @@
 {% endblock %}
 
 {% block body %}
-{% if status.message %}
+{% if request.session.message %}
 <script language="javascript">
 $(function () {
-	showMessage("{{ status.message }}");
+	showMessage("{{ request.session.message }}");
 })
 </script>
 {% endif %}
@@ -28,9 +28,9 @@ $(function () {
 			<div class="list-group-item" id="writeform">
 				<form role="form" class="form-horizontal" 
           {% if edit %}
-          action="./"
-          {% else %}
           action="/board/modify/{{ post.id }}/"
+          {% else %}
+          action="./"
           {% endif %}
           method="post">
 					{% csrf_token %}

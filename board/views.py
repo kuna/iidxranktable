@@ -37,9 +37,11 @@ def getBasicStatus(request):
 def clearMessage(request):
     request.session['message'] = ''
 
-def checkValidation(writer, ip, text):
+def checkValidation(ip, writer, text, title=None):
     message = None
-    if (len(text) <= 5 or len(writer) <= 0):
+    if (title != None and len(title) <= 0):
+        message = u"제목이 너무 짧습니다."
+    if (len(text) <= 3 or len(writer) <= 0):
         message = u"코멘트나 이름이 너무 짧습니다."
     for banword in models.BannedWord.objects.all():
         if banword.word in text:
@@ -95,7 +97,10 @@ def write(request, boardname):
             text = request.POST["text"]
             tag = request.POST["tag"]
             writer = request.POST["writer"]
-            v = checkValidation(ip, writer, text)
+            v = checkValidation(ip, writer, text, title)
+            # session and message
+            request.session['writer'] = writer
+            request.session['message'] = v[1]
             if (v[0]):
                 # add comment
                 models.BoardPost.objects.create(
@@ -108,16 +113,14 @@ def write(request, boardname):
                         ip = ip,
                         password = password,
                         )
-            # remember writer session
-            request.session['writer'] = writer
-            message = v[1]
+                return HttpResponseRedirect(reverse("postlist", args=[boardname, 1]))
 
-        # add message to session
-        request.session['message'] = message
-
-        # after POST request, redirect to same view
-        # (prevent sending same request)
-        return HttpResponseRedirect(reverse("postlist", args=[boardname, 1]))
+            post = {
+                    'title': title,
+                    'writer': writer,
+                    'tag': tag,
+                    'text': text,
+                    }
     else:
         post = {
                 'title': '',
@@ -125,10 +128,11 @@ def write(request, boardname):
                 'tag': '',
                 'text': '',
                 }
-        r = render(request, 'edit.html',
-                {'board': board, 'status': status, 'post': post})
-        clearMessage(request)
-        return r
+
+    r = render(request, 'edit.html',
+            {'board': board, 'status': status, 'post': post})
+    clearMessage(request)
+    return r
 
 # /board/modify/<postid>/
 def modify(request, postid):
@@ -140,34 +144,38 @@ def modify(request, postid):
 
     if (request.method == "POST"):
         if (request.POST["mode"] == "delete"):
+            print 'del'
             password = request.POST["password"]
             if (post.password == password or status['attr'] == 2):
                 post.delete()
                 message = "Removed Post"
             else:
                 message = "Wrong password"
+            request.session['message'] = message
             return HttpResponseRedirect(reverse("postlist", args=[board.title, 1]))
         elif (request.POST["mode"] == "modify"):
             password = request.POST["password"]
             writer = request.POST["writer"]
             text = request.POST["text"]
-            v = checkValidation(ip, writer, text)
+            title = request.POST["title"]
+            v = checkValidation("", writer, text, title)
 
-            # to stay data remaining
-            post.title = request.POST["title"]
-            post.text = request.POST["text"]
+            # to make data remaining
+            post.title = title
+            post.text = text
             post.tag = request.POST["tag"]
-            post.writer = request.POST["writer"]
+            post.writer = writer
             if (v[0]):
                 if (post.password == password or status['attr'] == 2):
                     post.save()
                     message = "Modified Post"
+                    request.session['message'] = message
                     return HttpResponseRedirect(reverse("postview", args=[post.id,]))
                 else:
-                    post. 
                     message = "Wrong password"
             else:
                 message = v[1]
+            request.session['message'] = message
 
     # failed to edit, or normal edit window
     r = render(request, 'edit.html',
