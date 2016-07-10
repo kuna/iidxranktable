@@ -3,7 +3,7 @@ import iidx
 import models
 import time
 
-def compile_data(ranktable, player, song_query):
+def compile_data(ranktable, player, song_query, removeEmptyCategory=True):
   # get userinfo first
   userinfo = getUserInfo(player)
 
@@ -13,6 +13,13 @@ def compile_data(ranktable, player, song_query):
   if (player is not None):
     musicdata = player['musicdata']
   score = addMetadata(musicdata, ranktable, song_query)
+  if (removeEmptyCategory):
+    r = []
+    for category in score:
+      if (len(category['items']) > 0):
+        r.append(category)
+    score = r
+
 
   # count clear counts
   clearcount = {
@@ -122,60 +129,48 @@ def addMetadata(musicdata, data, song_query):
         music['pkid'] = -1
 
   # 
-  # make processed array
+  # make category-processed array
   # - find each song data's category and add to that array
   #
-  categories = []       # processed category datas
-  categories_prefetch = []  # prefetched category datas from DB
+  item_to_category = {}     # key: songitem pkid
+  item_itemid = {}
+  categories_dict = {}      # key: category pkid
   for category in data.rankcategory_set.all():
-    items = []
     for item in category.rankitem_set.all():
-      items.append(item)
-    categories_prefetch.append({
-      'category': category, 
-      'items': items,
-    })
-  def getCategoryProcessed(category_model=None):
-    # none model means, '-'(no category)
-    if (category_model == None):
-      categoryname = '-'
-      categorytype = 1      # big category
+      item_to_category[item.song.id] = category.id
+      item_itemid[item.song.id] = item.id
+    sortindex = category.get_sortindex()
+    if (not sortindex):
       sortindex = 0
-    else:
-      categoryname = category_model.categoryname
-      categorytype = category_model.categorytype
-      sortindex = category_model.get_sortindex()
-      if (not sortindex):
-        sortindex = 0
-    # if processed category exists, then return it
-    for category in categories:
-      if (category['category'] == categoryname):
-        return category
-    # if category is not exist, then make new one
-    category = { 'category': categoryname, 
-        'items': [],
-        'sortindex': sortindex,
-        'categorytype': categorytype,
-        'categoryclearstring': u'FULL_COMBO',
-        'categoryclear': 7 }  # default setting
-    categories.append(category)
-    return category
-  def getCategoryDB(songpkid):
-    for category in categories_prefetch:
-      for item in category['items']:
-        # ASSERT! some deleted song may have no 'song relation item'
-        # ASSERT! item's difficulty(type) must considered)
-        if (item.song \
-          and item.song.id == int(songpkid)):
-          return category['category']
-    return None   # cannot find category
-
+    categories_dict[category.id] = {
+      'category': category.categoryname,
+      'categorytype': category.categorytype,
+      'sortindex': sortindex,
+      'categoryclearstring': iidx.getclearstring(7),
+      'categoryclear': 7,
+      'items': [],
+    }
+  categories_dict[-1] = {
+    'category': '-',
+    'categorytype': 1,
+    'sortindex': -100,
+    'categoryclearstring': iidx.getclearstring(7),
+    'categoryclear': 7,
+    'items': [],
+  }
   for music in musicdata:
-    category = getCategoryDB(music['pkid'])
-    if (category == None):
-      getCategoryProcessed()['items'].append(music)
+    pkid = music['pkid']
+    if (pkid in item_to_category):
+      music['itemid'] = item_itemid[pkid]
+      categories_dict[item_to_category[pkid]]['items'].append(music)
     else:
-      getCategoryProcessed(category)['items'].append(music)
+      music['itemid'] = -1
+      categories_dict[-1]['items'].append(music)
+  # convert dictionary to normal array
+  categories = []
+  for k, v in categories_dict.iteritems():
+    v['id'] = k
+    categories.append(v)
 
   #
   # category lamp process

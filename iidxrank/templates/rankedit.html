@@ -1,0 +1,82 @@
+{% extends "common.html" %}
+{% load staticfiles %}
+{% block head %}
+<link rel=stylesheet type=text/css href="{% static 'dragula/dragula.min.css' %}">
+<script language="javascript" src="{% static 'dragula/dragula.min.js' %}"></script>
+{% endblock %}
+{% block body %}
+
+{% include "top.html" %}
+
+<script language="javascript">
+function movecategory(id, songid, cate) {
+  $('#rankitemid').val(id);
+  $('#songid').val(songid);
+  $('#cateid').val(cate);
+  var jstr = $('#modify_songcategory').serialize();
+  console.log(jstr);
+  $.ajax({
+    url: "./",
+    type: "POST",
+    data: jstr,
+    success: function(r) {
+      console.log(r);
+      showMessage(r.message);
+    }
+  });
+}
+
+$(function () {
+  var l = [];
+  var objs = document.getElementsByClassName('category'); //document.querySelectorAll('.category');
+  for (var i=0; i<objs.length; i++) {
+    l.push(objs[i]);
+  }
+  dragula(l, {
+    removeOnSpill: false  // drag to '-' category to remove
+  }).on('drop', function (el, target, source) {
+    var eid = $(el).attr('data-id');
+    var sid = $(el).attr('data-songid');
+    var cid = $(target).attr('data-id');
+    movecategory(eid, sid, cid);
+  }).on('remove', function (el, container, source) {
+    var eid = $(el).attr('data-id');
+    var sid = $(el).attr('data-songid');
+    var cid = -1;
+    movecategory(eid, sid, cid);
+  });
+});
+
+//var tabledata = {{ tabledata_json|safe }};
+</script>
+
+<div id="container"><div class="inner">
+  <div class="ranktable">
+    {% for category in songdata %}
+    <div class="category_title"
+      data-sortindex='{{ category.sortindex }}'
+      data-type='{{ category.categorytype }}'>{{ category.category }}</div>
+    <div class="category" data-id='{{ category.id }}'>
+      {% for item in category.items %}
+      <div class="item"
+        data-id='{{ item.itemid }}'
+        data-songid='{{ item.pkid }}'
+        data-title='{{ item.data.title }}'>{{ item.data.title }}</div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- hidden forms for POST request -->
+  <div class="hidden">
+    <form id="modify_songcategory" method="POST">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="songcategory"/>
+      <input type="hidden" name="id" id="rankitemid" value="0"/>
+      <input type="hidden" name="songid" id="songid" value="0"/>
+      <input type="hidden" name="category" id="cateid" value="-1"/>
+    </form>
+  </div>
+</div></div>
+
+{% endblock %}

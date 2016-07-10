@@ -13,20 +13,21 @@ from update import jsondata
 import rankpage as rp
 import iidx
 import json
+import views_json
 
 import base64
 
 def checkValidPlayer(player):
   return not (player == None or 
-      'userdata' not in player or 
-      player['status'] != 'success')
+    'userdata' not in player or 
+    player['status'] != 'success')
 
   ####
 
 def mainpage(request):
   notices = models.Board.objects.filter(title='notice').first().boardcomment_set
   return render_to_response('index.html',
-          {'hidesearch': True, 'mobileview':True, 'notices': notices.order_by('-time')})
+    {'hidesearch': True, 'mobileview':True, 'notices': notices.order_by('-time')})
 
 def userpage(request, username="!"):
   if (username == "!"):
@@ -67,15 +68,32 @@ def rankpage(request, username="!", diff="SP", level=12):
   userinfo['title'] = pageinfo['title']
   userinfo['iidxmeid'] = username
   tabledata = {
-      'info': userinfo,
-      'categories': songdata
-      }
+    'info': userinfo,
+    'categories': songdata
+    }
   return render_to_response('user/rankview.html', 
-      {'score': songdata, 
-        'tabledata_json': json.dumps(tabledata),
-        'userinfo': userinfo, 
-        'pageinfo': pageinfo}
-      )
+    {'score': songdata, 
+    'tabledata_json': json.dumps(tabledata),
+    'userinfo': userinfo, 
+    'pageinfo': pageinfo}
+    )
+
+def rankedit(request, tablename):
+  # only admin can access it
+  # TODO
+  
+  # in case of POST? -> return JSON result
+  if (request.method == "POST"):
+    return views_json.json_rankedit(request)
+  
+  # check is valid table
+  ranktable = models.RankTable.objects.filter(tablename=tablename).first()
+  if (ranktable == None):
+    raise Http404
+  # compile table data
+  userinfo, songdata, pageinfo = rp.compile_data(ranktable, None, models.Song.objects, False)
+  return render(request, 'rankedit.html', { 'songdata': songdata, 'pageinfo': pageinfo })
+
 
 def songcomment_all(request, page=1):
   songcomment_list = models.SongComment.objects.order_by('-time').all()

@@ -37,10 +37,11 @@ urlpatterns = [
                     url(r'^user/(?P<username>(\w|-)+)/$', views_update.json_update_player),
                     url(r'^user_status/(?P<username>(\w|-)+)/$', views_update.json_update_player_status),
                     url(r'^rank/$', views_update.rankupdate),
+                    url(r'^rankedit/(?P<tablename>\w+)/$', views.rankedit, name="rankedit"),
                     url(r'^(?P<update>(\w|-)+)/$', views_update.update),
             ])),
 
-    # comment, board
+        # comment, board
             url(r'^board/', include([
                     url(r'^comment/(?P<postid>[0-9]+)/$', views_board.comment, name="postcomment"),
                     url(r'^view/(?P<postid>[0-9]+)/$', views_board.view, name="postview"),
@@ -50,7 +51,7 @@ urlpatterns = [
                     url(r'^(?P<boardname>\w+)/write/$', views_board.write, name="postwrite"),
             ])),
 
-            # select music
+        # select music
             url(r'^musiclist/$', views.musiclist),
             url(r'^json/', include([
                     url(r'^musiclist/(?P<type>\w+)/level/(?P<level>[0-9]+)/$', views_json.json_level),

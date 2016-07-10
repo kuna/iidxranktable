@@ -55,6 +55,7 @@ table .t0 { background-color:#fcfcfc; }
 table .t1 { background-color:#efefef; }
 table .loading { color:#999; text-align: center; padding:20px; }
 
+
 /* userpage (profile) */
 #goto { cursor:pointer; cursor:hand;/*fallback*/ }
 #container .notice_inner h4.djname { float:left; }
@@ -90,6 +91,11 @@ table .loading { color:#999; text-align: center; padding:20px; }
 .list.table li { background-color:#c69; }
 #container .list { float:left; margin-top:4px; margin-right:20px; }
 
+/* rankedit */
+.ranktable .category_title { background-color: #000; padding:10px; font-weight: bold; color: #fff; cursor: pointer; }
+.ranktable .category { border: 1px solid #999; padding: 10px 10px 0 0 ; background-color: #ccc; overflow: hidden; margin-bottom: 20px; cursor: pointer; }
+.ranktable .item { border: 1px solid #999; padding: 5px 10px; background-color: #fff; margin: 0 0 10px 10px; height: 30px; width: 180px; float: left; font-size: 10px; }
+
 /* in case of mobile */
 @media screen and (max-width: 768px) {
   #top { height: auto; }
@@ -116,7 +122,8 @@ table .loading { color:#999; text-align: center; padding:20px; }
 .right { float:right; }
 .center { text-align:center; }
 .row { clear:both; margin-bottom:10px; }
-.row button { margin-right:6px; margin-bottom:6px; }
+.row button 
+{ margin-right:6px; margin-bottom:6px; }
 
 .btn-recommend { background-color:#366; color:#fff; font-weight:bold; }
 .btn-recommend:hover { text-shadow:#ffe 0 0 10px; }
