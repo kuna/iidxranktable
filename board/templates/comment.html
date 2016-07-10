@@ -66,7 +66,7 @@ function childComment(id) {
           </div>
         </div>
         <div class="clear">
-          <span class="text">{{ comment.text }}</span>
+          <span class="text">{{ comment.text|linebreaks }}</span>
         </div>
       </div>
       {% for comment in comment.childs.all %}

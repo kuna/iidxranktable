@@ -72,8 +72,11 @@ def list(request, boardname, page=1):
     posts = models.BoardPost.objects.filter(board=board).order_by('-time')
     comments_page = Paginator(posts.all(), 20).page(page)
 
+    # writable?
+    writeable = board.permission == 0 or request.user.is_staff
+
     r =  render(request, 'list.html',
-            {'posts': comments_page, 'board': board, 'status': status})
+            {'posts': comments_page, 'board': board, 'status': status, 'writeable': writeable})
     clearMessage(request)
     return r
 
@@ -83,6 +86,11 @@ def write(request, boardname):
     if (board == None):
         raise Http404
     status = getBasicStatus(request)
+
+    # writable?
+    writeable = board.permission == 0 or request.user.is_staff
+    if (not writeable):
+        raise PermissionDenied
 
     if (request.method == "POST"):
         ip = get_client_ip(request)
@@ -141,6 +149,11 @@ def modify(request, postid):
         raise Http404
     status = getBasicStatus(request)
     board = post.board
+
+    # writable?
+    writeable = board.permission == 0 or request.user.is_staff
+    if (not writeable):
+        raise PermissionDenied
 
     if (request.method == "POST"):
         if (request.POST["mode"] == "delete"):

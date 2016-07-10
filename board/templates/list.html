@@ -43,7 +43,9 @@ $(function () {
 
   <!-- navigation -->
   <div class="navigation clear">
+    {% if writeable %}
     <a href="/board/{{ board.title }}/write/"><button class="btn btn-default">Write</button></a>
+    {% endif %}
   </div>
   <!-- navigation ends -->
 

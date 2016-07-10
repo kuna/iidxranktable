@@ -60,12 +60,14 @@ $(function () {
 						<input type="password" id="password" name="password" class="form-control input-sm" value="">
 						</div>
 					</div>
+          {% if request.user.is_staff %}
 					<div class="form-group">
 						<label for="tag" class="col-xs-4 control-label">tag (관리자용)</label>
 						<div class="col-xs-8">
               <input type="text" id="tag" name="tag" class="form-control input-sm" value="{{ post.tag }}">
 						</div>
 					</div>
+          {% endif %}
 
 					<div class="form-group">
 						<div class="col-xs-12">

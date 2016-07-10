@@ -15,7 +15,7 @@ class Board(models.Model):
 
 class BoardPost(models.Model):
   time = models.DateTimeField(default=now)    # db updated time
-  board = models.ForeignKey(Board, on_delete=CASCADE, null=True)
+  board = models.ForeignKey(Board, related_name="posts", on_delete=CASCADE, null=True)
   title = models.CharField(max_length=100)
   text = models.CharField(max_length=1000)
   writer = models.CharField(max_length=100)
@@ -33,7 +33,7 @@ class BoardPost(models.Model):
 
 class BoardComment(models.Model):
   time = models.DateTimeField(default=now)    # db updated time
-  post = models.ForeignKey(BoardPost, on_delete=CASCADE, null=True)
+  post = models.ForeignKey(BoardPost, related_name="comments", on_delete=CASCADE, null=True)
   parent = models.ForeignKey("self", related_name="childs", null=True, blank=True)
   text = models.CharField(max_length=1000)
   writer = models.CharField(max_length=100)

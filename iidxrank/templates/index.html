@@ -56,13 +56,14 @@ glyphicon glyphicon-home"></span></button></a></center>
 
 		<div class="row input-group">
       <div class="panel panel-default">
-        <div class="panel-heading">Notice</div>
+        <div class="panel-heading"><a href="/board/notice/">Notice</a></div>
         <div class="list-group" style="overflow-y:scroll; height:200px;">
-          {% for notice in notices.all %}
-            {% autoescape off %}
-            <div class="list-group-item">[{{ notice.time|date:"ymd" }}] {{ notice.text }}</div>
-            {% endautoescape %}
-          {% endfor %}
+          {% autoescape off %}
+          <span class="title">{{ noticepost.title }}</span>
+          <span class="time">{{ noticepost.time|date:"y-m-d" }}</span>
+          <div class="clear"></div>
+          <span class="text">{{ noticepost.text|safe }}</span>
+          {% endautoescape %}
         </div>
       </div>
 		</div>

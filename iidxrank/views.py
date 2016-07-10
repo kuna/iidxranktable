@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.core.paginator import Paginator
 import models
+import board.models
 import settings
 
 from update import jsondata
@@ -25,9 +26,10 @@ def checkValidPlayer(player):
   ####
 
 def mainpage(request):
-  notices = models.Board.objects.filter(title='notice').first().boardcomment_set
+  notice_board = board.models.Board.objects.filter(title='notice').first()
+  post = notice_board.posts.order_by('-time').first()
   return render_to_response('index.html',
-    {'hidesearch': True, 'mobileview':True, 'notices': notices.order_by('-time')})
+    {'hidesearch': True, 'mobileview':True, 'noticepost': post})
 
 def userpage(request, username="!"):
   if (username == "!"):
