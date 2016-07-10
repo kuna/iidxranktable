@@ -295,6 +295,9 @@ $(function (){
     <input type="text" id="url" value="" class="form-control" readonly>
     <button id="twitter" class="btn btn-info"><span class="glyphicon glyphicon-send"></span> twitter</button>
     -->
+    {% if request.user.is_staff %}
+    <a href="/update/rankedit/{{ pageinfo.tablename }}/" class="btn btn-default"><span class="glyphicon glyphicon-edit"></span></a>
+    {% endif %}
     <div class="btn-group btn-group-sm">
       <button id="ranksort_clear" class="btn btn-default">sort by clear</button>
       <button id="ranksort_rate" class="btn btn-default">rate</button>

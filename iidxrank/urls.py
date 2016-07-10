@@ -68,13 +68,13 @@ urlpatterns = [
             url(r'^!/$', views.userpage),
             url(r'^!/songrank/$', views.songrank),
             url(r'^!/userrank/$', views.userrank),
-            url(r'^!/(?P<diff>\w+)/(?P<level>\w+)/$', views.rankpage, name="rankpage"),
+            url(r'^!/(?P<tablename>\w+)/$', views.rankpage, name="rankpage"),
             # username
             url(r'^(?P<username>(\w|-)+)/', include([
                     url(r'^$', views.userpage),
                     url(r'^stat/recm/$', views.recommend),
                     url(r'^stat/skill/$', views.skillrank),
-                    url(r'^(?P<diff>\w+)/(?P<level>\w+)/$', views.rankpage, name="rankpage"),
+                    url(r'^(?P<tablename>\w+)/$', views.rankpage, name="rankpage"),
             ])),
 	])),
 ]

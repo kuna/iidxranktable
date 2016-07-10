@@ -45,12 +45,26 @@ $(function () {
     var cid = -1;
     movecategory(eid, sid, cid);
   });
+
+  $('.item').click(function (e) {
+    var songid = $(this).attr('data-songid');
+    var songtitle = $(this).attr('data-title');
+    $('#songtitle').text(songtitle);
+    $('#songedit').attr('href', '/admin/iidxrank/song/' + songid + '/change/');
+  });
 });
 
 //var tabledata = {{ tabledata_json|safe }};
 </script>
 
 <div id="container"><div class="inner">
+  <a href="/admin/iidxrank/ranktable/{{ tableid }}/change/" target="_blank">테이블/카테고리 정보 수정</a>
+  <div class="clear"></div>
+
+  <span id="songtitle">(곡명)</span>
+  <a href="#" target="_blank" id="songedit">곡 정보 수정</a>
+  <div class="clear"></div>
+
   <div class="ranktable">
     {% for category in songdata %}
     <div class="category_title"

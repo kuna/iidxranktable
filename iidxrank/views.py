@@ -43,12 +43,11 @@ def userpage(request, username="!"):
   playerinfo = rp.getUserInfo(player, username)
   return render_to_response('user/userpage.html', {'userinfo': playerinfo})
 
-def rankpage(request, username="!", diff="SP", level=12):
+def rankpage(request, username="!", tablename="SP12"):
   # check is argument valid
-  diff = diff.upper()
-  level = level.upper()
+  tablename = tablename.upper()
   try:
-    ranktable = models.RankTable.objects.get(tablename=diff+level)
+    ranktable = models.RankTable.objects.get(tablename=tablename)
   except:
     # invalid table!
     raise Http404
@@ -71,7 +70,7 @@ def rankpage(request, username="!", diff="SP", level=12):
     'info': userinfo,
     'categories': songdata
     }
-  return render_to_response('user/rankview.html', 
+  return render(request, 'user/rankview.html', 
     {'score': songdata, 
     'tabledata_json': json.dumps(tabledata),
     'userinfo': userinfo, 
@@ -79,6 +78,8 @@ def rankpage(request, username="!", diff="SP", level=12):
     )
 
 def rankedit(request, tablename):
+  tablename = tablename.upper()
+
   # only admin can access it
   # TODO
   
@@ -92,7 +93,7 @@ def rankedit(request, tablename):
     raise Http404
   # compile table data
   userinfo, songdata, pageinfo = rp.compile_data(ranktable, None, models.Song.objects, False)
-  return render(request, 'rankedit.html', { 'songdata': songdata, 'pageinfo': pageinfo })
+  return render(request, 'rankedit.html', { 'songdata': songdata, 'tableid': ranktable.id, 'pageinfo': pageinfo })
 
 
 def songcomment_all(request, page=1):
