@@ -93,6 +93,7 @@ table .loading { color:#999; text-align: center; padding:20px; }
 
 /* rankedit */
 .ranktable .category_title { background-color: #000; padding:10px; font-weight: bold; color: #fff; cursor: pointer; }
+.ranktable .ctype0 { background-color: #999 !important; }
 .ranktable .category { border: 1px solid #999; padding: 10px 10px 0 0 ; background-color: #ccc; overflow: hidden; margin-bottom: 20px; cursor: pointer; }
 .ranktable .item { border: 1px solid #999; padding: 5px 10px; background-color: #fff; margin: 0 0 10px 10px; height: 30px; width: 180px; float: left; font-size: 10px; }
 

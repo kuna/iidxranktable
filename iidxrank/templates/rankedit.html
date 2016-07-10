@@ -67,7 +67,7 @@ $(function () {
 
   <div class="ranktable">
     {% for category in songdata %}
-    <div class="category_title"
+    <div class="category_title ctype{{ category.categorytype }}"
       data-sortindex='{{ category.sortindex }}'
       data-type='{{ category.categorytype }}'>{{ category.category }}</div>
     <div class="category" data-id='{{ category.id }}'>
