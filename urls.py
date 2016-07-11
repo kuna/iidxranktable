@@ -16,9 +16,8 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 from django.views.generic import RedirectView
-import views
-import views_update
-import views_json
+import iidxrank.views as views
+import iidxrank.views_json as views_json
 import board.views as views_board
 
 urlpatterns = [
@@ -30,15 +29,7 @@ urlpatterns = [
 
 	# update (NOT WORKING NOW)
             url(r'^update/', include([
-                    url(r'^$', views_update.index),
-                    url(r'^status/$', views_update.status),
-                    url(r'^status/json/$', views_update.json_status),
-                    # username
-                    url(r'^user/(?P<username>(\w|-)+)/$', views_update.json_update_player),
-                    url(r'^user_status/(?P<username>(\w|-)+)/$', views_update.json_update_player_status),
-                    url(r'^rank/$', views_update.rankupdate),
                     url(r'^rankedit/(?P<tablename>\w+)/$', views.rankedit, name="rankedit"),
-                    url(r'^(?P<update>(\w|-)+)/$', views_update.update),
             ])),
 
         # comment, board
