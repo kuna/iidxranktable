@@ -24,12 +24,15 @@ To update DB peridically, run these command:
 ```
 celery -A update beat -l info
 ```
+This will automatically update your song database.
 
 To update DB manually,
 ```
-celery -A update worker -l info
+python manage.db updateSong
+python manage.db updateUser
+python manage.db updateCalc
 ```
-This will update song list, user list and clear list, and calculate predicted user/song level.
+These will update song list, user list and clear list, and calculate predicted user/song level.
 
 Use ```/admin``` or rankedit page to modify database easily.
 
