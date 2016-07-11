@@ -8,25 +8,33 @@ currently running on [AWS](http://insane.pe.kr/iidx).
 
 ### Environment
 
-Python (django)
-
-~~uWSGI, Redis~~
+Python (django, celery, scipy for difficulty calculation)
 
 SQL (MariaDB)
 
-SqlAlchemy (for update module)
-
+Redis
 
 ### How to use
 
 run ```pip install -r requirements.txt``` and ```python manage.py runserver```.
 
-To update DB totally, go to \iidxrank\update and run 
-```
-python update.py
-python updateuser.py
-python calculatedb.py
-```
-or go into ```/admin``` for admin page. (song information from iidx.me, DP from zasa.sakura.ne.jp)
+Easy way to install scipy: install anaconda(win) or python-scipy(apt-get).
 
-Read django documentation/github wiki for more information.
+To update DB peridically, run these command:
+```
+celery -A update beat -l info
+```
+
+To update DB manually,
+```
+celery -A update worker -l info
+```
+This will update song list, user list and clear list, and calculate predicted user/song level.
+
+Use ```/admin``` or rankedit page to modify database easily.
+
+### License
+
+MIT License
+
+This project includes some other project's code: bootstrap, dragula, mooEditable. All copyright reversed.
