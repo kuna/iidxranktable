@@ -5,21 +5,27 @@ from django import forms
 import models
 
 class BoardCommentForm(forms.ModelForm):
-	class Meta:
-		model = models.BoardComment
-		fields = '__all__'
-		widgets = {
-			'text': forms.Textarea(attrs={'cols': 80, 'rows': 20}),
-		}
+    class Meta:
+        model = models.BoardComment
+        fields = '__all__'
+        widgets = {
+            'text': forms.Textarea(attrs={'cols': 80, 'rows': 20}),
+        }
 
+
+class BoardCommentInline(admin.TabularInline):
+    model = models.BoardComment
+    ordering = ("-date",)
+    extra = 1
 
 class BoardAdmin(admin.ModelAdmin):
-	list_display = ('title',)
+    list_display = ('title',)
 class BoardPostAdmin(admin.ModelAdmin):
-	list_display = ('writer', 'ip', 'get_boardtitle', 'title', 'tag')
+    list_display = ('writer', 'ip', 'get_boardtitle', 'title', 'tag')
+    inline = BoardCommentInline
 class BoardCommentAdmin(admin.ModelAdmin):
-	list_display = ('writer', 'ip', 'get_posttitle', 'text', 'tag')
-	form = BoardCommentForm
+    list_display = ('writer', 'ip', 'get_posttitle', 'text', 'tag')
+    form = BoardCommentForm
 
 # register
 admin.site.register(models.Board, BoardAdmin)

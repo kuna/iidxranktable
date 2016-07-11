@@ -27,7 +27,7 @@ http://mplus.font-face.jp/#/
 
 /* container */
 #container { width: 1000px; margin:0 auto; padding-top:40px; }
-#container .row { margin-bottom: 30px; }
+#container .row { margin: 0 0 30px; }
 #container .notice_inner { max-width: 480px; margin: 100px auto 0; }
 #footer { font-size:11px; color:#ccc; text-align: center; width:100%;cursor:default; margin-top: 80px; clear:both; }
 

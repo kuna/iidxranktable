@@ -128,6 +128,18 @@ def addMetadata(musicdata, data, song_query):
       except:
         music['pkid'] = -1
 
+  # sort musicdata by name
+  def sort_musicdata(x, y):
+    x_ = x['data']['title'].upper()
+    y_ = y['data']['title'].upper()
+    if (x_ > y_):
+      return 1
+    elif (x_ == y_):
+      return 0
+    else:
+      return -1
+  musicdata.sort(sort_musicdata)
+
   # 
   # make category-processed array
   # - find each song data's category and add to that array

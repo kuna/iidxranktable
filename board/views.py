@@ -270,3 +270,6 @@ def comment(request, postid):
         return HttpResponseRedirect(reverse("postview", args=[postid,]))
     else:
         raise Http404
+
+def songcomment(request):
+    return render(request, 'songcomment.html')
