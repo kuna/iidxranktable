@@ -185,7 +185,7 @@ def calculate_song_all():
 
 
 
-
+"""
 # graph renderer (requires matplotlib)
 def showSongStat(type="SP", onlysave=True, fname="songstat.png"):
     import matplotlib.pyplot as plot        # only for debugee
@@ -493,4 +493,4 @@ def main():
 
 if __name__=="__main__":
     main()
-
+"""

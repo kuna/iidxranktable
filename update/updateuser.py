@@ -108,6 +108,7 @@ def update_playrecord_obj(player):
 def update_playrecord(iidxmeid):
     obj_player = models.Player.objects.filter(iidxmeid=iidxmeid).first()
     if (obj_player == None):
+        # TODO: create user, in case of this.
         return False
     update_playrecord_obj(obj_player)
     return True
