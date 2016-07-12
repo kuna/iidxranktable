@@ -41,6 +41,7 @@ urlpatterns = [
                     url(r'^(?P<boardname>\w+)/(?P<page>[0-9]+)/$', views_board.list, name="postlist"),
                     url(r'^(?P<boardname>\w+)/write/$', views_board.write, name="postwrite"),
             ])),
+            url(r'^songcomment/(?P<pkid>[0-9]+)/$', views_board.songcomment),
 
         # select music
             url(r'^musiclist/$', views.musiclist),

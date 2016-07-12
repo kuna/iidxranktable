@@ -6,6 +6,8 @@ from django.shortcuts import render, render_to_response
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.core.paginator import Paginator
 import models
+import iidxrank.models
+import random
 
 # common functions
 def get_client_ip(request):
@@ -215,6 +217,54 @@ def view(request, postid):
     clearMessage(request)
     return r
 
+
+
+# comment part
+
+def comment_POST(request, post):
+    if (request.POST['mode'] == "add"):
+        parent_comment = int(request.POST["parent"])
+        if (parent_comment == -1):
+            parent = None
+        else:
+            parent = models.BoardComment.objects.get(id=parent_comment)
+        writer = request.POST['writer']
+        ip = get_client_ip(request)
+        password = request.POST["password"]
+        # if no password, then make ip as password
+        if (password == ""):
+            password = ip
+        text = request.POST['text']
+        r = checkValidation(writer, ip, text)
+        request.session['message'] = r[1]
+        if (r[0]):
+            # add comment
+            models.BoardComment.objects.create(
+                    post = post,
+                    parent = parent,
+                    text = text,
+                    writer = writer,
+                    tag = '',
+                    password = password,
+                    attr = status['attr'],
+                    ip = ip,
+                    )
+        # remember writer session
+        request.session['writer'] = writer
+    elif (request.POST['mode'] == "delete"):
+        cmtid = request.POST['id']
+        password = request.POST['password']
+        ip = get_client_ip(request)
+        # if no password, then make ip as password
+        if (password == ""):
+            password = ip
+        cmtobj = models.BoardComment.objects.get(id=cmtid)
+        if (cmtobj.password == password or status['attr'] == 2):
+            cmtobj.delete()
+            request.session['message'] = u"댓글을 삭제하였습니다."
+        else:
+            request.session['message'] = u"패스워드가 틀렸습니다."
+
 # /board/comment/<postid>/
 def comment(request, postid):
     # check is valid url
@@ -225,51 +275,51 @@ def comment(request, postid):
 
     # only process POST request
     if (request.method == "POST"):
-        if (request.POST['mode'] == "add"):
-            parent_comment = int(request.POST["parent"])
-            if (parent_comment == -1):
-                parent = None
-            else:
-                parent = models.BoardComment.objects.get(id=parent_comment)
-            writer = request.POST['writer']
-            ip = get_client_ip(request)
-            password = request.POST["password"]
-            # if no password, then make ip as password
-            if (password == ""):
-                password = ip
-            text = request.POST['text']
-            r = checkValidation(writer, ip, text)
-            request.session['message'] = r[1]
-            if (r[0]):
-                # add comment
-                models.BoardComment.objects.create(
-                        post = post,
-                        parent = parent,
-                        text = text,
-                        writer = writer,
-                        tag = '',
-                        password = password,
-                        attr = status['attr'],
-                        ip = ip,
-                        )
-            # remember writer session
-            request.session['writer'] = writer
-        elif (request.POST['mode'] == "delete"):
-            cmtid = request.POST['id']
-            password = request.POST['password']
-            ip = get_client_ip(request)
-            # if no password, then make ip as password
-            if (password == ""):
-                password = ip
-            cmtobj = models.BoardComment.objects.get(id=cmtid)
-            if (cmtobj.password == password or status['attr'] == 2):
-                cmtobj.delete()
-                request.session['message'] = u"댓글을 삭제하였습니다."
-            else:
-                request.session['message'] = u"패스워드가 틀렸습니다."
+        comment_POST(request, status, post)
         return HttpResponseRedirect(reverse("postview", args=[postid,]))
     else:
         raise Http404
 
-def songcomment(request):
-    return render(request, 'songcomment.html')
+def songcomment(request, pkid):
+    board = models.Board.objects.get(title="songcomment")
+    post = models.BoardPost.objects.get(board=board, tag=str(pkid))
+    status = getBasicStatus(request)
+    comments = None
+    if (post == None):
+        # find song and get song title
+        # and prepare virtual posting object
+        try:
+            ritem = iidxrank.models.RankItem.get(id=pkid)
+        except Exception as e:
+            # invalid item no.
+            raise Http404
+        song = ritem.song
+
+    if (request.method == "POST"):
+        if (post == None):
+            # create a post
+            models.BoardPost.objects.create(
+                board = board,
+                title = u'%s (%s / %d)' % (song.songtitle, song.songtype, song.songlevel),
+                text = u'아직 난이도 변경내역이 없습니다.',
+                writer = 'Bot',
+                tag = str(pkid),
+                attr = 2,
+                ip = 'Bot',
+                password = int(random.random()*100000),
+                )
+        # create a comment
+        # by using common comment function
+        comment_POST(request, status, post)
+    else:
+        if (post == None):
+            post = {
+                'title': u'%s (%s / %d)' % (song.songtitle, song.songtype, song.songlevel),
+                'text': u'아직 의견이 없습니다.',
+                }
+            comments = []
+
+    # anyway, return songcomment window
+    if (comments == None):
+        comments = models.BoardComment.objects.filter(post=post, parent=None).order_by('-time')
+    return render(request, 'songcomment.html', {'post': post, 'comments': comments})
