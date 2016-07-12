@@ -166,7 +166,7 @@ def imgtl(request):
 @csrf_exempt
 def qpro(request, iidxid):
   if (iidxid.isdigit() and int(iidxid) == 0):
-    with open('iidxrank/static/qpro/noname.png', 'r') as f:
+    with open('static/qpro/noname.png', 'r') as f:
       img_blank = f.read()
     return HttpResponse(img_blank, content_type="image/png")
 
@@ -180,6 +180,6 @@ def qpro(request, iidxid):
     pass
 
   # cannot found
-  with open('iidxrank/static/qpro/blank.png', 'r') as f:
+  with open('static/qpro/blank.png', 'r') as f:
     img_blank = f.read()
   return HttpResponse(img_blank, content_type="image/png")
