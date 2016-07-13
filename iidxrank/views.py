@@ -45,7 +45,8 @@ def userpage(request, username="!"):
   playerinfo = rp.getUserInfo(player, username)
   return render_to_response('user/userpage.html', {'userinfo': playerinfo})
 
-def rankpage(request, username="!", tablename="SP12"):
+# common
+def retrieve_userdata(username, tablename):
   # check is argument valid
   tablename = tablename.upper()
   try:
@@ -72,12 +73,19 @@ def rankpage(request, username="!", tablename="SP12"):
     'info': userinfo,
     'categories': songdata
     }
-  return render(request, 'user/rankview.html', 
-    {'score': songdata, 
+
+  return {'score': songdata, 
     'tabledata_json': json.dumps(tabledata),
     'userinfo': userinfo, 
     'pageinfo': pageinfo}
-    )
+
+def rankpage(request, username="!", tablename="SP12"):
+  d = retrieve_userdata(username, tablename)
+  return render(request, 'user/rankview.html', d)
+
+def detailpage(request, username="!", tablename="SP12"):
+  d = retrieve_userdata(username, tablename)
+  return render(request, 'user/detailview.html', d)
 
 def rankedit(request, tablename):
   tablename = tablename.upper()

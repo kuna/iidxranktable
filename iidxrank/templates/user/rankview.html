@@ -2,9 +2,6 @@
 {% block subtitle %} - {{ pageinfo.title }}{% endblock %}
 {% block head %}
 {% load staticfiles %}
-<!-- override metadata -->
-<meta name="viewport" content="width=1080, user-scalable=1">
-
 <script type="text/javascript" src="{% static 'js/table.default.skin.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/table.defscore.skin.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/table.js' %}"></script>
@@ -289,7 +286,10 @@ $(function (){
   </div>
   <!-- edit tool end -->
 
-  <div class="right clear">
+  <div class="left">
+    <a href="./detail/" class="btn btn-default">난이도 제안 & 자세한 정보</a>
+  </div>
+  <div class="right">
     <!--
     <button id="send" class="btn btn-default" data-loading-text="uploading..."><span class="glyphicon glyphicon-upload"></span> upload for url/twitter</button>
     <input type="text" id="url" value="" class="form-control" readonly>
@@ -309,6 +309,8 @@ $(function (){
       <a href="#"><li data-value="score">점수</li></a>
     </ul>
   </div>
+  <div class="clear"></div>
+
   <div id="rankimg">
   </div>
   <div id="container_saveload" style="display:none;">

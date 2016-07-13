@@ -92,11 +92,50 @@ table .loading { color:#999; text-align: center; padding:20px; }
 .list.table li { background-color:#c69; }
 #container .list { float:left; margin-top:4px; margin-right:20px; }
 
-/* rankedit */
+/* rankedit & detail page */
+.ranktable .title { margin-bottom: 40px; border-bottom: 1px solid #ccc; text-align: center; }
 .ranktable .category_title { background-color: #000; padding:10px; font-weight: bold; color: #fff; cursor: pointer; }
 .ranktable .ctype0 { background-color: #999 !important; }
 .ranktable .category { border: 1px solid #999; padding: 10px 10px 0 0 ; background-color: #ccc; overflow: hidden; margin-bottom: 20px; cursor: pointer; }
 .ranktable .item { border: 1px solid #999; padding: 5px 10px; background-color: #fff; margin: 0 0 10px 10px; height: 30px; width: 180px; float: left; font-size: 10px; }
+
+.ranktable .category.detail { padding: 15px; }
+.ranktable .itemdetail { border: 1px solid #999; padding: 5px 10px; clear:both; width: 100%; background-color: #fff; height: 36px; }
+.ranktable .itemdetail div { float: left; }
+.ranktable .itemdetail .title { width: 50%; border: none; margin: 0; text-align: left; }
+.ranktable .itemdetail .type { float: right; }
+.ranktable .itemdetail .type span { display: block; float: left; margin-right: 10px; font-size: 10px; font-weight: bold; color: #fff; border-radius: 3px; background-color: #ccc; padding: 3px 5px; cursor: default; }
+
+/* some nasty things ... */
+.type span:before { content: "미정"; }
+
+.type span.scratch:before { content: "血"; background-color: #c99; }
+.type span.charge:before { content: "CN"; background-color: #c99; }
+.type span.hellcharge:before { content: "HCN"; background-color: #c99; }
+.type span.hit:before { content: "연타"; }
+.type span.trill:before { content: "트릴"; }
+.type span.stair:before { content: "계단"; }
+.type span.tempo:before { content: "엇박"; }
+.type span.tatsu:before { content: "동치"; }
+.type span.complex:before { content: "스크복합"; }
+
+.type span.bpm:before { content: "변속"; }
+.type span.acc:before { content: "가속"; }
+.type span.fast:before { content: "고BPM"; }
+
+.type span.first:before { content: "초살"; }
+.type span.middle:before { content: "중살"; }
+.type span.end:before { content: "후살"; }
+
+.type span.normal1p:before { content: "1P정배"; }
+.type span.normal2p:before { content: "2P정배"; }
+.type span.mirror1p:before { content: "1P미러"; }
+.type span.mirror2p:before { content: "2P미러"; }
+.type span.random1p:before { content: "1P랜덤"; }
+.type span.random2p:before { content: "2P랜덤"; }
+
+
+
 
 /* in case of mobile */
 @media screen and (max-width: 768px) {
@@ -122,6 +161,7 @@ table .loading { color:#999; text-align: center; padding:20px; }
 /* others (common) */
 .clear { clear:both; margin-bottom:10px; }
 .right { float:right; }
+.left { float:left; }
 .center { text-align:center; }
 .row { clear:both; margin-bottom:10px; }
 .row button 

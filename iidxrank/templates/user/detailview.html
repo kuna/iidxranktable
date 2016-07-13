@@ -1,0 +1,47 @@
+{% extends "common.html" %}
+{% block subtitle %} - {{ pageinfo.title }}{% endblock %}
+{% block head %}
+{% load staticfiles %}
+<!-- 
+  provides detailed view of song rank
+  also commentable
+-->
+{% endblock %}
+{% block body %}
+
+{% include "top.html" %}
+{% include "profileheader.html" %}
+
+<div id="container" class="fixed">
+  <div class="left">
+    <a href="../" class="btn btn-default">되돌아가기</a>
+  </div>
+  <div class="clear"></div>
+
+  <div class="ranktable">
+    <h3 class="title">{{ pageinfo.title }}</h3>
+    {% for category in score %}
+    <div class="category_title ctype{{ category.categorytype }}">{{ category.category }}</div>
+    <div class="category detail">
+      {% for item in category.items %}
+      <a href="/songcomment/{{ pageinfo.tablename }}_{{ item.pkid }}/" onclick="openComment(this.href); return false;">
+      <div class="itemdetail">
+        <div class="title">
+          {{ item.data.title }}
+          <div class="type">
+            <span class="undefined"></span>
+          </div>
+        </div>
+        <div class="clear clear{{ item.clear }}"></div>
+        <div class="rank"></div>
+        <div class="rate">
+          <div class="bar" width="{{ item.rate }}%"></div>
+        </div>
+      </div></a>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+{% block etc %}{{ pageinfo.copyright }}<br>updated {{ pageinfo.date|date:"ymd" }}{% endblock %}

@@ -24,7 +24,8 @@ class BoardPostAdmin(admin.ModelAdmin):
     list_display = ('writer', 'ip', 'get_boardtitle', 'title', 'tag')
     inline = BoardCommentInline
 class BoardCommentAdmin(admin.ModelAdmin):
-    list_display = ('writer', 'ip', 'get_posttitle', 'text', 'tag')
+    list_display = ('writer', 'ip', 'password', 'attr', 'get_posttitle', 'text', 'tag')
+    list_editable = ('ip', 'password', 'attr')
     form = BoardCommentForm
 
 # register
