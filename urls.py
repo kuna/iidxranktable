@@ -40,7 +40,7 @@ urlpatterns = [
                     url(r'^(?P<boardname>\w+)/(?P<page>[0-9]+)/$', views_board.list, name="postlist"),
                     url(r'^(?P<boardname>\w+)/write/$', views_board.write, name="postwrite"),
             ])),
-            url(r'^songcomments/$', views_board.songcomments),
+            url(r'^songcomments/$', RedirectView.as_view(url='/songcomments/1/')),
             url(r'^songcomments/(?P<page>[0-9]+)/$', views_board.songcomments),
             url(r'^songcomment/(?P<tag>\w+)/$', views_board.songcomment),
 

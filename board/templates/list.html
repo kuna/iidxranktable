@@ -54,21 +54,21 @@ $(function () {
 	<!-- pagination -->
 	<div class="paging">
 		<div class="prev">
-		{% if comments.has_previous %}
-			<a href="../{{ comments.previous_page_number }}/">
+		{% if posts.has_previous %}
+			<a href="../{{ posts.previous_page_number }}/">
 			<span class="glyphicon glyphicon-chevron-left"></span>
 			</a>
 		{% endif %}
 		</div>
 		<div class="next">
-		{% if comments.has_next %}
-			<a href="../{{ comments.next_page_number }}/">
+		{% if posts.has_next %}
+			<a href="../{{ posts.next_page_number }}/">
 			<span class="glyphicon glyphicon-chevron-right"></span>
 			</a>
 		{% endif %}
 		</div>
 		<div class="center">
-			Page {{ comments.number }} of {{ comments.paginator.num_pages }}
+			{{ posts.number }} / {{ posts.paginator.num_pages }}
 		</div>
 	</div>
   <!-- pagination end -->

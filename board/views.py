@@ -278,6 +278,7 @@ def view(request, postid):
 # songcomment parts
 # TODO: get / show current category
 # TODO: link to songcomments page; by reusing template.
+# TODO: hide board object with no child comments.
 
 def songcomments(request, page=1):
     # check is valid url

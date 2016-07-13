@@ -39,7 +39,7 @@ div.recentuser li.info { width:auto; text-align:center; }
 div.recentuser a.rmlink { float:right; color:#966; font-size:8pt; }
 
 /* paging part (container) */
-#container .paging { font-size:9pt; overflow:hidden; color:#666; height:45px; }
+#container .paging { font-size:9pt; overflow:hidden; color:#666; height:45px; width: 240px; margin: 0 auto; }
 #container .paging .prev { float:left; padding:0 10px; width:100px; height:10px; text-align:left; }
 #container .paging .next { float:right; padding:0 10px; width:100px; height:10px; text-align:right; }
 #container .paging .center { float:left; width:100%; margin-top:-10px; text-align:center; }
