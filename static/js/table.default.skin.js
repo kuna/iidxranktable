@@ -6,6 +6,7 @@
 function DefaultRenderer(ctx) {
   var self = this;
   self.ctx = ctx;
+  self.rank_count = [0,0,0,0,0,0,0,0];
 
   // load image/resources
   var img_clear = new Image();
@@ -72,6 +73,7 @@ function DefaultRenderer(ctx) {
             0,30 * (d.clear-1),15,h,
             x+w-15,y,15,h);
       }
+      self.rank_count[d.clear]++;   // accumulate count
       // 4 score TODO
       if (self.drawscore) {
       }
@@ -210,5 +212,39 @@ function DefaultRenderer(ctx) {
       self.ctx.textAlign="left";
       self.ctx.fillText(d.copyright, x, y+h+20);
     }
+    // rank count
+    var ey = y+h;
+    self.ctx.fillStyle="#ddd";
+    self.ctx.fillRect(x+150,ey+6,30,20);
+    self.ctx.fillStyle="#fff";
+    self.ctx.fillText(self.rank_count[0], x+155, ey+20);
+    self.ctx.fillStyle="#bbb";
+    self.ctx.fillRect(x+190,ey+6,30,20);
+    self.ctx.fillStyle="#fff";
+    self.ctx.fillText(self.rank_count[1], x+195, ey+20);
+    self.ctx.fillStyle="#ca9";
+    self.ctx.fillRect(x+230,ey+6,30,20);
+    self.ctx.fillStyle="#fff";
+    self.ctx.fillText(self.rank_count[2], x+235, ey+20);
+    self.ctx.fillStyle="#9c9";
+    self.ctx.fillRect(x+270,ey+6,30,20);
+    self.ctx.fillStyle="#fff";
+    self.ctx.fillText(self.rank_count[3], x+275, ey+20);
+    self.ctx.fillStyle="#9ac";
+    self.ctx.fillRect(x+310,ey+6,30,20);
+    self.ctx.fillStyle="#fff";
+    self.ctx.fillText(self.rank_count[4], x+315, ey+20);
+    self.ctx.fillStyle="#c99";
+    self.ctx.fillRect(x+350,ey+6,30,20);
+    self.ctx.fillStyle="#fff";
+    self.ctx.fillText(self.rank_count[5], x+355, ey+20);
+    self.ctx.fillStyle="#cc9";
+    self.ctx.fillRect(x+390,ey+6,30,20);
+    self.ctx.fillStyle="#fff";
+    self.ctx.fillText(self.rank_count[6], x+395, ey+20);
+    self.ctx.fillStyle="#9cc";
+    self.ctx.fillRect(x+430,ey+6,30,20);
+    self.ctx.fillStyle="#fff";
+    self.ctx.fillText(self.rank_count[7], x+435, ey+20);
   }
 }
