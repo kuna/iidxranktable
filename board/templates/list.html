@@ -26,6 +26,7 @@ $(function () {
 		<div class="panel-heading">{{ board.title }}</div>
 		<div class="list-group">
       <ul class="postlist">
+      {% block postlist %}
 			{% for post in posts %}
       <li>
         <div class="no">{{ post.id }}</div>
@@ -36,6 +37,7 @@ $(function () {
         <div class="date">{{ post.time|date:"m-d H:i" }}</div>
       </li>
 			{% endfor %}
+      {% endblock %}
       </ul>
 		</div>
 	</div>

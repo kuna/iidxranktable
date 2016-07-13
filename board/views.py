@@ -271,6 +271,31 @@ def view(request, postid):
     return r
 
 
+
+
+
+
+# songcomment parts
+# TODO: get / show current category
+# TODO: link to songcomments page; by reusing template.
+
+def songcomments(request, page=1):
+    # check is valid url
+    board = models.Board.objects.filter(title="songcomment").first()
+    status = getBasicStatus(request)
+
+    # fetch all posts (with pagination)
+    posts = models.BoardPost.objects.filter(board=board).order_by('-time')
+    comments_page = Paginator(posts.all(), 20).page(page)
+
+    # writable?
+    writeable = board.permission == 0 or request.user.is_staff
+
+    r =  render(request, 'songcomments.html',
+            {'posts': comments_page, 'board': board, 'status': status, 'writeable': writeable})
+    clearMessage(request)
+    return r
+
 def songcomment(request, tag):
     board = models.Board.objects.get(title="songcomment")
     post = models.BoardPost.objects.filter(board=board, tag=tag).first()

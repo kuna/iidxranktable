@@ -36,10 +36,12 @@ urlpatterns = [
             url(r'^board/', include([
                     url(r'^view/(?P<postid>[0-9]+)/$', views_board.view, name="postview"),
                     url(r'^modify/(?P<postid>[0-9]+)/$', views_board.modify, name="postmodify"),
-                    url(r'^(?P<boardname>\w+)/$', views_board.list),
+                    url(r'^(?P<boardname>\w+)/$', views_board.list, name="postlist"),
                     url(r'^(?P<boardname>\w+)/(?P<page>[0-9]+)/$', views_board.list, name="postlist"),
                     url(r'^(?P<boardname>\w+)/write/$', views_board.write, name="postwrite"),
             ])),
+            url(r'^songcomments/$', views_board.songcomments),
+            url(r'^songcomments/(?P<page>[0-9]+)/$', views_board.songcomments),
             url(r'^songcomment/(?P<tag>\w+)/$', views_board.songcomment),
 
         # select music
