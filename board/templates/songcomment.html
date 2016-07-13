@@ -1,45 +1,12 @@
-{% extends "index.html" %}
-{% block subtitle %} - board{% endblock %}
-{% block head %}
-{% load staticfiles %}
-<link rel="stylesheet" type="text/css" href="{% static 'css/board.css' %}">
-<link rel="stylesheet" type="text/css" href="{% static 'MooEditable/MooEditable.css' %}">
-<script language="javascript" src="{% static 'js/mootools.js' %}"></script>
-<script language="javascript" src="{% static 'js/MooEditable.js' %}"></script>
-{% endblock %}
+{% extends "view.html" %}
 
-{% block body %}
-{% if request.session.message %}
-<script language="javascript">
-$(function () {
-	showMessage("{{ request.session.message }}");
-})
-</script>
-{% endif %}
+{% block top %} {% endblock %}
 
-<script language="javascript">
-function doDelete() {
-  var pas = prompt("패스워드를 입력하세요 (입력하지 않을 시 ip로 인증)");
-  $("#password").val(pas);
-  $("#del").submit();
-}
-</script>
-
-<div id="container"><div class="inner">
-  <div class="post">
-    <div class="clear info">
-      <h3>{{ post.title }}</h3>
-      <span class="writer{% if post.attr == 2 %} admin{% endif %}">{{ post.writer }}</span>
-      <div class="detail">
-        <span class="date">[{{ post.time|date:"y-m-d H:i:s" }}]</span>
-        <span class="ip">{{ post.ip_public }}</span>
-      </div>
+{% block navigation %}
+    <div class="rankpage_info">
+      <a href="{{ rankpage.url }}" class="btn btn-primary" target="_blank">{{ rankpage.name }} 서열표로 가기</a>
     </div>
-
-    <div class="clear body">
-      {{ post.text|safe }}
-    </div>
-
+    <div class="clear"></div>
     {% if request.user.is_staff %}
     <!-- navigation -->
     <div class="clear navigation">
@@ -60,10 +27,4 @@ function doDelete() {
     </div>
     <!-- nativation ends -->
     {% endif %}
-  </div>
-
-  <div class="clear"></div>
-    
-  {% include "comment.html" %}
-</div></div>
 {% endblock %}

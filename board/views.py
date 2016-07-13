@@ -308,13 +308,20 @@ def songcomment(request, tag):
     # find song and get song title
     # and prepare virtual posting object
     try:
-        song_pkid = tag.split("_")[1]
+        tablename, song_pkid = tag.split("_")
         print song_pkid
         song = iidxrank.models.Song.objects.get(id=song_pkid)
     except Exception as e:
         # invalid item no.
         print e
         raise Http404
+
+    # check out rankpage also.
+    ranktable = iidxrank.models.RankTable.objects.filter(tablename=tablename).first()
+    if (ranktable == None):
+        rankpage = {'url': '#', 'name': u'(존재하지 않습니다)'}
+    else:
+        rankpage = {'url': '/!/'+tablename+'/detail/', 'name': ranktable.tabletitle}
 
     if (request.method == "POST"):
         if (post == None and checkValidText(request.POST["text"])):
@@ -348,6 +355,8 @@ def songcomment(request, tag):
             'writer': 'Bot',
             'attr': 2,
             }
-    r = render(request, 'songcomment.html', {'post': post, 'comments': comments, 'status':status})
+    r = render(request, 'songcomment.html', {
+        'post': post, 'comments': comments, 'status':status, 'rankpage':rankpage
+        })
     clearMessage(request)
     return r

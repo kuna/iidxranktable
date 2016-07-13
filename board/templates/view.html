@@ -17,7 +17,9 @@ $(function () {
 </script>
 {% endif %}
 
+{% block top %}
 {% include 'top.html' %}
+{% endblock %}
 
 <script language="javascript">
 function doDelete() {
@@ -43,6 +45,7 @@ function doDelete() {
     </div>
 
     <!-- navigation -->
+    {% block navigation %}
     <div class="clear navigation">
       <div class="left" style="float:left;">
         <a class="btn btn-default" href="/board/{{ board.title }}/{{ status.page }}/">목록</a>
@@ -59,6 +62,7 @@ function doDelete() {
         <a class="btn btn-default" href="/board/modify/{{ post.id }}/">수정</a>
       </div>
     </div>
+    {% endblock %}
     <!-- nativation ends -->
   </div>
 

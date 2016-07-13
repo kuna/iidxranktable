@@ -100,6 +100,7 @@ def addMetadata(musicdata, data, song_query):
           'id': song.songid,
           'version': song.version,
         },
+        'tags': song.get_tags(),
       }
       musicdata.append(music)
   else:
@@ -125,8 +126,10 @@ def addMetadata(musicdata, data, song_query):
       try:
         song_obj = song_query.get(songid=music['data']['id'], songtype=music['data']['diff_detail'])
         music['pkid'] = song_obj.id
+        music['tags'] = song_obj.get_tags()
       except:
         music['pkid'] = -1
+        music['tags'] = []
 
   # sort musicdata by name
   def sort_musicdata(x, y):

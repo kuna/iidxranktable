@@ -26,16 +26,19 @@
       {% for item in category.items %}
       <a href="/songcomment/{{ pageinfo.tablename }}_{{ item.pkid }}/" onclick="openComment(this.href); return false;">
       <div class="itemdetail">
+        <div class="lamp clear{{ item.clear }}"></div>
         <div class="title">
           {{ item.data.title }}
           <div class="type">
-            <span class="undefined"></span>
+            {% for tag in item.tags %}
+            <span class="{{ tag }}"></span>
+            {% endfor %}
           </div>
         </div>
-        <div class="clear clear{{ item.clear }}"></div>
         <div class="rank"></div>
         <div class="rate">
-          <div class="bar" width="{{ item.rate }}%"></div>
+          <div class="bar" style="width:{{ item.rate }}%;"></div>
+          <div class="bg"></div>
         </div>
       </div></a>
       {% endfor %}

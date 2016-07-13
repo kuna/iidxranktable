@@ -100,32 +100,92 @@ table .loading { color:#999; text-align: center; padding:20px; }
 .ranktable .item { border: 1px solid #999; padding: 5px 10px; background-color: #fff; margin: 0 0 10px 10px; height: 30px; width: 180px; float: left; font-size: 10px; }
 
 .ranktable .category.detail { padding: 15px; }
-.ranktable .itemdetail { border: 1px solid #999; padding: 5px 10px; clear:both; width: 100%; background-color: #fff; height: 36px; }
+.ranktable .category.detail a { color:#fff; font-weight: bold; }
+.ranktable .itemdetail { 
+  padding: 10px 10px 10px 30px; clear:both;
+  width: 100%; height: 40px;
+  background: url('/static/img/item_bar_bg.png') 0 0 no-repeat;
+}
 .ranktable .itemdetail div { float: left; }
-.ranktable .itemdetail .title { width: 50%; border: none; margin: 0; text-align: left; }
+.ranktable .itemdetail .lamp { 
+  margin: -14px 0 0 -35px; display: block;
+  width: 30px; height: 50px;
+  background: url('/static/img/item_clearlamp.png');
+}
+.ranktable .itemdetail .lamp.clear0 { background: none; }
+.ranktable .itemdetail .lamp.clear1 { background-position: -96px 0; opacity: 0.6; }
+.ranktable .itemdetail .lamp.clear2 { background-position: -96px 0; opacity: 0.6;  }
+.ranktable .itemdetail .lamp.clear3 { background-position: -128px 0; }
+.ranktable .itemdetail .lamp.clear4 { background-position: -64px 0; opacity: 0.6; }
+.ranktable .itemdetail .lamp.clear5 { background-position: -96px 0; }
+.ranktable .itemdetail .lamp.clear6 { background-position: 0 0; }
+.ranktable .itemdetail .lamp.clear7 { background-position: -64px 0; }
+.ranktable .itemdetail .title { width: 485px; border: none; margin: 0; text-align: left; }
 .ranktable .itemdetail .type { float: right; }
-.ranktable .itemdetail .type span { display: block; float: left; margin-right: 10px; font-size: 10px; font-weight: bold; color: #fff; border-radius: 3px; background-color: #ccc; padding: 3px 5px; cursor: default; }
+.ranktable .itemdetail .type span {
+  display: block; float: left; margin-right: 10px;
+  font-size: 11px; font-weight: bold; color: #fff;
+  border-radius: 3px; background-color: #ccc; padding: 3px 5px; cursor: default;
+}
+.ranktable .itemdetail .rate {
+  display:block;
+  margin-left: 30px;
+  width: 380px; height: 27px;
+  margin-top: -4px; position:relative;
+}
+.ranktable .itemdetail .rate .bg { 
+  position: absolute;
+  margin-left: -10px;
+  width: 400px; height: 100%;
+  background: url('/static/img/item_rate.png') 0 0 no-repeat;
+}
+.ranktable .itemdetail .rate .bar {
+  position:absolute;
+  background-color: #9cf;
+  height: 24px;
+}
 
 /* some nasty things ... */
 .type span:before { content: "미정"; }
 
-.type span.scratch:before { content: "血"; background-color: #c99; }
-.type span.charge:before { content: "CN"; background-color: #c99; }
-.type span.hellcharge:before { content: "HCN"; background-color: #c99; }
-.type span.hit:before { content: "연타"; }
+.type span.scratch:before { content: "血"; }
+.type span.charge:before { content: "CN"; }
+.type span.hellcharge:before { content: "HCN"; }
+.type span.scratch,
+.type span.charge,
+.type span.hellcharge
+{ background-color: #c33 !important; }
+
+.type span.roll:before { content: "연타"; }
+.type span.axis:before { content: "축연타"; }
 .type span.trill:before { content: "트릴"; }
 .type span.stair:before { content: "계단"; }
 .type span.tempo:before { content: "엇박"; }
 .type span.tatsu:before { content: "동치"; }
 .type span.complex:before { content: "스크복합"; }
-
 .type span.bpm:before { content: "변속"; }
-.type span.acc:before { content: "가속"; }
 .type span.fast:before { content: "고BPM"; }
-
+.type span.strength:before { content: "물량"; }
+.type span.rush:before { content: "순간물량"; }
 .type span.first:before { content: "초살"; }
 .type span.middle:before { content: "중살"; }
-.type span.end:before { content: "후살"; }
+.type span.last:before { content: "후살"; }
+.type span.roll,
+.type span.axis,
+.type span.trill,
+.type span.stair,
+.type span.tempo,
+.type span.tatsu,
+.type span.complex,
+.type span.bpm,
+.type span.fast,
+.type span.strength,
+.type span.rush,
+.type span.first,
+.type span.middle,
+.type span.last
+{ background-color: #c93 !important; }
+
 
 .type span.normal1p:before { content: "1P정배"; }
 .type span.normal2p:before { content: "2P정배"; }
@@ -133,6 +193,13 @@ table .loading { color:#999; text-align: center; padding:20px; }
 .type span.mirror2p:before { content: "2P미러"; }
 .type span.random1p:before { content: "1P랜덤"; }
 .type span.random2p:before { content: "2P랜덤"; }
+.type span.normal1p,
+.type span.normal2p,
+.type span.mirror1p,
+.type span.mirror2p,
+.type span.random1p,
+.type span.random2p
+{ background-color: #3c3 !important; }
 
 
 
