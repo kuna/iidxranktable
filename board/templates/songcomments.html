@@ -2,7 +2,7 @@
 {% block postlist %}
 			{% for post in posts %}
       <li>
-        <a href="/board/view/{{ post.id }}" onclick="openComment(this.href); return false;">
+        <a href="/songcomment/{{ post.tag }}" onclick="openComment(this.href); return false;">
         <div class="title">{{ post.title }}</div>
         </a>
         <div class="date">{{ post.time|date:"m-d H:i" }}</div>
