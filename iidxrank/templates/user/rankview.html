@@ -110,7 +110,7 @@ var dorender = function(_rendermode) {
       var y = e.pageY - offset.top;
       item = t.Click(tabledata, x, y);
       if (item)
-        openComment("/songcomment/{{ pageinfo.tablename }}/" + item.pkid);
+        openComment("/songcomment/{{ pageinfo.tablename }}_" + item.pkid);
       return false;
     });
     $("#rankimg").append(canvas);

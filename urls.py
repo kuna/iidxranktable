@@ -34,14 +34,13 @@ urlpatterns = [
 
         # comment, board
             url(r'^board/', include([
-                    url(r'^comment/(?P<postid>[0-9]+)/$', views_board.comment, name="postcomment"),
                     url(r'^view/(?P<postid>[0-9]+)/$', views_board.view, name="postview"),
                     url(r'^modify/(?P<postid>[0-9]+)/$', views_board.modify, name="postmodify"),
                     url(r'^(?P<boardname>\w+)/$', views_board.list),
                     url(r'^(?P<boardname>\w+)/(?P<page>[0-9]+)/$', views_board.list, name="postlist"),
                     url(r'^(?P<boardname>\w+)/write/$', views_board.write, name="postwrite"),
             ])),
-            url(r'^songcomment/(?P<pkid>[0-9]+)/$', views_board.songcomment),
+            url(r'^songcomment/(?P<tag>\w+)/$', views_board.songcomment),
 
         # select music
             url(r'^musiclist/$', views.musiclist),

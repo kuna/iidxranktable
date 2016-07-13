@@ -44,3 +44,11 @@
 .writeform .submit { width: 100px; float: right; }
 #richedit { height:280px; }
 .mooeditable-container { background-color:#fff; }
+
+/* for small screen, or songcomment */
+@media screen and (max-width: 768px) {
+  .writeform .text { width: 100%; margin-bottom: 20px; }
+  .writeform .writer { width: 40%; }
+  .writeform .password { width: 40%; }
+}
+

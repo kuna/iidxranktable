@@ -8,6 +8,7 @@ from django.core.paginator import Paginator
 import models
 import iidxrank.models
 import random
+import datetime
 
 # common functions
 def get_client_ip(request):
@@ -198,30 +199,11 @@ def modify(request, postid):
     return r
 
 
-# /board/view/<postid>/
-def view(request, postid):
-    # check is valid url
-    post = models.BoardPost.objects.filter(id=postid).first()
-    if (post == None):
-        raise Http404
-    status = getBasicStatus(request)
-    status['page'] = 1  # TODO
-
-    # fetch all comments (which has no parents)
-    comments = models.BoardComment.objects\
-        .filter(post=post, parent=None)\
-        .order_by('-time')
-
-    r = render(request, 'view.html',
-            {'comments': comments, 'post': post, 'board': post.board, 'status': status})
-    clearMessage(request)
-    return r
 
 
 
 # comment part
-
-def comment_POST(request, post):
+def comment_POST(request, status, post):
     if (request.POST['mode'] == "add"):
         parent_comment = int(request.POST["parent"])
         if (parent_comment == -1):
@@ -265,61 +247,67 @@ def comment_POST(request, post):
         else:
             request.session['message'] = u"패스워드가 틀렸습니다."
 
-# /board/comment/<postid>/
-def comment(request, postid):
+
+# /board/view/<postid>/
+def view(request, postid):
     # check is valid url
     post = models.BoardPost.objects.filter(id=postid).first()
     if (post == None):
         raise Http404
     status = getBasicStatus(request)
+    status['page'] = 1  # TODO
 
-    # only process POST request
     if (request.method == "POST"):
         comment_POST(request, status, post)
-        return HttpResponseRedirect(reverse("postview", args=[postid,]))
-    else:
-        raise Http404
 
-def songcomment(request, pkid):
+    # fetch all comments (which has no parents)
+    comments = models.BoardComment.objects\
+        .filter(post=post, parent=None)\
+        .order_by('-time')
+
+    r = render(request, 'view.html',
+            {'comments': comments, 'post': post, 'board': post.board, 'status': status})
+    clearMessage(request)
+    return r
+
+
+def songcomment(request, tag):
     board = models.Board.objects.get(title="songcomment")
-    post = models.BoardPost.objects.get(board=board, tag=str(pkid))
+    post = models.BoardPost.objects.filter(board=board, tag=tag).first()
     status = getBasicStatus(request)
-    comments = None
     if (post == None):
         # find song and get song title
         # and prepare virtual posting object
         try:
-            ritem = iidxrank.models.RankItem.get(id=pkid)
+            song_pkid = tag.split("_")[1]
+            print song_pkid
+            song = iidxrank.models.Song.objects.get(id=song_pkid)
         except Exception as e:
             # invalid item no.
+            print e
             raise Http404
-        song = ritem.song
+        # create a post
+        post = models.BoardPost.objects.create(
+            board = board,
+            title = u'%s (%s / %d)' % (song.songtitle, song.songtype, song.songlevel),
+            text = u'아직 난이도 변경내역이 없습니다.',
+            writer = 'Bot',
+            tag = tag,
+            attr = 2,
+            ip = 'Bot',
+            password = int(random.random()*100000),
+            )
 
     if (request.method == "POST"):
-        if (post == None):
-            # create a post
-            models.BoardPost.objects.create(
-                board = board,
-                title = u'%s (%s / %d)' % (song.songtitle, song.songtype, song.songlevel),
-                text = u'아직 난이도 변경내역이 없습니다.',
-                writer = 'Bot',
-                tag = str(pkid),
-                attr = 2,
-                ip = 'Bot',
-                password = int(random.random()*100000),
-                )
         # create a comment
         # by using common comment function
         comment_POST(request, status, post)
-    else:
-        if (post == None):
-            post = {
-                'title': u'%s (%s / %d)' % (song.songtitle, song.songtype, song.songlevel),
-                'text': u'아직 의견이 없습니다.',
-                }
-            comments = []
+        # and, update post date to current one
+        post.time = datetime.datetime.now()
+        post.save()
 
     # anyway, return songcomment window
-    if (comments == None):
-        comments = models.BoardComment.objects.filter(post=post, parent=None).order_by('-time')
-    return render(request, 'songcomment.html', {'post': post, 'comments': comments})
+    comments = models.BoardComment.objects.filter(post=post, parent=None).order_by('-time')
+    r = render(request, 'songcomment.html', {'post': post, 'comments': comments, 'status':status})
+    clearMessage(request)
+    return r

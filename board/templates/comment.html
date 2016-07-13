@@ -16,7 +16,7 @@ function childComment(id) {
   <!-- comments -->
   <div class="comments">
 		<div class="list-group-item writeform">
-      <form role="form" action="/board/comment/{{ post.id }}/" method="post">
+      <form role="form" action="./" method="post">
 				{% csrf_token %}
 				<input type="hidden" name="mode" value="add">
 				<input type="hidden" id="cmt_parent" name="parent" value="-1">
@@ -53,7 +53,7 @@ function childComment(id) {
             </div>
           </div>
           <div class="right">
-            <form role="form" action="/board/comment/{{ post.id }}/" method="post">
+            <form role="form" action="./" method="post">
               {% csrf_token %}
               <input id="mode" type="hidden" name="mode" value="delete">
               <input id="id" type="hidden" name="id" value="{{ comment.id }}">
@@ -80,7 +80,7 @@ function childComment(id) {
             </div>
           </div>
           <div class="right">
-            <form role="form" action="/board/comment/{{ post.id }}/" method="post">
+            <form role="form" action="./" method="post">
               {% csrf_token %}
               <input id="mode" type="hidden" name="mode" value="delete">
               <input id="id" type="hidden" name="id" value="{{ comment.id }}">
