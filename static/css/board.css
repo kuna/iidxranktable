@@ -19,14 +19,15 @@
 
 .board .postlist { list-style:none; padding: 0 20px; }
 .board .postlist a { color: #333; }
-.board .postlist a:hover { text-decoration: underline; }
 .board .postlist li { padding: 10px 10px; border-bottom: 1px solid #ccc; overflow:hidden; }
+.board .postlist li:hover { background-color: #f0f0f0; }
 .board .postlist li:last-child { border-bottom: none; padding-bottom: 0; }
 .board .postlist li div { float:left; padding: 0 10px; }
 .board .postlist li .no { width:50px; text-align: center; }
 .board .postlist li .title { width: 600px; }
 .board .postlist li .writer { float: right; width: 100px; }
 .board .postlist li .date { float: right; width: 150px; }
+.board .postlist li .detail { width: 600px; font-size: 10pt; color:#999; }
 
 .post .info { overflow: hidden; padding-bottom: 10px; border-bottom: 1px solid #999; margin-bottom:20px; }
 .post .info .title {  }

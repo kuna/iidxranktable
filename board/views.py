@@ -40,16 +40,20 @@ def getBasicStatus(request):
 def clearMessage(request):
     request.session['message'] = ''
 
+def checkValidText(text):
+    for banword in models.BannedWord.objects.all():
+        if banword.word in text:
+            return False
+    return True
+
 def checkValidation(ip, writer, text, title=None):
     message = None
     if (title != None and len(title) <= 0):
         message = u"제목이 너무 짧습니다."
     if (len(text) <= 3 or len(writer) <= 0):
         message = u"코멘트나 이름이 너무 짧습니다."
-    for banword in models.BannedWord.objects.all():
-        if banword.word in text:
-            message = u"코멘트에 사용할 수 없는 단어/태그가 들어가 있습니다."
-            break
+    if (not checkValidText(text)):
+        message = u"코멘트에 사용할 수 없는 단어/태그가 들어가 있습니다."
     if (models.BannedUser.objects.filter(ip=ip).count()):
         message = u"차단당한 유저입니다."
 
@@ -204,6 +208,9 @@ def modify(request, postid):
 
 # comment part
 def comment_POST(request, status, post):
+    if (post == None):
+        request.session['message'] = u"An Internal error occured."
+        return
     if (request.POST['mode'] == "add"):
         parent_comment = int(request.POST["parent"])
         if (parent_comment == -1):
@@ -276,9 +283,6 @@ def view(request, postid):
 
 
 # songcomment parts
-# TODO: get / show current category
-# TODO: link to songcomments page; by reusing template.
-# TODO: hide board object with no child comments.
 
 def songcomments(request, page=1):
     # check is valid url
@@ -301,39 +305,49 @@ def songcomment(request, tag):
     board = models.Board.objects.get(title="songcomment")
     post = models.BoardPost.objects.filter(board=board, tag=tag).first()
     status = getBasicStatus(request)
-    if (post == None):
-        # find song and get song title
-        # and prepare virtual posting object
-        try:
-            song_pkid = tag.split("_")[1]
-            print song_pkid
-            song = iidxrank.models.Song.objects.get(id=song_pkid)
-        except Exception as e:
-            # invalid item no.
-            print e
-            raise Http404
-        # create a post
-        post = models.BoardPost.objects.create(
-            board = board,
-            title = u'%s (%s / %d)' % (song.songtitle, song.songtype, song.songlevel),
-            text = u'아직 난이도 변경내역이 없습니다.',
-            writer = 'Bot',
-            tag = tag,
-            attr = 2,
-            ip = 'Bot',
-            password = int(random.random()*100000),
-            )
+    # find song and get song title
+    # and prepare virtual posting object
+    try:
+        song_pkid = tag.split("_")[1]
+        print song_pkid
+        song = iidxrank.models.Song.objects.get(id=song_pkid)
+    except Exception as e:
+        # invalid item no.
+        print e
+        raise Http404
 
     if (request.method == "POST"):
-        # create a comment
-        # by using common comment function
-        comment_POST(request, status, post)
-        # and, update post date to current one
-        post.time = datetime.datetime.now()
-        post.save()
+        if (post == None and checkValidText(request.POST["text"])):
+            # create a post
+            post = models.BoardPost.objects.create(
+                board = board,
+                title = u'%s (%s / %d)' % (song.songtitle, song.songtype, song.songlevel),
+                text = u'아직 난이도 변경내역이 없습니다.',
+                writer = 'Bot',
+                tag = tag,
+                attr = 2,
+                ip = 'Bot',
+                password = int(random.random()*100000),
+                )
+        if (post):
+            # create a comment
+            # by using common comment function
+            comment_POST(request, status, post)
+            # and, update post date to current one
+            post.time = datetime.datetime.now()
+            post.save()
 
     # anyway, return songcomment window
-    comments = models.BoardComment.objects.filter(post=post, parent=None).order_by('-time')
+    if (post):
+        comments = post.get_comments()
+    else:
+        comments = []
+        post = {
+            'title': u'%s (%s / %d)' % (song.songtitle, song.songtype, song.songlevel),
+            'text': u'아직 의견이 없습니다.',
+            'writer': 'Bot',
+            'attr': 2,
+            }
     r = render(request, 'songcomment.html', {'post': post, 'comments': comments, 'status':status})
     clearMessage(request)
     return r

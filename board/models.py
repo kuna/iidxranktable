@@ -31,6 +31,12 @@ class BoardPost(models.Model):
   def __unicode__(self):
     return self.title
 
+  def check_comment_exists(self):
+    return self.comments.filter(parent=None).exists()
+
+  def get_comments(self):
+    return self.comments.filter(parent=None).order_by('-time').all()
+
 class BoardComment(models.Model):
   time = models.DateTimeField(default=now)    # db updated time
   post = models.ForeignKey(BoardPost, related_name="comments", on_delete=CASCADE, null=True)
