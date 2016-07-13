@@ -50,3 +50,6 @@ env.py
 !testunit.py
 *.swp
 settings.py
+
+# 
+celerybeat*
