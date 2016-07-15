@@ -74,6 +74,18 @@ class PlayRecord(models.Model):
     playclear = models.IntegerField(default=0)
     playmiss = models.IntegerField(default=0, null=True)
 
+    def _getScoreCalculated(self):
+        if (self.playclear == 3):
+            return self.song.songcalc.ez_l
+        if (self.playclear == 4):
+            return self.song.songcalc.nm_l
+        if (self.playclear == 5):
+            return self.song.songcalc.hd_l
+        if (self.playclear == 6):
+            return self.song.songcalc.ex_l
+        else:
+            return 0
+    getScoreCalculated = property(_getScoreCalculated)
 
 class RankTable(models.Model):
     time = models.DateTimeField(default=now)        # db updated time

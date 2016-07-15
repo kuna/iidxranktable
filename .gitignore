@@ -53,3 +53,4 @@ settings.py
 
 # 
 celerybeat*
+*~

@@ -6,6 +6,7 @@ import math
 from random import random as rand
 import random
 import log
+import models as m
 import iidxrank.models as models
 
 # basic initalization
@@ -91,7 +92,7 @@ def sigmoid_regression(a=None,b=1,lx,ly):
             a = na
     for t in range(iterate_time):
         nb = ob + random.uniform(b-b_delta/2,b+b_delta/2)
-        if (nb <= 0.1):     # negativity totally changes function
+        if (nb*b <= 0):     # negativity totally changes function - we should avoid it
             continue
         ne = sigmoid_error(a,nb,lx,ly)
         if (ne < error):
@@ -121,31 +122,77 @@ def checkIsValidSong(song):
 
 
 # user calculation
+def prepare_user_obj(obj_player):
+    if (not hasattr(obj_player, 'PlayerCalc')):
+        obj = m.PlayerCalc.objects.create(
+            player=obj_player,
+            tag=player.name,
+            valid=0,
+            sp_l=0,
+            sp_w=1,
+            dp_l=0,
+            dp_w=1
+            )
+    else:
+        obj = obj_player.PlayerCalc
+
+    # check is user score is calculatable
+    sp_cnt = 0
+    dp_cnt = 0
+    for pr in obj_player.playrecord_set:
+        songtype = pr.song.songtype[:2].upper()
+        if songtype == "SP":
+            sp_cnt += 1
+        elif songtype == "DP":
+            dp_cnt += 1
+    if (sp_cnt < 30):
+        obj.sp_w = 0
+    if (dp_cnt < 30):
+        obj.dp_w = 0
+
+def prepare_user_all():
+    for obj_player in models.Player.objects.all():
+        prepare_user_obj(obj_player)
+
+def get_skill_songs(user):
+    sp_plays = []
+    dp_plays = []
+    for pr in user.playrecord_set:
+        songtype = pr.song.songtype[:2].upper()
+        if (songtype == "SP"):
+            sp_plays.append(pr)
+        elif (songtype == "DP"):
+            dp_plays.append(pr)
+    sorted(sp_plays, key=lambda obj: obj.getCalculateScore)
+    sorted(dp_plays, key=lambda obj: obj.getCalculateScore)
+    sp_songs = [o.song for o in sp_plays]
+    dp_songs = [o.song for o in dp_plays]
+    return sp_songs, dp_songs
+
 def calculate_user_obj(user):
-    # TODO: is there more perfect modeling ...?
-    prs = user.playrecord
-    prss = []
-    for pr in prs:
-        song = pr.song
-        # TODO: check song.songtype (hard? groove?)
-        if (checkIsValidSong(song)):
-            prs.append(pr)
-    lx = []
-    ly = []
-    for pr in prs:
-        song = pr.song
-        lx.append(song.calclevel)
-        ly.append(pr.cleared)
-    a,b = sigmoid_regression(user.splevel, user.splevelres, lx, ly)
-    user.splevel = a
-    user.splevelres = b
+    # if you don't have failed - we don't care!
+    # this modeling - get score for top 20 songs (so must prepare/calc song score first)
+    # and average it to make user's.
+    sp_songs, dp_songs = get_skill_songs(user)
+    if (len(sp_songs) > 20):
+        sp_score = 0
+        for i in range(20):
+            sp_score += 0
+        user.sp_l = sp_score / 20.0
+    if (len(dp_songs) > 20):
+        dp_score = 0
+        for i in range(20):
+            dp_score += 0
+        user.dp_l = dp_score / 20.0
     user.save()
+
 
 def calculate_user_id(iidxmeid):
     obj_player = models.Player.objects.filter(iidxmeid=iidxmeid).first()
     if (obj_player == None):
         return False
     else:
+        prepare_user_obj(obj_player)
         calculate_user_obj(obj_player)
         return True
 
@@ -159,22 +206,80 @@ def calculate_user_all():
 
 
 # song calculation
-def calculate_song_obj(song):
-    # TODO
-    # easy, hard, ex
+def calculate_song_obj(obj):
     lx = []
-    ez_ly = []
-    hd_ly = []
-    ex_ly = []
+    ly = []
+    for pr in obj.Song.playrecord_set:
+        songtype = obj.song.songtype[:2].upper()
+        if songtype == "SP":
+            if (pr.player.sp_w > 0):
+                lx.append(pr.player.sp_l)
+                ly.append(pr.clear)
+        elif songtype == "DP":
+            if (pr.player.dp_w > 0):
+                lx.append(pr.player.dp_l)
+                ly.append(pr.clear)
 
-    song.calclevelez = 0
-    song.calclevelhd = 0
-    song.calclevelex = 0
-    song.save()
+    # easy, hard, ex
+    if (obj.valid < 3):
+        lyy = [0 if y<3 else 1 for y in ly]
+        ez_l, ez_w = sigmoid_regression(lx,lyy,obj.ez_l,obj.ez_w)
+        obj.ez_l = ez_l
+        obj.ez_w = ez_w
+    if (obj.valid < 4):
+        lyy = [0 if y<4 else 1 for y in ly]
+        nm_l, nm_w = sigmoid_regression(lx,lyy,obj.nm_l,obj.nm_w)
+        obj.ez_l = nm_l
+        obj.ez_w = nm_w
+    if (obj.valid < 5):
+        lyy = [0 if y<5 else 1 for y in ly]
+        hd_l, hd_w = sigmoid_regression(lx,lyy,obj.ez_l,obj.ez_w)
+        obj.hd_l = hd_l
+        obj.hd_w = hd_w
+    if (obj.valid < 6):
+        lyy = [0 if y<6 else 1 for y in ly]
+        ex_l, ex_w = sigmoid_regression(lx,lyy,obj.ez_l,obj.ez_w)
+        obj.hd_l = ex_l
+        obj.hd_w = ex_w
+    obj.save()
 
 def calculate_song_all():
+    for obj in m.SongCalc.objects.all():
+        calculate_song_obj(obj)
+
+def prepare_song_all():
     for obj_song in models.Song.objects.all():
-        calculate_song_obj(song)
+        # if no songcalc exists?
+        # then make it
+        if (not hasattr(obj_song, 'SongCalc')):
+            tag = '%s%d - %s' % (obj_song.songtype, obj_song.songlevel, obj_song.songtitle[:12])
+            print tag
+            obj = m.SongCalc.objects.create(
+                song=obj_song,
+                tag=tag,
+                valid=0,
+                ez_l=song.songlevel,
+                ez_w=1,
+                nm_l=song.songlevel,
+                nm_w=1,
+                hd_l=song.songlevel,
+                hd_w=1,
+                ex_l=song.songlevel,
+                ex_w=1
+                )
+        else:
+            obj = song.SongCalc
+
+        # check validation of song
+        # - if no failed user, then cannot calculate - valid=0
+        # - if no easy user, then cannot calculate easy - valid=1
+        # ...
+        valid = 99
+        for pr in song.playrecord:
+            if (pr.clear < valid):
+                valid = pr.clear
+                obj.valid = valid
+        obj.save()
 # song calculation end
 
 
