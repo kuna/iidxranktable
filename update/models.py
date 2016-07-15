@@ -16,7 +16,7 @@ class PlayerCalc(models.Model):
     dp_w = models.FloatField(default=0)
 
 class SongCalc(models.Model):
-    song = models.OneToOneField(iidxrank.models.Player)
+    song = models.OneToOneField(iidxrank.models.Song)
     tag = models.CharField(max_length=20)
 
     valid = models.IntegerField(default=0)  # if no fail, then it's invalid; can't calculate
