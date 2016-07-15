@@ -19,6 +19,7 @@ class SongCalc(models.Model):
     song = models.OneToOneField(iidxrank.models.Player)
     tag = models.CharField(max_length=20)
 
+    valid = models.IntegerField(default=0)  # if no fail, then it's invalid; can't calculate
     ez_l = models.FloatField(default=0)
     ez_w = models.FloatField(default=0)
     nm_l = models.FloatField(default=0)
