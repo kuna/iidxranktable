@@ -51,6 +51,7 @@ class Player(models.Model):
     dppoint = models.IntegerField(default=0)
     spclass = models.IntegerField(default=0)
     dpclass = models.IntegerField(default=0)
+
     splevel = models.FloatField(default=0)  # need to calculate
     dplevel = models.FloatField(default=0)  # need to calculate
 
