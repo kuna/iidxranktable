@@ -101,6 +101,7 @@ var dorender = function(_rendermode) {
       return;
     }
     var canvas = t.getCanvas();
+    /*
     $(canvas).bind('contextmenu', function(e) {
       var offset = $(this).offset();
       var x = e.pageX - offset.left;
@@ -110,6 +111,7 @@ var dorender = function(_rendermode) {
         openComment("/songcomment/{{ pageinfo.tablename }}_" + item.pkid);
       return false;
     });
+    */
     $("#rankimg").append(canvas);
   }, 100)};
 

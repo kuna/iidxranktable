@@ -6,7 +6,6 @@
 function DefaultRenderer(ctx) {
   var self = this;
   self.ctx = ctx;
-  self.rank_count = [0,0,0,0,0,0,0,0];
 
   // load image/resources
   var img_clear = new Image();
@@ -132,6 +131,9 @@ function DefaultRenderer(ctx) {
   }
 
   self.drawTableBefore = function(d,x,y,w,h) {
+    // init
+    self.rank_count = [0,0,0,0,0,0,0,0];
+
     // fill total white
     self.ctx.fillStyle = "#FFF";
     self.ctx.fillRect(0, 0, self.ctx.canvas.width, self.ctx.canvas.height);
