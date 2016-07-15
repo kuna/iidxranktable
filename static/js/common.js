@@ -387,7 +387,8 @@ function downloadCanvas(c, fn) {
   console.log(c);
   var link = document.createElement('a');
   link.setAttribute('download', fn);
-  link.setAttribute('href', c.toDataURL("image/png").replace("image/png", "image/octet-stream"));
+  dataurl = c.toDataURL("image/png");
+  link.setAttribute('href', dataurl);//.replace("image/png", "image/octet-stream"));
   link.click();
 }
 $(function() {
