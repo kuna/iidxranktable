@@ -315,8 +315,14 @@ $(function (){
 
   <div id="rankimg">
   </div>
-  <div id="container_saveload" style="display:none;">
-	{% include 'rankviewsaveload.html' %}
+  <div class="hidden">
+    <form id="imgdownload" action="/imgdownload/" method="POST">
+      {% csrf_token %}
+      <input type="hidden" id="imgdata" name="base64">
+      <input type="hidden" id="imgname" name="name">
+    </form>
+  </div>
+
 </div>
 {% endblock %}
 {% block etc %}{{ pageinfo.copyright }}<br>updated {{ pageinfo.date|date:"ymd" }}{% endblock %}

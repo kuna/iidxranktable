@@ -382,29 +382,23 @@ $(function() {
 /*
  * download canvas
  */
-jQuery.fn.simulateClick = function() {
-    return this.each(function() {
-        if('createEvent' in document) {
-            var doc = this.ownerDocument,
-                evt = doc.createEvent('MouseEvents');
-            evt.initMouseEvent('click', true, true, doc.defaultView, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
-            this.dispatchEvent(evt);
-        } else {
-            this.click(); // IE Boss!
-        }
-    });
-}
 function downloadCanvas(c, fn) {
   fn = fn !== undefined ? fn : "download.png";
   var link = document.createElement('a');
   link.setAttribute('download', fn);
-  dataurl = c.toDataURL("image/png");
+  var dataurl = c.toDataURL("image/png");
+  /*
   link.setAttribute('href', dataurl);//.replace("image/png", "image/octet-stream"));
   link.click();
   // some browsesr might fail, so add link object dynamically ...
   $(link).text('다운로드가 안되신다면, 여기를 눌러서 직접 다운로드하세요!');
   $('#rankimg a').remove();
   $('#rankimg').append(link);
+  */
+  var data = dataurl.split(",")[1];
+  $("#imgdata").val(data);
+  $("#imgname").val(fn);
+  $("#imgdownload").submit();
 }
 $(function() {
   $("#capture").click(function () {

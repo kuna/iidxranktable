@@ -152,6 +152,19 @@ def userrank(request):
   return render_to_response('userrank.html')
 
 
+# imgdownload/
+@csrf_exempt
+def imgdownload(request):
+  if request.method != "POST":
+    # allow only POST method
+    raise PermissionDenied
+  filename = request.POST['name']
+  pngdata = base64.decodestring(request.POST['base64'])
+  print "got request: %s (%d byte)" % (filename, len(pngdata))
+  r = HttpResponse(pngdata, content_type="application/octet-stream")
+  r['Content-Disposition'] = 'attachment; filename=%s' % filename
+  return r
+
 # iidx/imgtl/
 @csrf_exempt
 def imgtl(request):
@@ -161,7 +174,7 @@ def imgtl(request):
 
   filename = request.POST['name']
   pngdata = base64.decodestring(request.POST['base64'])
-  print "got imgtl request: %s (%d byte)" % (request.POST['name'], len(pngdata))
+  print "got request: %s (%d byte)" % (request.POST['name'], len(pngdata))
 
   import requests
   import urllib2
