@@ -10,7 +10,6 @@ import models as m
 import iidxrank.models as models
 
 # basic initalization
-db_session = db.get_session()
 diffs = ['easy', 'normal', 'hd', 'exh']
 diffs_num = {'easy':3, 'normal':4, 'hd':5, 'exh':6}
 
@@ -56,7 +55,13 @@ def randomTest(p):
     return p<=rand()
 
 def sigmoid(a, b, x):
-    return 1/(1+math.exp(b*(x-a)))
+    cst = b*(x-a)
+    if (cst > 30):
+        return 0
+    elif (cst < -30):
+        return 1
+    else:
+        return 1/(1+math.exp(b*(x-a)))
 
 def sigmoid_error(a,b,lx,ly):
     cul = 0
@@ -68,7 +73,7 @@ def sigmoid_error(a,b,lx,ly):
 
 iterate_time = 5
 b_delta = 1
-def sigmoid_regression(a=None,b=1,lx,ly):
+def sigmoid_regression(a,b,lx,ly):
     # check is it too far away;
     # that is, over range of biggest or smallest one?
     if (a > max(lx) or b < min(lx)):
@@ -79,19 +84,20 @@ def sigmoid_regression(a=None,b=1,lx,ly):
         a = reduce(lambda x,y: x+y, lx) / len(lx)
     # where to go; up or down?
     delta = 1
-    if (sigmoid_error(a-0.1,b,lx) < sigmoid_error(a+0.1,b,lx)):
-        delta = -1
+    #if (sigmoid_error(a-0.5,b,lx,ly) < sigmoid_error(a+0.5,b,lx,ly)):
+    #    delta = -1
     # MCMC to calculate a & b
     error = sigmoid_error(a,b,lx,ly)
     oa = a
     ob = b
     for t in range(iterate_time):
-        na = oa + random.uniform(a,a+delta)
+        na = oa + random.uniform(a-delta/2.0,a+delta/2.0)
         ne = sigmoid_error(na,b,lx,ly)
         if (ne < error):
             a = na
     for t in range(iterate_time):
-        nb = ob + random.uniform(b-b_delta/2,b+b_delta/2)
+        print b
+        nb = ob + random.uniform(b-b_delta/2.0,b+b_delta/2.0)
         if (nb*b <= 0):     # negativity totally changes function - we should avoid it
             continue
         ne = sigmoid_error(a,nb,lx,ly)
@@ -123,10 +129,12 @@ def checkIsValidSong(song):
 
 # user calculation
 def prepare_user_obj(obj_player):
-    if (not hasattr(obj_player, 'PlayerCalc')):
+    if (not hasattr(obj_player, 'playercalc')):
+        tag = '%s %d/%d' % (obj_player.iidxmeid, obj_player.spclass, obj_player.dpclass)
+        tag = tag[:20]
         obj = m.PlayerCalc.objects.create(
             player=obj_player,
-            tag=player.name,
+            tag=tag,
             valid=0,
             sp_l=0,
             sp_w=1,
@@ -134,12 +142,13 @@ def prepare_user_obj(obj_player):
             dp_w=1
             )
     else:
-        obj = obj_player.PlayerCalc
+        obj = obj_player.playercalc
 
     # check is user score is calculatable
+    """
     sp_cnt = 0
     dp_cnt = 0
-    for pr in obj_player.playrecord_set:
+    for pr in obj_player.playrecord_set.all():
         songtype = pr.song.songtype[:2].upper()
         if songtype == "SP":
             sp_cnt += 1
@@ -149,6 +158,7 @@ def prepare_user_obj(obj_player):
         obj.sp_w = 0
     if (dp_cnt < 30):
         obj.dp_w = 0
+        """
 
 def prepare_user_all():
     for obj_player in models.Player.objects.all():
@@ -157,34 +167,44 @@ def prepare_user_all():
 def get_skill_songs(user):
     sp_plays = []
     dp_plays = []
-    for pr in user.playrecord_set:
+    for pr in user.playrecord_set.filter(song__songtype__istartswith="SP").order_by('-song__songlevel')[:200]:
+        sp_plays.append(pr)
+    for pr in user.playrecord_set.filter(song__songtype__istartswith="DP").order_by('-song__songlevel')[:200]:
+        dp_plays.append(pr)
+        """
         songtype = pr.song.songtype[:2].upper()
         if (songtype == "SP"):
-            sp_plays.append(pr)
         elif (songtype == "DP"):
             dp_plays.append(pr)
-    sorted(sp_plays, key=lambda obj: obj.getCalculateScore)
-    sorted(dp_plays, key=lambda obj: obj.getCalculateScore)
-    sp_songs = [o.song for o in sp_plays]
-    dp_songs = [o.song for o in dp_plays]
-    return sp_songs, dp_songs
+            """
+    sp_plays.sort(key=lambda obj: obj.getScoreCalculated, reverse=True)
+    dp_plays.sort(key=lambda obj: obj.getScoreCalculated, reverse=True)
+    return sp_plays, dp_plays
 
 def calculate_user_obj(user):
     # if you don't have failed - we don't care!
     # this modeling - get score for top 20 songs (so must prepare/calc song score first)
     # and average it to make user's.
     sp_songs, dp_songs = get_skill_songs(user)
+    print '%d, cnt: %d/%d' % (user.id, len(sp_songs), len(dp_songs))
+    # check is user score is calculatable
     if (len(sp_songs) > 20):
         sp_score = 0
         for i in range(20):
-            sp_score += 0
-        user.sp_l = sp_score / 20.0
+            sp_score += sp_songs[i].getScoreCalculated
+        user.playercalc.sp_l = sp_score / 20.
+        user.playercalc.sp_w = 1
+    else:
+        user.playercalc.sp_w = 0
     if (len(dp_songs) > 20):
         dp_score = 0
         for i in range(20):
-            dp_score += 0
-        user.dp_l = dp_score / 20.0
-    user.save()
+            dp_score += dp_songs[i].getScoreCalculated
+        user.playercalc.dp_l = dp_score / 20.0
+        user.playercalc.dp_w = 1
+    else:
+        user.playercalc.dp_w = 0
+    user.playercalc.save()
 
 
 def calculate_user_id(iidxmeid):
@@ -198,7 +218,7 @@ def calculate_user_id(iidxmeid):
 
 def calculate_user_all():
     for obj_player in models.Player.objects.all():
-        calculate_user_obj(player)
+        calculate_user_obj(obj_player)
 # user calculation end
 
 
@@ -207,40 +227,65 @@ def calculate_user_all():
 
 # song calculation
 def calculate_song_obj(obj):
+    if (not obj.valid):
+        return
     lx = []
     ly = []
-    for pr in obj.Song.playrecord_set:
-        songtype = obj.song.songtype[:2].upper()
+    song = obj.song
+    songtype = song.songtype[:2].upper()
+    for pr in song.playrecord_set.all():
         if songtype == "SP":
-            if (pr.player.sp_w > 0):
-                lx.append(pr.player.sp_l)
-                ly.append(pr.clear)
+            if (pr.player.playercalc.sp_w > 0):
+                lx.append(pr.player.playercalc.sp_l)
+                ly.append(pr.playclear)
         elif songtype == "DP":
-            if (pr.player.dp_w > 0):
-                lx.append(pr.player.dp_l)
-                ly.append(pr.clear)
+            if (pr.player.playercalc.dp_w > 0):
+                lx.append(pr.player.playercalc.dp_l)
+                ly.append(pr.playclear)
+
+    print '-- info --'
+    print 'songlevel: %d' % song.songlevel
 
     # easy, hard, ex
+    obj.ez_w = 1
+    obj.nm_w = 1
+    obj.hd_w = 1
+    obj.ex_w = 1
     if (obj.valid < 3):
         lyy = [0 if y<3 else 1 for y in ly]
-        ez_l, ez_w = sigmoid_regression(lx,lyy,obj.ez_l,obj.ez_w)
+        ez_l, ez_w = sigmoid_regression(obj.ez_l,-obj.ez_w,lx,lyy)
         obj.ez_l = ez_l
-        obj.ez_w = ez_w
+        obj.ez_w = -ez_w
     if (obj.valid < 4):
         lyy = [0 if y<4 else 1 for y in ly]
-        nm_l, nm_w = sigmoid_regression(lx,lyy,obj.nm_l,obj.nm_w)
-        obj.ez_l = nm_l
-        obj.ez_w = nm_w
+        nm_l, nm_w = sigmoid_regression(obj.nm_l,-obj.nm_w,lx,lyy)
+        obj.nm_l = nm_l
+        obj.nm_w = -nm_w
     if (obj.valid < 5):
         lyy = [0 if y<5 else 1 for y in ly]
-        hd_l, hd_w = sigmoid_regression(lx,lyy,obj.ez_l,obj.ez_w)
+        hd_l, hd_w = sigmoid_regression(obj.hd_l,-obj.hd_w,lx,lyy)
         obj.hd_l = hd_l
-        obj.hd_w = hd_w
+        obj.hd_w = -hd_w
+
+        hd_ly = []
+        hd_ln = []
+        for x,y in zip(lx,lyy):
+            if (y == 0):
+                hd_ln.append(x)
+            else:
+                hd_ly.append(x)
+        hd_ly.sort()
+        hd_ln.sort()
+        print zip(lx,lyy)
+        print 'hard not cleared? %d ~ %d (%d)' % (hd_ln[0], hd_ln[-1], len(hd_ln))
+        print 'hard cleared?: %d ~ %d (%d)' % (hd_ly[0], hd_ly[-1], len(hd_ly))
     if (obj.valid < 6):
         lyy = [0 if y<6 else 1 for y in ly]
-        ex_l, ex_w = sigmoid_regression(lx,lyy,obj.ez_l,obj.ez_w)
-        obj.hd_l = ex_l
-        obj.hd_w = ex_w
+        ex_l, ex_w = sigmoid_regression(obj.ex_l,-obj.ex_w,lx,lyy)
+        obj.ex_l = ex_l
+        obj.ex_w = -ex_w
+    #print zip(lx,ly)
+    print 'hard level: %d' % obj.hd_l
     obj.save()
 
 def calculate_song_all():
@@ -251,11 +296,11 @@ def prepare_song_all():
     for obj_song in models.Song.objects.all():
         # if no songcalc exists?
         # then make it
-        if (not hasattr(obj_song, 'SongCalc')):
+        if (not hasattr(obj_song, 'songcalc')):
+            song = obj_song
             tag = '%s%d - %s' % (obj_song.songtype, obj_song.songlevel, obj_song.songtitle[:12])
-            print tag
             obj = m.SongCalc.objects.create(
-                song=obj_song,
+                song=song,
                 tag=tag,
                 valid=0,
                 ez_l=song.songlevel,
@@ -268,17 +313,26 @@ def prepare_song_all():
                 ex_w=1
                 )
         else:
-            obj = song.SongCalc
+            obj = obj_song.songcalc
 
         # check validation of song
         # - if no failed user, then cannot calculate - valid=0
         # - if no easy user, then cannot calculate easy - valid=1
         # ...
         valid = 99
-        for pr in song.playrecord:
-            if (pr.clear < valid):
-                valid = pr.clear
+        for pr in obj_song.playrecord_set.all():
+            if (pr.playclear < valid):
+                valid = pr.playclear
                 obj.valid = valid
+        # in case of arg clear???
+        obj.ez_l = obj_song.songlevel-1
+        obj.nm_l = obj_song.songlevel-0.5
+        obj.hd_l = obj_song.songlevel
+        obj.ex_l = obj_song.songlevel+1
+        obj.ez_w = 1
+        obj.nm_w = 1
+        obj.hd_w = 1
+        obj.ex_w = 1
         obj.save()
 # song calculation end
 
