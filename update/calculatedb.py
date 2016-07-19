@@ -55,13 +55,13 @@ def randomTest(p):
     return p<=rand()
 
 def sigmoid(a, b, x):
-    cst = b*(x-a)
+    cst = -b*(x-a)
     if (cst > 30):
         return 0
     elif (cst < -30):
         return 1
     else:
-        return 1/(1+math.exp(b*(x-a)))
+        return 1/(1+math.exp(cst))
 
 def sigmoid_error(a,b,lx,ly):
     cul = 0
@@ -76,7 +76,7 @@ b_delta = 1
 def sigmoid_regression(a,b,lx,ly):
     # check is it too far away;
     # that is, over range of biggest or smallest one?
-    if (a > max(lx) or b < min(lx)):
+    if (a > max(lx) or a < min(lx)):
         a = None
     # if basic a value isn't exists
     # then set it as average of a
@@ -91,18 +91,19 @@ def sigmoid_regression(a,b,lx,ly):
     oa = a
     ob = b
     for t in range(iterate_time):
-        na = oa + random.uniform(a-delta/2.0,a+delta/2.0)
+        na = random.uniform(oa-delta/2.0,oa+delta/2.0)
         ne = sigmoid_error(na,b,lx,ly)
         if (ne < error):
             a = na
+            error = ne
     for t in range(iterate_time):
-        print b
-        nb = ob + random.uniform(b-b_delta/2.0,b+b_delta/2.0)
+        nb = random.uniform(ob-b_delta/2.0,ob+b_delta/2.0)
         if (nb*b <= 0):     # negativity totally changes function - we should avoid it
             continue
         ne = sigmoid_error(a,nb,lx,ly)
         if (ne < error):
             b = nb
+            error = ne
     return a,b
 
 # reject if player has 
@@ -192,7 +193,7 @@ def calculate_user_obj(user):
         sp_score = 0
         for i in range(20):
             sp_score += sp_songs[i].getScoreCalculated
-        user.playercalc.sp_l = sp_score / 20.
+        user.playercalc.sp_l = sp_score / 20.0
         user.playercalc.sp_w = 1
     else:
         user.playercalc.sp_w = 0
@@ -253,19 +254,19 @@ def calculate_song_obj(obj):
     obj.ex_w = 1
     if (obj.valid < 3):
         lyy = [0 if y<3 else 1 for y in ly]
-        ez_l, ez_w = sigmoid_regression(obj.ez_l,-obj.ez_w,lx,lyy)
+        ez_l, ez_w = sigmoid_regression(obj.ez_l,obj.ez_w,lx,lyy)
         obj.ez_l = ez_l
-        obj.ez_w = -ez_w
+        obj.ez_w = ez_w
     if (obj.valid < 4):
         lyy = [0 if y<4 else 1 for y in ly]
-        nm_l, nm_w = sigmoid_regression(obj.nm_l,-obj.nm_w,lx,lyy)
+        nm_l, nm_w = sigmoid_regression(obj.nm_l,obj.nm_w,lx,lyy)
         obj.nm_l = nm_l
-        obj.nm_w = -nm_w
+        obj.nm_w = nm_w
     if (obj.valid < 5):
         lyy = [0 if y<5 else 1 for y in ly]
-        hd_l, hd_w = sigmoid_regression(obj.hd_l,-obj.hd_w,lx,lyy)
+        hd_l, hd_w = sigmoid_regression(obj.hd_l,obj.hd_w,lx,lyy)
         obj.hd_l = hd_l
-        obj.hd_w = -hd_w
+        obj.hd_w = hd_w
 
         hd_ly = []
         hd_ln = []
@@ -281,9 +282,9 @@ def calculate_song_obj(obj):
         print 'hard cleared?: %d ~ %d (%d)' % (hd_ly[0], hd_ly[-1], len(hd_ly))
     if (obj.valid < 6):
         lyy = [0 if y<6 else 1 for y in ly]
-        ex_l, ex_w = sigmoid_regression(obj.ex_l,-obj.ex_w,lx,lyy)
+        ex_l, ex_w = sigmoid_regression(obj.ex_l,obj.ex_w,lx,lyy)
         obj.ex_l = ex_l
-        obj.ex_w = -ex_w
+        obj.ex_w = ex_w
     #print zip(lx,ly)
     print 'hard level: %d' % obj.hd_l
     obj.save()
