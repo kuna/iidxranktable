@@ -101,6 +101,7 @@ var dorender = function(_rendermode) {
       return;
     }
     var canvas = t.getCanvas();
+    /*
     $(canvas).bind('contextmenu', function(e) {
       var offset = $(this).offset();
       var x = e.pageX - offset.left;
@@ -110,6 +111,7 @@ var dorender = function(_rendermode) {
         openComment("/songcomment/{{ pageinfo.tablename }}_" + item.pkid);
       return false;
     });
+    */
     $("#rankimg").append(canvas);
   }, 100)};
 
@@ -313,8 +315,14 @@ $(function (){
 
   <div id="rankimg">
   </div>
-  <div id="container_saveload" style="display:none;">
-	{% include 'rankviewsaveload.html' %}
+  <div class="hidden">
+    <form id="imgdownload" action="/imgdownload/" method="POST">
+      {% csrf_token %}
+      <input type="hidden" id="imgdata" name="base64">
+      <input type="hidden" id="imgname" name="name">
+    </form>
+  </div>
+
 </div>
 {% endblock %}
 {% block etc %}{{ pageinfo.copyright }}<br>updated {{ pageinfo.date|date:"ymd" }}{% endblock %}

@@ -384,11 +384,21 @@ $(function() {
  */
 function downloadCanvas(c, fn) {
   fn = fn !== undefined ? fn : "download.png";
-  console.log(c);
   var link = document.createElement('a');
   link.setAttribute('download', fn);
-  link.setAttribute('href', c.toDataURL("image/png").replace("image/png", "image/octet-stream"));
+  var dataurl = c.toDataURL("image/png");
+  /*
+  link.setAttribute('href', dataurl);//.replace("image/png", "image/octet-stream"));
   link.click();
+  // some browsesr might fail, so add link object dynamically ...
+  $(link).text('다운로드가 안되신다면, 여기를 눌러서 직접 다운로드하세요!');
+  $('#rankimg a').remove();
+  $('#rankimg').append(link);
+  */
+  var data = dataurl.split(",")[1];
+  $("#imgdata").val(data);
+  $("#imgname").val(fn);
+  $("#imgdownload").submit();
 }
 $(function() {
   $("#capture").click(function () {
