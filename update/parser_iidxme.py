@@ -147,6 +147,8 @@ def parse_songs_http():
         'http://iidx.me/delmitz/dp/ver/24/normal',
         'http://iidx.me/delmitz/dp/ver/24/hyper',
         'http://iidx.me/delmitz/dp/ver/24/another',
+#        'http://iidx.me/delmitz/sp/level/leggendaria',
+#        'http://iidx.me/delmitz/dp/level/leggendaria',
         ]
     ret = []
     # remove scores
