@@ -44,6 +44,8 @@ def update_iidxme():
                     obj_song.save()
         log.Print("added %d datas" % added_data)
 
+    # when json is possible
+    """
     for lvl in range(6, 13):
         log.Print('parsing iidxme sp (%d)' % lvl)
         data = parser_iidxme.parse_songs(lvl, "sp")
@@ -53,6 +55,11 @@ def update_iidxme():
         log.Print('parsing iidxme dp (%d)' % lvl)
         data = parser_iidxme.parse_songs(lvl, "dp")
         update(data)
+    """
+    # temp method for json inavailable
+    data = parser_iidxme.parse_songs_http()
+    update(data)
+
 
 # update or create rank table
 # (depreciated)
