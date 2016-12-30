@@ -9,7 +9,6 @@ import log
 import iidxrank.models as models
 
 # basic initalization
-db_session = db.get_session()
 diffs = ['easy', 'normal', 'hd', 'exh']
 diffs_num = {'easy':3, 'normal':4, 'hd':5, 'exh':6}
 
@@ -67,7 +66,7 @@ def sigmoid_error(a,b,lx,ly):
 
 iterate_time = 5
 b_delta = 1
-def sigmoid_regression(a=None,b=1,lx,ly):
+def sigmoid_regression(a=None,b=1,lx=0,ly=0):
     # check is it too far away;
     # that is, over range of biggest or smallest one?
     if (a > max(lx) or b < min(lx)):

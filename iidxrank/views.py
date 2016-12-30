@@ -1,4 +1,5 @@
 #-*- coding: utf-8 -*-
+
 from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
@@ -10,15 +11,17 @@ import models
 import board.models
 import settings
 
-#from update import jsondata
-import update.parser_iidxme as iidxme
 
 import rankpage as rp
 import iidx
 import json
 import views_json
-
 import base64
+
+
+import update.parser_iidxme as iidxme
+
+
 
 def checkValidPlayer(player):
   return not (player == None or 

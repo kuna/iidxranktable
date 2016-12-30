@@ -40,9 +40,11 @@ def parse_users():
 # parse_user: return user info (includes song)
 # (djname, iidxid, ...)
 #
+"""
 def parse_user(username, mode, level):
     parsedata = jsondata.loadJSONurl("http://json.iidx.me/%s/%s/level/%d/" % (username, mode, level))
     return parsedata
+"""
 
 def parse_user_recent(username):
     data = []
@@ -86,43 +88,44 @@ def parse_songs(level, mode):
 ##
 # (use ONLY when json isn't working)
 #
-def parse_iidxme_http(url):
-    def parse_iidxme_http_musicdata(data):
-        musicdata = []
-        try:
-            soup = BeautifulSoup(data.read())
-            contentobj = soup.find('div', attrs={'id': 'content'})
-            modeobj = contentobj.find('p')
-            mode = modeobj['class'][1]
-            musicobj = contentobj.find('div', class_='musiclist')
-            for tr in musicobj.findAll('div', class_='tr')[1:]:
-                cells = tr.findAll('div', class_='td')
-                obj = {}
-                if (len(cells) == 0 or 'separator' in cells[0]['class'] or 'th' in cells[0]['class']):
-                    continue
-                _, _, clr, _ = cells[0]['class']
-                _, _, diffchar, lvstr = cells[1]['class']
-                obj['clear'] = int(clr.replace('clear', ''))
-                obj['data'] = {}
-                obj['data']['level'] = int(lvstr[2:])
-                obj['data']['diff'] = (mode + diffchar).upper()
-                obj['data']['title'] = cells[2].get_text()
-                obj['data']['version'] = 24     # IMPORTANT! this is hardcoded, so must use for recent.
-                obj['data']['id'] = int( cells[2].find('a')['href'].split('/')[-1])
-                try:
-                    obj['data']['notes'] = int(cells[3].get_text())
-                except ValueError:
-                    obj['data']['notes'] = 0
-                obj['rate'] = float(cells[7].find('span').get_text()[:-1])
-                try:
-                    obj['miss'] = int(cells[8].get_text())
-                except ValueError:
-                    obj['miss'] = 0
-                musicdata.append(obj)
-        except Exception as e:
-            print e
-        return musicdata
+def parse_iidxme_http_musicdata(data):
+    musicdata = []
+    try:
+        soup = BeautifulSoup(data.read())
+        contentobj = soup.find('div', attrs={'id': 'content'})
+        modeobj = contentobj.find('p')
+        mode = modeobj['class'][1]
+        musicobj = contentobj.find('div', class_='musiclist')
+        for tr in musicobj.findAll('div', class_='tr')[1:]:
+            cells = tr.findAll('div', class_='td')
+            obj = {}
+            if (len(cells) == 0 or 'separator' in cells[0]['class'] or 'th' in cells[0]['class']):
+                continue
+            _, _, clr, _ = cells[0]['class']
+            _, _, diffchar, lvstr = cells[1]['class']
+            obj['clear'] = int(clr.replace('clear', ''))
+            obj['data'] = {}
+            obj['data']['level'] = int(lvstr[2:])
+            obj['data']['diff'] = (mode + diffchar).upper()
+            obj['data']['title'] = cells[2].get_text()
+            obj['data']['version'] = 24     # IMPORTANT! this is hardcoded, so must use for recent.
+            obj['data']['id'] = int( cells[2].find('a')['href'].split('/')[-1])
+            try:
+                obj['data']['notes'] = int(cells[3].get_text())
+            except ValueError:
+                obj['data']['notes'] = 0
+            obj['rate'] = float(cells[7].find('span').get_text()[:-1])
+            try:
+                obj['miss'] = int(cells[8].get_text())
+            except ValueError:
+                obj['miss'] = 0
+            musicdata.append(obj)
+    except Exception as e:
+        print e
+    return musicdata
 
+
+def parse_iidxme_http(url):
     userdata = {}
     musicdata = []
     r = {'userdata': userdata, 'musicdata': musicdata}

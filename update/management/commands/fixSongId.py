@@ -3,9 +3,10 @@
 
 from django.core.management import BaseCommand
 import iidxrank.models as models
+import update.parser_iidxme as iidxme
 
 class Command(BaseCommand):
     help = """this fixes iidx.me song id"""
 
     def handle(self, *args, **options):
-        pass
+        iidxme.parse_iidxme_http
