@@ -45,5 +45,6 @@ def update_user(iidxmeid):
 # some periodic tasks
 @periodic_task(run_every=(crontab(hour='*/24')), name="update_song", ignore_result=True)
 def song_update():
-    import update.updatedb
-    update.updatedb.update_iidxme()
+    #import update.updatedb
+    #update.updatedb.update_iidxme()
+    print('update DB not works until iidx.me works!')

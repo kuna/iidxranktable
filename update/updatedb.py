@@ -7,6 +7,9 @@ from django.db import transaction
 import log
 import iidxrank.models as models
 
+#
+# TODO: we need to separate SPA/SPL, as updating is confusing.
+#
 def update_iidxme():
     def update(data):
         added_data = 0

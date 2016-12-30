@@ -67,6 +67,7 @@ urlpatterns = [
             # username
             url(r'^(?P<username>(\w|-)+)/', include([
                     url(r'^$', views.userpage),
+                    url(r'^json/$', views.userjson),
                     url(r'^stat/recm/$', views.recommend),
                     url(r'^stat/skill/$', views.skillrank),
                     url(r'^(?P<tablename>\w+)/$', views.rankpage, name="rankpage"),

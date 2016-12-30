@@ -1,5 +1,5 @@
 #-*- coding: utf-8 -*-
-from django.http import HttpResponse, HttpResponseRedirect, Http404
+from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, render_to_response
@@ -10,7 +10,9 @@ import models
 import board.models
 import settings
 
-from update import jsondata
+#from update import jsondata
+import update.parser_iidxme as iidxme
+
 import rankpage as rp
 import iidx
 import json
@@ -31,21 +33,29 @@ def mainpage(request):
   return render_to_response('index.html',
     {'hidesearch': True, 'mobileview':True, 'noticepost': post})
 
+def userjson(request, username="!"):
+  j = {}
+  if (username != "!"):
+    j = iidxme.parse_iidxme_http("http://iidx.me/%s/sp/level/12" % username)
+  return JsonResponse(j)
+
 def userpage(request, username="!"):
   if (username == "!"):
     # make dummy data
     player = None
   else:
     # check recent json to get player info
-    userjson_url = "http://json.iidx.me/%s/recent/" % username
-    player = jsondata.loadJSONurl(userjson_url)
+    #userjson_url = "http://json.iidx.me/%s/recent/" % username
+    #player = jsondata.loadJSONurl(userjson_url)
+    userpage_url = "http://iidx.me/%s/recent/" % username
+    player = iidxme.parse_iidxme_http(userpage_url)
     if (not checkValidPlayer(player)):
       # invalid user!
       raise Http404
   playerinfo = rp.getUserInfo(player, username)
   return render_to_response('user/userpage.html', {'userinfo': playerinfo})
 
-# common
+# common for rankpage
 def retrieve_userdata(username, tablename):
   # check is argument valid
   tablename = tablename.upper()
@@ -59,8 +69,10 @@ def retrieve_userdata(username, tablename):
   if (username == "!"):
     player = None
   else:
-    userjson_url = "http://json.iidx.me/%s/%s/level/%d/" % (username, ranktable.type.lower(), ranktable.level)
-    player = jsondata.loadJSONurl(userjson_url)
+    #userjson_url = "http://json.iidx.me/%s/%s/level/%d/" % (username, ranktable.type.lower(), ranktable.level)
+    #player = jsondata.loadJSONurl(userjson_url)
+    userpage_url = "http://iidx.me/%s/%s/level/%d/" % (username, ranktable.type.lower(), ranktable.level)
+    player = iidxme.parse_iidxme_http(userpage_url)
     if (not checkValidPlayer(player)):
       # invalid user!
       raise Http404
