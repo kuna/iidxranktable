@@ -142,11 +142,14 @@ def parse_iidxme_http(url):
         # if multipage, then parse them all
         contentobj = soup.find('div', attrs={'id': 'content'})
         pagerobj = contentobj.find('div', class_='pager')
-        pagesobj = pagerobj.find('a')
+        pagesobj = pagerobj.findAll('a')
         musicdata += parse_iidxme_http_musicdata(data)
         for aobj in pagesobj:
             try:
-                data_page = urllib.urlopen(aobj['href'])
+                url = aobj['href']
+                if (url[0] == '/'):
+                    url = 'http://iidx.me' + url
+                data_page = urllib.urlopen(url)
                 musicdata += parse_iidxme_http_musicdata(data_page)
             except Exception as e:
                 print e
