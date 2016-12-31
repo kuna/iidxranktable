@@ -88,14 +88,14 @@ def parse_songs(level, mode):
 ##
 # (use ONLY when json isn't working)
 #
-def parse_iidxme_http_musicdata(data):
+def parse_iidxme_http_musicdata(html):
     musicdata = []
     try:
-        soup = BeautifulSoup(data.read())
+        soup = BeautifulSoup(html)
         contentobj = soup.find('div', attrs={'id': 'content'})
         modeobj = contentobj.find('p')
         mode = modeobj['class'][1]
-        musicobj = contentobj.find('div', class_='musiclist')
+        musicobj = contentobj.find('div', class_='table')   # musiclist
         for tr in musicobj.findAll('div', class_='tr')[1:]:
             cells = tr.findAll('div', class_='td')
             obj = {}
@@ -104,12 +104,17 @@ def parse_iidxme_http_musicdata(data):
             _, _, clr, _ = cells[0]['class']
             _, _, diffchar, lvstr = cells[1]['class']
             obj['clear'] = int(clr.replace('clear', ''))
+            obj['score'] = 0    # TODO- it's quite hard...
             obj['data'] = {}
             obj['data']['level'] = int(lvstr[2:])
             obj['data']['diff'] = (mode + diffchar).upper()
             obj['data']['title'] = cells[2].get_text()
-            obj['data']['version'] = 24     # IMPORTANT! this is hardcoded, so must use for recent.
             obj['data']['id'] = int( cells[2].find('a')['href'].split('/')[-1])
+            obj['data']['version'] = 0    # TODO- maybe impossible to get exact one?
+            title_aobj = cells[2].find('a')
+            title_cls = title_aobj.get('class')
+            if (title_cls and title_cls[0] == 'newmusic'):
+                obj['data']['version'] = 99
             try:
                 obj['data']['notes'] = int(cells[3].get_text())
             except ValueError:
@@ -128,35 +133,39 @@ def parse_iidxme_http_musicdata(data):
 def parse_iidxme_http(url):
     userdata = {}
     musicdata = []
-    r = {'userdata': userdata, 'musicdata': musicdata}
+    r = {'userdata': userdata, 'musicdata': musicdata, 'status': 'success'}
     try:
         data = urllib.urlopen(url)
-        soup = BeautifulSoup(data.read())
+        html = data.read()
+        soup = BeautifulSoup(html)
         # userdata part
         userobj = soup.find('div', attrs={'id': 'playernav_toggle'})
         userdata['djname'] = userobj.find('div', class_='djname').get_text().strip()
         userdata['iidxid'] = userobj.find('div', class_='iidxid').get_text().strip()
-        userdata['spclass'] = userobj.find('div', class_='spclass').find('span')['class'][1][5:]
-        userdata['dpclass'] = userobj.find('div', class_='dpclass').find('span')['class'][1][5:]
+        userdata['spclass'] = int(userobj.find('div', class_='spclass').find('span')['class'][1][5:])
+        userdata['dpclass'] = int(userobj.find('div', class_='dpclass').find('span')['class'][1][5:])
         # musicdata part
         # if multipage, then parse them all
         contentobj = soup.find('div', attrs={'id': 'content'})
         pagerobj = contentobj.find('div', class_='pager')
-        pagesobj = pagerobj.findAll('a')
-        musicdata += parse_iidxme_http_musicdata(data)
+        if (pagerobj):
+            pagesobj = pagerobj.findAll('a')
+        else:
+            pagesobj = []
+        musicdata += parse_iidxme_http_musicdata(html)
         for aobj in pagesobj:
             try:
                 url = aobj['href']
                 if (url[0] == '/'):
                     url = 'http://iidx.me' + url
                 data_page = urllib.urlopen(url)
-                musicdata += parse_iidxme_http_musicdata(data_page)
+                musicdata += parse_iidxme_http_musicdata(data_page.read())
             except Exception as e:
                 print e
     except Exception as e:
         # maybe temporaral server connection error, or invalid user
         print e
-        r = {}
+        r = {'status': 'failed'}
     return r
 
 def parse_user_http(username, mode, level):
