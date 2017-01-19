@@ -117,7 +117,11 @@ def addMetadata(musicdata, data, song_query):
       if (music['score'] == None or music['data']['notes'] == None):
         music['rate'] = 0
       else:
-        music['rate'] = music['score'] / float(music['data']['notes']) / 2 * 100
+        notes = float(music['data']['notes'])
+        if (notes == 0):
+            music['rate'] = 0
+        else:
+            music['rate'] = music['score'] / float(music['data']['notes']) / 2 * 100
       
       # make rank
       music['rank'] = iidx.getrank(music['rate'])
