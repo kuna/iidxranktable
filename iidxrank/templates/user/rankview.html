@@ -210,6 +210,65 @@ $(function () {
 
 $(function (){
 	dorender();
+
+  // TODO: render another ...
+  var height_per_element = 30;
+  var height = tabledata.categories.length * height_per_element + 60;
+  var canvas = document.createElement("canvas");
+  var ctx = canvas.getContext("2d");
+  canvas.width = 600;
+  canvas.height = height;
+
+  var ypos = 30;
+  ctx.font = "12px Arial";
+  var fillclr = [
+    "#F0F0F0",
+    "#CCCCCC",
+    "#FFAAFF",
+    "#99CC33",
+    "#3399FF",
+    "#D03333",  // hard gauge
+    "#E0E066",
+    "#33FFCC"];
+  var graphx = 120;
+  var graphw = 440;
+  var graphh = 20;
+
+  for (var k=0; k<tabledata.categories.length; k++) {
+    var d = tabledata.categories[k];
+    ctx.fillStyle="#000000";
+    ctx.textAlign="center";
+    ctx.fillText(d.category, 50, ypos+15);
+
+    var totalcnt = d.items.length;
+    var clearrate = [1,0,0,0,0,0,0,0 ,0]; // last one is dummy
+    var clearcnt = [0,0,0,0,0,0,0,0 ,0];
+    var ccnt = 0;
+
+    for (var i=0; i<=7; i++) {
+      ccnt = 0;
+      for (var j=0; j<totalcnt; j++) {
+        if (d.items[j].clear >= i) ccnt++;
+      }
+      clearrate[i] = ccnt / totalcnt;
+      clearcnt[i] = ccnt;
+      ctx.fillStyle=fillclr[i];
+      // box size: 840, 20
+      ctx.fillRect(graphx, ypos, graphw*clearrate[i], graphh);
+    }
+    ctx.fillStyle="#FFFFFF";
+    ctx.textAlign="center";
+    for (var i=0; i<=7; i++) {
+      var cnt = clearcnt[i+1] - clearcnt[i];
+      if (cnt==0) continue;
+      var xp = (clearrate[i+1] + (clearrate[i]-clearrate[i+1])/2) * graphw;
+      ctx.fillText(clearcnt[i], graphx+xp, ypos+15);
+    }
+
+    ypos += height_per_element;
+  }
+  $(canvas).insertAfter("#rankimg");
+  //$("#rankimg").insertAfter(canvas);
 });
 
 </script>
