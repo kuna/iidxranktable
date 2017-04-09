@@ -20,12 +20,12 @@ def parse_users():
                 i+= 1
 
         data = urllib.urlopen("http://iidx.me/!/userlist/?page=%d" % num)
-        soup = BeautifulSoup(data.read())
+        soup = BeautifulSoup(data.read(), "lxml")
         getUsers(soup, arr)
 
     def getPageCount():
         data = urllib.urlopen("http://iidx.me/!/userlist/")
-        soup = BeautifulSoup(data.read())
+        soup = BeautifulSoup(data.read(), "lxml")
         page = soup.find_all(class_="page")
         return int(page[len(page)-1].get_text())
     
@@ -91,7 +91,7 @@ def parse_songs(level, mode):
 def parse_iidxme_http_musicdata(html):
     musicdata = []
     try:
-        soup = BeautifulSoup(html)
+        soup = BeautifulSoup(html, "lxml")
         contentobj = soup.find('div', attrs={'id': 'content'})
         modeobj = contentobj.find('p')
         mode = modeobj['class'][1]
@@ -137,7 +137,8 @@ def parse_iidxme_http(url):
     try:
         data = urllib.urlopen(url)
         html = data.read()
-        soup = BeautifulSoup(html)
+        data.close()
+        soup = BeautifulSoup(html, "lxml")
         # userdata part
         userobj = soup.find('div', attrs={'id': 'playernav_toggle'})
         userdata['djname'] = userobj.find('div', class_='djname').get_text().strip()
@@ -186,8 +187,8 @@ def parse_songs_http():
         'http://iidx.me/delmitz/dp/ver/24/normal',
         'http://iidx.me/delmitz/dp/ver/24/hyper',
         'http://iidx.me/delmitz/dp/ver/24/another',
-#        'http://iidx.me/delmitz/sp/level/leggendaria',
-#        'http://iidx.me/delmitz/dp/level/leggendaria',
+        'http://iidx.me/delmitz/sp/level/leggendaria',
+        'http://iidx.me/delmitz/dp/level/leggendaria',
         ]
     ret = []
     # remove scores
