@@ -49,8 +49,11 @@ $(function () {
 						</div>
 						<div class="right">
 							{% if status.iswritable %}
+              {% include "board/form_comment.html" with id=comment.id %}
+              <!--
 							<form action="./" method="post">
 								{% csrf_token %}
+                <div class="g-recaptcha" data-sitekey="6LfwqBwUAAAAAOAxqn7FkTkBG5cYVw81y_nXovXu"></div>
 								<input id="mode" type="hidden" name="mode" value="delete">
 								<input id="id" type="hidden" name="id" value="{{ comment.id }}">
 								<div class="input-group">
@@ -60,6 +63,7 @@ $(function () {
 									</span>
 								</div>
 							</form>
+              -->
 							{% endif %}
 						</div>
 					</div>

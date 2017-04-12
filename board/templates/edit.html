@@ -12,7 +12,7 @@
 {% if request.session.message %}
 <script language="javascript">
 $(function () {
-	showMessage("{{ request.session.message }}");
+	showMessage("{{ request.session.message|escape }}");
 })
 </script>
 {% endif %}
@@ -33,37 +33,27 @@ $(function () {
           action="./"
           {% endif %}
           method="post">
+
 					{% csrf_token %}
 
-          {% if edit %}
-					<input type="hidden" name="mode" value="modify">
-          [편집중]
-          {% else %}
-					<input type="hidden" name="mode" value="add">
-          {% endif %}
+          {{ form.mode }}
 
 					<div class="form-group">
 						<label for="title" class="col-xs-4 control-label">title</label>
 						<div class="col-xs-8">
-              <input type="text" id="title" name="title" class="form-control input-sm" value="{{ post.title }}">
+              {{ form.title }}
 						</div>
 					</div>
 					<div class="form-group">
 						<label for="writer" class="col-xs-4 control-label">name</label>
 						<div class="col-xs-8">
-						<input type="text" id="writer" name="writer" class="form-control input-sm"
-            {% if edit %}
-            value="{{ post.writer }}"
-            {% else %}
-            value="{{ status.writer }}"
-            {% endif %}
-            >
+              {{ form.writer }}
 						</div>
 					</div>
 					<div class="form-group">
 						<label for="password" class="col-xs-4 control-label">password (비우면 ip로 인증됩니다)</label>
 						<div class="col-xs-8">
-						<input type="password" id="password" name="password" class="form-control input-sm" value="">
+              {{ form.password }}
 						</div>
 					</div>
           {% if request.user.is_staff %}
@@ -79,7 +69,7 @@ $(function () {
 
 					<div class="form-group">
 						<div class="col-xs-12">
-              <textarea id="richedit" class="form-control" name="text" placeholder="내용을 입력하세요" rows=4 cols=50>{{ post.text }}</textarea>
+              {{ form.text }}
               <script language="javascript">
                 $(function () {
                   richedit = new MooEditable(document.getElementById("richedit"));
@@ -87,6 +77,7 @@ $(function () {
               </script>
 						</div>
 					</div>
+          {{ form.captcha }}
 					<div class="form-group">
 						<div class="col-xs-12 navigation">
               <a class="btn btn-default" href="/board/{{ board.title }}/">cancel</a>

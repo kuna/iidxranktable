@@ -10,6 +10,8 @@ import iidxrank.models
 import random
 import datetime
 
+import board.forms as forms
+
 # common functions
 def get_client_ip(request):
     x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
@@ -39,28 +41,6 @@ def getBasicStatus(request):
 
 def clearMessage(request):
     request.session['message'] = ''
-
-def checkValidText(text):
-    for banword in models.BannedWord.objects.all():
-        if banword.word in text:
-            return False
-    return True
-
-def checkValidation(ip, writer, text, title=None):
-    message = None
-    if (title != None and len(title) <= 0):
-        message = u"제목이 너무 짧습니다."
-    if (len(text) <= 3 or len(writer) <= 0):
-        message = u"코멘트나 이름이 너무 짧습니다."
-    if (not checkValidText(text)):
-        message = u"코멘트에 사용할 수 없는 단어/태그가 들어가 있습니다."
-    if (models.BannedUser.objects.filter(ip=ip).count()):
-        message = u"차단당한 유저입니다."
-
-    if (message == None):
-        return (True, u"코멘트를 등록하였습니다.")
-    else:
-        return (False, message)
 # common function end
 
 
@@ -100,52 +80,41 @@ def write(request, boardname):
         raise PermissionDenied
 
     if (request.method == "POST"):
+        form = forms.PostForm(request.POST)
         ip = get_client_ip(request)
-        password = request.POST["password"]
         # if no password, then make ip as password
+        password  = form.data['password']
         if (password == ""):
             password = ip
 
-        if (request.POST["mode"] == "add"):
+        if (form.data['mode'] == "add"):
             # check argument is valid
-            title = request.POST["title"]
-            text = request.POST["text"]
-            tag = request.POST["tag"]
-            writer = request.POST["writer"]
-            v = checkValidation(ip, writer, text, title)
-            # session and message
-            request.session['writer'] = writer
-            request.session['message'] = v[1]
-            if (v[0]):
+            if (form.is_valid_with_ip(ip)):
+                # session and message
+                request.session['writer'] = form.data['writer']
+
                 # add comment
                 models.BoardPost.objects.create(
                         board = board,
-                        title = title,
-                        text = text,
-                        writer = writer,
-                        tag = tag,
+                        title = form.data['title'],
+                        text = form.data['text'],
+                        writer = form.data['writer'],
+                        tag = form.data['tag'],
                         attr = status['attr'],
                         ip = ip,
                         password = password,
                         )
                 return HttpResponseRedirect(reverse("postlist", args=[boardname, 1]))
+            else:
+                request.session['message'] = form.errors.as_text().replace("\n","-")
 
-            post = {
-                    'title': title,
-                    'writer': writer,
-                    'tag': tag,
-                    'text': text,
-                    }
     else:
-        post = {
-                'title': '',
-                'writer': '',
-                'tag': '',
-                'text': '',
-                }
+        form = forms.PostForm(initial={
+            'writer':status['writer']
+            })
 
     r = render(request, 'edit.html',
-            {'board': board, 'status': status, 'post': post})
+            {'board': board, 'form': form})
     clearMessage(request)
     return r
 
@@ -163,43 +132,39 @@ def modify(request, postid):
         raise PermissionDenied
 
     if (request.method == "POST"):
-        if (request.POST["mode"] == "delete"):
-            print 'del'
-            password = request.POST["password"]
-            if (post.password == password or status['attr'] == 2):
+        form = forms.PostForm(request.POST)
+        ip = get_client_ip(request)
+        if (form.is_valid_with_ip(ip, status['attr'], post.password)):
+            mode = form.data["mode"]
+            if (mode == "delete"):
                 post.delete()
-                message = "Removed Post"
+                request.session['message'] = "Removed Post."
+            elif (mode == "modify"):
+                post.title = form.data['title']
+                post.writer = form.data['writer']
+                post.tag = form.data['tag']
+                post.text = form.data['text']
+                post.save()
+                request.session['message'] = "Modified Post."
+                return HttpResponseRedirect(reverse("postview", args=[post.id,]))
             else:
-                message = "Wrong password"
-            request.session['message'] = message
-            return HttpResponseRedirect(reverse("postlist", args=[board.title, 1]))
-        elif (request.POST["mode"] == "modify"):
-            password = request.POST["password"]
-            writer = request.POST["writer"]
-            text = request.POST["text"]
-            title = request.POST["title"]
-            v = checkValidation("", writer, text, title)
+                request.session['message'] = "Something unexpected happened."
+            return HttpResponseRedirect(reverse("postlist", args=[boardname, 1]))
+        else:
+            request.session['message'] = form.errors.as_text().replace("\n","-")
 
-            # to make data remaining
-            post.title = title
-            post.text = text
-            post.tag = request.POST["tag"]
-            post.writer = writer
-            if (v[0]):
-                if (post.password == password or status['attr'] == 2):
-                    post.save()
-                    message = "Modified Post"
-                    request.session['message'] = message
-                    return HttpResponseRedirect(reverse("postview", args=[post.id,]))
-                else:
-                    message = "Wrong password"
-            else:
-                message = v[1]
-            request.session['message'] = message
+    else:
+        form = forms.PostForm(initial={
+            'title': post.title,
+            'writer': post.writer,
+            'text': post.text,
+            'mode': 'modify',
+            })
 
-    # failed to edit, or normal edit window
+    # return to edit window
     r = render(request, 'edit.html',
-            {'board': board, 'status': status, 'post': post, 'edit': True})
+            {'board': board, 'post':post, 'form': form, 'edit': True})
+    clearMessage(request)
     return r
 
 

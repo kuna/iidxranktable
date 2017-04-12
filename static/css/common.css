@@ -17,6 +17,11 @@ http://mplus.font-face.jp/#/
 
 .hidden { display:none; }
 
+.notice_inner .list-group .text ul,
+.post .body ul { padding-left: 20px; }
+.notice_inner .list-group .text li,
+.post .body li { margin-bottom: 10px; }
+
 /* top */
 #top { width:100%; background-color:#346; height:50px; padding: 16px 0; color:#fff; }
 #top .inner { width: 1000px; margin: 0 auto; }

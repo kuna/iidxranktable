@@ -1,7 +1,7 @@
 {% if request.session.message %}
 <script language="javascript">
 $(function () {
-	showMessage("{{ request.session.message }}");
+	showMessage("{{ request.session.message|escape }}");
 })
 </script>
 {% endif %}
