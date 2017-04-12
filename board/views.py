@@ -25,15 +25,18 @@ def getBasicStatus(request):
     # check admin
     is_admin = request.user.is_superuser
     attr = 0
+    writer = request.session.get('writer', '')
     if (is_admin):
         attr = 2
+    if request.user.is_authenticated():
+        writer = request.user.first_name
 
     # status
     status = {
             #'iswritable': not (board.permission > 0 and not is_admin),
             'isadmin': is_admin,
             'message': request.session.get('message', ''),
-            'writer': request.session.get('writer', ''),
+            'writer': writer,
             'attr': attr,
             }
     
@@ -45,7 +48,7 @@ def clearMessage(request):
 
 
 
-
+PAGENATE_NUM = 20
 
 # /board/<boardid>/<boardpage>
 def list(request, boardname, page=1):
@@ -57,7 +60,7 @@ def list(request, boardname, page=1):
 
     # fetch all posts (with pagination)
     posts = models.BoardPost.objects.filter(board=board).order_by('-time')
-    comments_page = Paginator(posts.all(), 20).page(page)
+    comments_page = Paginator(posts.all(), PAGENATE_NUM).page(page)
 
     # writable?
     writeable = board.permission == 0 or request.user.is_staff
@@ -106,7 +109,7 @@ def write(request, boardname):
                         )
                 return HttpResponseRedirect(reverse("postlist", args=[boardname, 1]))
             else:
-                request.session['message'] = form.errors.as_text().replace("\n","-")
+                request.session['message'] = form.get_error_msg()
 
     else:
         form = forms.PostForm(initial={
@@ -151,7 +154,7 @@ def modify(request, postid):
                 request.session['message'] = "Something unexpected happened."
             return HttpResponseRedirect(reverse("postlist", args=[boardname, 1]))
         else:
-            request.session['message'] = form.errors.as_text().replace("\n","-")
+            request.session['message'] = form.get_error_msg()
 
     else:
         form = forms.PostForm(initial={
@@ -170,55 +173,65 @@ def modify(request, postid):
 
 
 
-
+# TODO: post - too short character: display error
 # comment part
-def comment_POST(request, status, post):
+def comment_POST(request, status, post, form):
     if (post == None):
-        request.session['message'] = u"An Internal error occured."
-        return
-    if (request.POST['mode'] == "add"):
-        parent_comment = int(request.POST["parent"])
-        if (parent_comment == -1):
-            parent = None
-        else:
-            parent = models.BoardComment.objects.get(id=parent_comment)
-        writer = request.POST['writer']
-        ip = get_client_ip(request)
-        password = request.POST["password"]
-        # if no password, then make ip as password
-        if (password == ""):
-            password = ip
-        text = request.POST['text']
-        r = checkValidation(writer, ip, text)
-        request.session['message'] = r[1]
-        if (r[0]):
+        return "Null Post (unexpected error)"
+    ip = get_client_ip(request)
+    mode = form.data['mode']
+    password = form.data['password']
+    # if no password, then make ip as password
+    if (password == ""):
+        password = ip
+
+    if (mode == 'add'):
+        if (form.is_valid_with_ip(ip)):
+            # check for parent comment
+            parent_comment = int(form.data["parent"])
+            if (parent_comment == -1):
+                parent = None
+            else:
+                parent = models.BoardComment.objects.get(id=parent_comment)
+
             # add comment
             models.BoardComment.objects.create(
                     post = post,
                     parent = parent,
-                    text = text,
-                    writer = writer,
+                    text = form.data['text'],
+                    writer = form.data['writer'],
                     tag = '',
                     password = password,
                     attr = status['attr'],
                     ip = ip,
                     )
-        # remember writer session
-        request.session['writer'] = writer
-    elif (request.POST['mode'] == "delete"):
-        cmtid = request.POST['id']
-        password = request.POST['password']
-        ip = get_client_ip(request)
-        # if no password, then make ip as password
-        if (password == ""):
-            password = ip
-        cmtobj = models.BoardComment.objects.get(id=cmtid)
-        if (cmtobj.password == password or status['attr'] == 2):
-            cmtobj.delete()
-            request.session['message'] = u"댓글을 삭제하였습니다."
-        else:
-            request.session['message'] = u"패스워드가 틀렸습니다."
 
+            # remember writer session
+            request.session['writer'] = form.data['writer']
+
+            return u"댓글을 등록하였습니다."
+        else:
+            return u"비밀번호가 틀렸습니다." #form.get_error_msg()
+    elif (mode == 'delete'):
+        cmtid = form.data['id']
+        cmtobj = models.BoardComment.objects.get(id=cmtid)
+        if (form.is_valid_with_ip(ip, status['attr'], cmtobj.password)):
+            cmtobj.delete()
+            return u"댓글을 삭제하였습니다."
+        else:
+            return form.get_error_msg()
+    else:
+        return "Unknown mode attempted (unexpected error)"
+
+# /board/comment/add/<postid>/
+def comment_add(request, postid):
+#TODO
+    pass
+
+# /board/comment/delete/<postid>/
+def comment_delete(request, postid):
+#TODO
+    pass
 
 # /board/view/<postid>/
 def view(request, postid):
@@ -227,18 +240,29 @@ def view(request, postid):
     if (post == None):
         raise Http404
     status = getBasicStatus(request)
-    status['page'] = 1  # TODO
+    page_num = models.BoardPost.objects.filter(id__gt=postid).count() / PAGENATE_NUM + 1
 
     if (request.method == "POST"):
-        comment_POST(request, status, post)
+        if (request.POST['mode'] == 'add'):
+            form = forms.CommentForm(request.POST)
+        else:
+            form = forms.CommentDeleteForm(request.POST)
+        message = comment_POST(request, status, post, form)
+        request.session['message'] = message
+
+    # we create new form object, anyway.
+    form = forms.CommentForm( initial= {'writer': status['writer']} )
 
     # fetch all comments (which has no parents)
     comments = models.BoardComment.objects\
         .filter(post=post, parent=None)\
         .order_by('-time')
 
-    r = render(request, 'view.html',
-            {'comments': comments, 'post': post, 'board': post.board, 'status': status})
+    r = render(request, 'view.html', {
+        'comments': comments,
+        'post': post, 'page_num': page_num,
+        'form': form, 'board': post.board
+        })
     clearMessage(request)
     return r
 

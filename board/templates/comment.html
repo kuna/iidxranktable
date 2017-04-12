@@ -1,7 +1,7 @@
 {% if request.session.message %}
 <script language="javascript">
 $(function () {
-	showMessage("{{ request.session.message|escape }}");
+	showMessage("{{ request.session.message|safe }}");
 })
 </script>
 {% endif %}
@@ -23,19 +23,23 @@ function childComment(id) {
 
 				<div class="writer">
 					<label for="writer" class="control-label">name</label>
-					<input type="text" id="writer" name="writer" class="form-control input-sm" value="{{ request.session.writer }}">
+          {{ form.writer }}
 				</div>
 				<div class="password">
 					<label for="password" class="control-label">password (비우면 ip로 인증됩니다)</label>
-					<input type="password" id="password" name="password" class="form-control input-sm" value="">
+          {{ form.password }}
 				</div>
         <div class="clear"></div>
 				<div class="text">
-					<textarea class="form-control" id="text" name="text" placeholder="댓글을 입력하세요" rows=4 cols=50></textarea>
+          {{ form.text }}
 				</div>
 				<div class="submit">
 					<input class="form-control btn-default" type="submit" value="OK">
 				</div>
+        <div style="clear: both;"></div>
+        <div style="transform:scale(0.7); transform-origin:0; float: left;">
+          {{ form.captcha }}
+        </div>
 			</form>
 		</div>
 

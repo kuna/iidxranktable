@@ -12,7 +12,7 @@
 {% if request.session.message %}
 <script language="javascript">
 $(function () {
-	showMessage("{{ request.session.message|escape }}");
+	showMessage("{{ request.session.message|safe }}");
 })
 </script>
 {% endif %}
@@ -48,7 +48,7 @@ function doDelete() {
     {% block navigation %}
     <div class="clear navigation">
       <div class="left" style="float:left;">
-        <a class="btn btn-default" href="/board/{{ board.title }}/{{ status.page }}/">목록</a>
+        <a class="btn btn-default" href="/board/{{ board.title }}/{{ page_num }}/">목록</a>
       </div>
       <div class="right">
         <form class="right" action="/board/modify/{{ post.id }}/" method="post" id="del">
