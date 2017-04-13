@@ -262,7 +262,7 @@ $(function (){
       var cnt = clearcnt[i+1] - clearcnt[i];
       if (cnt==0) continue;
       var xp = (clearrate[i+1] + (clearrate[i]-clearrate[i+1])/2) * graphw;
-      ctx.fillText(clearcnt[i], graphx+xp, ypos+15);
+      ctx.fillText(clearcnt[i]-clearcnt[i+1], graphx+xp, ypos+15);
     }
 
     ypos += height_per_element;

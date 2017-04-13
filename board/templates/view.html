@@ -51,7 +51,7 @@ function doDelete() {
         <a class="btn btn-default" href="/board/{{ board.title }}/{{ page_num }}/">목록</a>
       </div>
       <div class="right">
-        <form class="right" action="/board/modify/{{ post.id }}/" method="post" id="del">
+        <form class="right" action="/board/delete/{{ post.id }}/" method="post" id="del">
           {% csrf_token %}
           <input type="hidden" name="mode" value="delete">
           <input type="hidden" name="id" value="{{ post.id }}">

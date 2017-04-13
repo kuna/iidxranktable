@@ -17,10 +17,28 @@ http://mplus.font-face.jp/#/
 
 .hidden { display:none; }
 
+/* index & post style */
 .notice_inner .list-group .text ul,
 .post .body ul { padding-left: 20px; }
 .notice_inner .list-group .text li,
 .post .body li { margin-bottom: 10px; }
+
+.notice-boards { width: 100%; padding: 0 20px 0px; overflow:hidden; }
+.notice-boards .board-title { 
+  font-weight: bold; font-size: 11pt; 
+  padding: 10px 0; border-bottom: 1px solid #ccc; }
+.notice-boards ul { list-style: none; font-size: 10pt; }
+.notice-boards ul a { color: #666; }
+.notice-boards ul a:hover { color: #999; }
+.notice-boards ul li { clear:both; }
+.notice-boards ul li .title {
+  float: left;max-width:200px;
+  display: block; white-space:nowrap; overflow: hidden; text-overflow: ellipsis;}
+.notice-boards ul li .writer {
+  max-width: 50px;
+  display: block; white-space:nowrap; overflow: hidden;text-overflow: ellipsis;
+  float:right; margin-right: 5px; }
+.notice-boards ul li .date { float:right; letter-spacing: -1px; }
 
 /* top */
 #top { width:100%; background-color:#346; height:50px; padding: 16px 0; color:#fff; }

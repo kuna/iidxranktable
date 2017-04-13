@@ -67,16 +67,49 @@ glyphicon glyphicon-home"></span></button></a></center>
         </div>
       </div>
 		</div>
-    <center><a href="/board/freetalk/">건의는 이곳에</a></center>
+    <!--<center><a href="/board/freetalk/">건의는 이곳에</a></center>-->
 	</div>
-	
-  <!--
-	<div class="row center">
-		<a href="/!/songrank/"><button type="button" class="btn btn-warning">Songs</button></a>
-		<a href="/!/userrank/"><button type="button" class="btn btn-warning">Players</button></a>
-		<a href="/songcomment/all/1/"><button type="button" class="btn btn-warning">Recent Comments</button></a>
-    <a href="/musiclist/"><button type="button" class="btn btn-warning">Musiclist</button></a>
-  </div>-->
+
+
+  <div class="notice-boards">
+    <div class="col-board col-sm-4">
+      <h4 class="board-title"><a href="/board/freetalk">건의+잡담</a></h4>
+      <div class="list-group">
+        <ul>
+          {% for post in freetalk %}
+          <a href="/board/view/{{post.id}}/"><li>
+            <span class="title">{{ post.title|truncatechars:20 }}</span>
+            <span class="date">{{ post.time|date:"m-d" }}</span>
+            <span class="writer">{{ post.writer }}</span>
+          </li></a>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    <div class="col-board col-sm-4">
+      <h4 class="board-title">최근 댓글</h4>
+      <div class="list-group">
+        <ul>
+          {% for cmt in comments %}
+          <a href="/board/view/{{cmt.post.id}}/"><li>
+            <span class="title">{{ cmt.text|truncatechars:20 }}</span>
+            <span class="date">{{ cmt.time|date:"m-d" }}</span>
+            <span class="writer">{{ cmt.writer }}</span>
+          </li></a>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+    <div class="col-board col-sm-4">
+      <h4 class="board-title">난이도 투표</h4>
+      <div class="list-group">
+        <ul>
+          <li>준비중입니다.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
 
 	<!--<div class="row center">
 		<a href="https://github.com/kuna/iidxme_chromeapp/blob/master/app.crx">크롬</a> / <a href="https://github.com/kuna/iidxme_android/blob/master/iidxme.apk">안드로이드</a> iidx.me 갱신 앱을 사용해 보세요.

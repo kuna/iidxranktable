@@ -90,26 +90,25 @@ def write(request, boardname):
         if (password == ""):
             password = ip
 
-        if (form.data['mode'] == "add"):
-            # check argument is valid
-            if (form.is_valid_with_ip(ip)):
-                # session and message
-                request.session['writer'] = form.data['writer']
+        # check argument is valid
+        if (form.is_valid_with_ip(ip)):
+            # session and message
+            request.session['writer'] = form.data['writer']
 
-                # add comment
-                models.BoardPost.objects.create(
-                        board = board,
-                        title = form.data['title'],
-                        text = form.data['text'],
-                        writer = form.data['writer'],
-                        tag = form.data['tag'],
-                        attr = status['attr'],
-                        ip = ip,
-                        password = password,
-                        )
-                return HttpResponseRedirect(reverse("postlist", args=[boardname, 1]))
-            else:
-                request.session['message'] = form.get_error_msg()
+            # add comment
+            models.BoardPost.objects.create(
+                    board = board,
+                    title = form.data['title'],
+                    text = form.data['text'],
+                    writer = form.data['writer'],
+                    tag = form.data['tag'],
+                    attr = status['attr'],
+                    ip = ip,
+                    password = password,
+                    )
+            return HttpResponseRedirect(reverse("postlist", args=[boardname, 1]))
+        else:
+            request.session['message'] = form.get_error_msg()
 
     else:
         form = forms.PostForm(initial={
@@ -138,21 +137,13 @@ def modify(request, postid):
         form = forms.PostForm(request.POST)
         ip = get_client_ip(request)
         if (form.is_valid_with_ip(ip, status['attr'], post.password)):
-            mode = form.data["mode"]
-            if (mode == "delete"):
-                post.delete()
-                request.session['message'] = "Removed Post."
-            elif (mode == "modify"):
-                post.title = form.data['title']
-                post.writer = form.data['writer']
-                post.tag = form.data['tag']
-                post.text = form.data['text']
-                post.save()
-                request.session['message'] = "Modified Post."
-                return HttpResponseRedirect(reverse("postview", args=[post.id,]))
-            else:
-                request.session['message'] = "Something unexpected happened."
-            return HttpResponseRedirect(reverse("postlist", args=[boardname, 1]))
+            post.title = form.data['title']
+            post.writer = form.data['writer']
+            post.tag = form.data['tag']
+            post.text = form.data['text']
+            post.save()
+            request.session['message'] = "Modified Post."
+            return HttpResponseRedirect(reverse("postview", args=[post.id,]))
         else:
             request.session['message'] = form.get_error_msg()
 
@@ -170,68 +161,98 @@ def modify(request, postid):
     clearMessage(request)
     return r
 
+# /board/delete/<postid>/
+def delete(request, postid):
+    if (request.method == "POST"):
+        post = models.BoardPost.objects.filter(id=postid).first()
+        if (post == None):
+            raise Http404
+        boardname = post.board.title
+        status = getBasicStatus(request)
+        board = post.board
+        ip = get_client_ip(request)
+        form = forms.PostDeleteForm(request.POST)
+
+        if (form.is_valid_with_ip(ip, status['attr'], post.password)):
+            post.delete()
+            request.session['message'] = "Removed Post."
+        else:
+            request.session['message'] = u"비밀번호가 틀립니다." #form.get_error_msg()
+        return HttpResponseRedirect(reverse("postlist", args=[boardname, 1]))
+    else:
+        raise Http404
 
 
 
 # TODO: post - too short character: display error
-# comment part
-def comment_POST(request, status, post, form):
+
+
+# /board/comment/add/<postid>/
+def comment_add(request, postid):
+    status = getBasicStatus(request)
+    post = models.BoardPost.objects.filter(id=postid).first()
     if (post == None):
-        return "Null Post (unexpected error)"
+        raise Http404
+    form = forms.CommentForm(request.POST)
     ip = get_client_ip(request)
-    mode = form.data['mode']
     password = form.data['password']
     # if no password, then make ip as password
     if (password == ""):
         password = ip
+    message = ""
 
-    if (mode == 'add'):
-        if (form.is_valid_with_ip(ip)):
-            # check for parent comment
-            parent_comment = int(form.data["parent"])
-            if (parent_comment == -1):
-                parent = None
-            else:
-                parent = models.BoardComment.objects.get(id=parent_comment)
-
-            # add comment
-            models.BoardComment.objects.create(
-                    post = post,
-                    parent = parent,
-                    text = form.data['text'],
-                    writer = form.data['writer'],
-                    tag = '',
-                    password = password,
-                    attr = status['attr'],
-                    ip = ip,
-                    )
-
-            # remember writer session
-            request.session['writer'] = form.data['writer']
-
-            return u"댓글을 등록하였습니다."
+    if (form.is_valid_with_ip(ip)):
+        # check for parent comment
+        parent_comment = int(form.data["parent"])
+        if (parent_comment == -1):
+            parent = None
         else:
-            return u"비밀번호가 틀렸습니다." #form.get_error_msg()
-    elif (mode == 'delete'):
-        cmtid = form.data['id']
-        cmtobj = models.BoardComment.objects.get(id=cmtid)
-        if (form.is_valid_with_ip(ip, status['attr'], cmtobj.password)):
-            cmtobj.delete()
-            return u"댓글을 삭제하였습니다."
-        else:
-            return form.get_error_msg()
+            parent = models.BoardComment.objects.get(id=parent_comment)
+
+        # add comment
+        models.BoardComment.objects.create(
+                post = post,
+                parent = parent,
+                text = form.data['text'],
+                writer = form.data['writer'],
+                tag = '',
+                password = password,
+                attr = status['attr'],
+                ip = ip,
+                )
+
+        # remember writer session
+        request.session['writer'] = form.data['writer']
+        message = u"댓글을 등록하였습니다."
     else:
-        return "Unknown mode attempted (unexpected error)"
+        message = form.get_error_msg()
 
-# /board/comment/add/<postid>/
-def comment_add(request, postid):
-#TODO
-    pass
+    request.session['message'] = message
+    return HttpResponseRedirect(reverse("postview", args=[postid,]))
 
-# /board/comment/delete/<postid>/
-def comment_delete(request, postid):
-#TODO
-    pass
+
+# /board/comment/delete/
+def comment_delete(request):
+    status = getBasicStatus(request)
+    form = forms.CommentDeleteForm(request.POST)
+    ip = get_client_ip(request)
+    password = form.data['password']
+    # if no password, then make ip as password
+    if (password == ""):
+        password = ip
+    message = ""
+
+    cmtid = form.data['id']
+    cmtobj = models.BoardComment.objects.get(id=cmtid)
+    postid = cmtobj.post.id
+    if (form.is_valid_with_ip(ip, status['attr'], cmtobj.password)):
+        cmtobj.delete()
+        message = u"댓글을 삭제하였습니다."
+    else:
+        message = form.get_error_msg()
+    request.session['message'] = message
+    return HttpResponseRedirect(reverse("postview", args=[postid,]))
+
 
 # /board/view/<postid>/
 def view(request, postid):
@@ -240,17 +261,11 @@ def view(request, postid):
     if (post == None):
         raise Http404
     status = getBasicStatus(request)
-    page_num = models.BoardPost.objects.filter(id__gt=postid).count() / PAGENATE_NUM + 1
+    page_num = models.BoardPost.objects.filter(
+            board=post.board, id__gt=postid
+            ).count() / PAGENATE_NUM + 1
 
-    if (request.method == "POST"):
-        if (request.POST['mode'] == 'add'):
-            form = forms.CommentForm(request.POST)
-        else:
-            form = forms.CommentDeleteForm(request.POST)
-        message = comment_POST(request, status, post, form)
-        request.session['message'] = message
-
-    # we create new form object, anyway.
+    # create new form object for comment
     form = forms.CommentForm( initial= {'writer': status['writer']} )
 
     # fetch all comments (which has no parents)
@@ -271,7 +286,7 @@ def view(request, postid):
 
 
 
-# songcomment parts
+# songcomment parts - depreciated
 
 def songcomments(request, page=1):
     # check is valid url
@@ -291,6 +306,10 @@ def songcomments(request, page=1):
     return r
 
 def songcomment(request, tag):
+    # we won't support songcomment from now on.
+    # we'll use songvote instead.
+    raise Http404
+
     board = models.Board.objects.get(title="songcomment")
     post = models.BoardPost.objects.filter(board=board, tag=tag).first()
     status = getBasicStatus(request)

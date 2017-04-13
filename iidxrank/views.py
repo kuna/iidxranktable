@@ -1,5 +1,4 @@
 #-*- coding: utf-8 -*-
-
 from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
@@ -11,211 +10,218 @@ import models
 import board.models
 import settings
 
-
 import rankpage as rp
 import iidx
 import json
 import views_json
 import base64
 
-
 import update.parser_iidxme as iidxme
 
 
 
 def checkValidPlayer(player):
-  return not (player == None or 
-    'userdata' not in player or 
-    player['status'] != 'success')
-
-  ####
+    return not (player == None or 
+        'userdata' not in player or 
+        player['status'] != 'success')
 
 def mainpage(request):
-  notice_board = board.models.Board.objects.filter(title='notice').first()
-  post = notice_board.posts.order_by('-time').first()
-  return render_to_response('index.html',
-    {'hidesearch': True, 'mobileview':True, 'noticepost': post})
+    # get first notice
+    notice_board = board.models.Board.objects.get(title='notice')
+    post = notice_board.posts.order_by('-time').first()
+    # get recent 3 freetalk
+    freetalk_board = board.models.Board.objects.get(title='freetalk')
+    freetalk = freetalk_board.posts.order_by('-time')[:5]
+    comments = board.models.BoardComment.objects.order_by('-time')[:5]
+    votes = []
+    return render_to_response('index.html', {
+        'hidesearch': True, 'mobileview':True,
+        'noticepost': post,
+        'freetalk': freetalk,
+        'comments': comments,
+        'votes': votes,
+        })
 
 def userjson(request, username="!"):
-  j = {}
-  if (username != "!"):
-    j = iidxme.parse_iidxme_http("http://iidx.me/%s/sp/level/12" % username)
-  return JsonResponse(j)
+    j = {}
+    if (username != "!"):
+        j = iidxme.parse_iidxme_http("http://iidx.me/%s/sp/level/12" % username)
+    return JsonResponse(j)
 
 def userpage(request, username="!"):
-  if (username == "!"):
-    # make dummy data
-    player = None
-  else:
-    # check recent json to get player info
-    #userjson_url = "http://json.iidx.me/%s/recent/" % username
-    #player = jsondata.loadJSONurl(userjson_url)
-    userpage_url = "http://iidx.me/%s/recent/" % username
-    player = iidxme.parse_iidxme_http(userpage_url)
-    if (not checkValidPlayer(player)):
-      # invalid user!
-      raise Http404
-  playerinfo = rp.getUserInfo(player, username)
-  return render_to_response('user/userpage.html', {'userinfo': playerinfo})
+    if (username == "!"):
+        # make dummy data
+        player = None
+    else:
+        # check recent json to get player info
+        #userjson_url = "http://json.iidx.me/%s/recent/" % username
+        #player = jsondata.loadJSONurl(userjson_url)
+        userpage_url = "http://iidx.me/%s/recent/" % username
+        player = iidxme.parse_iidxme_http(userpage_url)
+        if (not checkValidPlayer(player)):
+            # invalid user!
+            raise Http404
+    playerinfo = rp.getUserInfo(player, username)
+    return render_to_response('user/userpage.html', {'userinfo': playerinfo})
 
 # common for rankpage
 def retrieve_userdata(username, tablename):
-  # check is argument valid
-  tablename = tablename.upper()
-  try:
-    ranktable = models.RankTable.objects.get(tablename=tablename)
-  except:
-    # invalid table!
-    raise Http404
+    # check is argument valid
+    tablename = tablename.upper()
+    try:
+        ranktable = models.RankTable.objects.get(tablename=tablename)
+    except:
+        # invalid table!
+        raise Http404
 
-  # load player json data
-  if (username == "!"):
-    player = None
-  else:
-    #userjson_url = "http://json.iidx.me/%s/%s/level/%d/" % (username, ranktable.type.lower(), ranktable.level)
-    #player = jsondata.loadJSONurl(userjson_url)
-    userpage_url = "http://iidx.me/%s/%s/level/%d/" % (username, ranktable.type.lower(), ranktable.level)
-    player = iidxme.parse_iidxme_http(userpage_url)
-    if (not checkValidPlayer(player)):
-      # invalid user!
-      raise Http404
+    # load player json data
+    if (username == "!"):
+        player = None
+    else:
+        #userjson_url = "http://json.iidx.me/%s/%s/level/%d/" % (username, ranktable.type.lower(), ranktable.level)
+        #player = jsondata.loadJSONurl(userjson_url)
+        userpage_url = "http://iidx.me/%s/%s/level/%d/" % (username, ranktable.type.lower(), ranktable.level)
+        player = iidxme.parse_iidxme_http(userpage_url)
+        if (not checkValidPlayer(player)):
+            # invalid user!
+            raise Http404
 
-  # compile user data to render score
-  userinfo, songdata, pageinfo = rp.compile_data(ranktable, player, models.Song.objects)
-  userinfo['title'] = pageinfo['title']
-  userinfo['iidxmeid'] = username
-  tabledata = {
-    'info': userinfo,
-    'categories': songdata
-    }
+    # compile user data to render score
+    userinfo, songdata, pageinfo = rp.compile_data(ranktable, player, models.Song.objects)
+    userinfo['title'] = pageinfo['title']
+    userinfo['iidxmeid'] = username
+    tabledata = {
+        'info': userinfo,
+        'categories': songdata
+        }
 
-  return {'score': songdata, 
-    'tabledata_json': json.dumps(tabledata),
-    'userinfo': userinfo, 
-    'pageinfo': pageinfo}
+    return {'score': songdata, 
+        'tabledata_json': json.dumps(tabledata),
+        'userinfo': userinfo, 
+        'pageinfo': pageinfo}
 
 def rankpage(request, username="!", tablename="SP12"):
-  d = retrieve_userdata(username, tablename)
-  return render(request, 'user/rankview.html', d)
+    d = retrieve_userdata(username, tablename)
+    return render(request, 'user/rankview.html', d)
 
 def detailpage(request, username="!", tablename="SP12"):
-  d = retrieve_userdata(username, tablename)
-  return render(request, 'user/detailview.html', d)
+    d = retrieve_userdata(username, tablename)
+    return render(request, 'user/detailview.html', d)
 
 def rankedit(request, tablename):
-  tablename = tablename.upper()
+    tablename = tablename.upper()
 
-  # only admin can access it
-  # TODO
-  
-  # in case of POST? -> return JSON result
-  if (request.method == "POST"):
-    return views_json.json_rankedit(request)
-  
-  # check is valid table
-  ranktable = models.RankTable.objects.filter(tablename=tablename).first()
-  if (ranktable == None):
-    raise Http404
-  # compile table data
-  userinfo, songdata, pageinfo = rp.compile_data(ranktable, None, models.Song.objects, False)
-  return render(request, 'rankedit.html', { 'songdata': songdata, 'tableid': ranktable.id, 'pageinfo': pageinfo })
+    # only admin can access it
+    # TODO
+    
+    # in case of POST? -> return JSON result
+    if (request.method == "POST"):
+        return views_json.json_rankedit(request)
+    
+    # check is valid table
+    ranktable = models.RankTable.objects.filter(tablename=tablename).first()
+    if (ranktable == None):
+        raise Http404
+    # compile table data
+    userinfo, songdata, pageinfo = rp.compile_data(ranktable, None, models.Song.objects, False)
+    return render(request, 'rankedit.html', { 'songdata': songdata, 'tableid': ranktable.id, 'pageinfo': pageinfo })
 
 
 def songcomment_all(request, page=1):
-  songcomment_list = models.SongComment.objects.order_by('-time').all()
-  paginator = Paginator(songcomment_list, 100)
+    songcomment_list = models.SongComment.objects.order_by('-time').all()
+    paginator = Paginator(songcomment_list, 100)
 
-  try:
-    songcomments = paginator.page(page)
-  except:
-    # invalid pagenation!
-    raise Http404
+    try:
+        songcomments = paginator.page(page)
+    except:
+        # invalid pagenation!
+        raise Http404
 
-  return render_to_response('recentcomment.html', {"comments": songcomments})
+    return render_to_response('recentcomment.html', {"comments": songcomments})
 
 
 # /iidx/musiclist
 #@xframe_options_exempt
 def musiclist(request):
-  # all the other things will done in json & html
-  return render_to_response('musiclist.html')
+    # all the other things will done in json & html
+    return render_to_response('musiclist.html')
 
 # /iidx/(username)/recommend/
 def recommend(request, username):
-  userjson_url = "http://json.iidx.me/%s/recent/" % username
-  player = jsondata.loadJSONurl(userjson_url)
-  if (not checkValidPlayer(player)):
-    raise Http404
-  userinfo = rp.getUserInfo(player, username)
-  return render_to_response('user/recommend.html', {"userinfo": userinfo})
+    userjson_url = "http://json.iidx.me/%s/recent/" % username
+    player = jsondata.loadJSONurl(userjson_url)
+    if (not checkValidPlayer(player)):
+        raise Http404
+    userinfo = rp.getUserInfo(player, username)
+    return render_to_response('user/recommend.html', {"userinfo": userinfo})
 
 # /iidx/(username)/skillrank
 def skillrank(request, username):
-  userjson_url = "http://json.iidx.me/%s/recent/" % username
-  player = jsondata.loadJSONurl(userjson_url)
-  if (not checkValidPlayer(player)):
-    raise Http404
-  userinfo = rp.getUserInfo(player, username)
-  return render_to_response('user/skillrank.html', {"userinfo": userinfo})
+    userjson_url = "http://json.iidx.me/%s/recent/" % username
+    player = jsondata.loadJSONurl(userjson_url)
+    if (not checkValidPlayer(player)):
+        raise Http404
+    userinfo = rp.getUserInfo(player, username)
+    return render_to_response('user/skillrank.html', {"userinfo": userinfo})
 
 # /iidx/!/songrank/
 def songrank(request):
-  return render_to_response('songrank.html')
+    return render_to_response('songrank.html')
 
 # /iidx/!/userrank/
 def userrank(request):
-  return render_to_response('userrank.html')
+    return render_to_response('userrank.html')
 
 
 # imgdownload/
 @csrf_exempt
 def imgdownload(request):
-  if request.method != "POST":
-    # allow only POST method
-    raise PermissionDenied
-  filename = request.POST['name']
-  pngdata = base64.decodestring(request.POST['base64'])
-  print "got request: %s (%d byte)" % (filename, len(pngdata))
-  r = HttpResponse(pngdata, content_type="application/octet-stream")
-  r['Content-Disposition'] = 'attachment; filename=%s' % filename
-  return r
+    if request.method != "POST":
+        # allow only POST method
+        raise PermissionDenied
+    filename = request.POST['name']
+    pngdata = base64.decodestring(request.POST['base64'])
+    print "got request: %s (%d byte)" % (filename, len(pngdata))
+    r = HttpResponse(pngdata, content_type="application/octet-stream")
+    r['Content-Disposition'] = 'attachment; filename=%s' % filename
+    return r
 
 # iidx/imgtl/
 @csrf_exempt
 def imgtl(request):
-  if request.method != "POST":
-    # allow only POST method
-    raise PermissionDenied
+    if request.method != "POST":
+        # allow only POST method
+        raise PermissionDenied
 
-  filename = request.POST['name']
-  pngdata = base64.decodestring(request.POST['base64'])
-  print "got request: %s (%d byte)" % (request.POST['name'], len(pngdata))
+    filename = request.POST['name']
+    pngdata = base64.decodestring(request.POST['base64'])
+    print "got request: %s (%d byte)" % (request.POST['name'], len(pngdata))
 
-  import requests
-  import urllib2
-  header = {'X-IMGTL-TOKEN': settings.imgtlkey}
-  r = requests.post('https://api.img.tl/upload', data={'desc': '', 'filename': filename}, \
-      files={'file': (filename, pngdata, 'application/octet-stream')}, headers=header)
-  return HttpResponse(r.text)
+    import requests
+    import urllib2
+    header = {'X-IMGTL-TOKEN': settings.imgtlkey}
+    r = requests.post('https://api.img.tl/upload', data={'desc': '', 'filename': filename}, \
+            files={'file': (filename, pngdata, 'application/octet-stream')}, headers=header)
+    return HttpResponse(r.text)
 
 # iidx/qpro/<iidxid>/
 @csrf_exempt
 def qpro(request, iidxid):
-  if (iidxid.isdigit() and int(iidxid) == 0):
-    with open('static/qpro/noname.png', 'r') as f:
-      img_blank = f.read()
+    if (iidxid.isdigit() and int(iidxid) == 0):
+        with open('static/qpro/noname.png', 'r') as f:
+            img_blank = f.read()
+        return HttpResponse(img_blank, content_type="image/png")
+
+    import urllib2
+    qpro_url = 'http://iidx.me/userdata/copula/%s/qpro.png' % iidxid
+    try:
+        resp = urllib2.urlopen(qpro_url)
+        if (resp.info().maintype == "image"):
+            return HttpResponse(resp.read(), content_type="image/png")
+    except urllib2.HTTPError as e:
+        pass
+
+    # cannot found
+    with open('static/qpro/blank.png', 'r') as f:
+        img_blank = f.read()
     return HttpResponse(img_blank, content_type="image/png")
-
-  import urllib2
-  qpro_url = 'http://iidx.me/userdata/copula/%s/qpro.png' % iidxid
-  try:
-    resp = urllib2.urlopen(qpro_url)
-    if (resp.info().maintype == "image"):
-      return HttpResponse(resp.read(), content_type="image/png")
-  except urllib2.HTTPError as e:
-    pass
-
-  # cannot found
-  with open('static/qpro/blank.png', 'r') as f:
-    img_blank = f.read()
-  return HttpResponse(img_blank, content_type="image/png")

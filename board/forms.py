@@ -15,6 +15,8 @@ class CommentForm(forms.Form):
     captcha = ReCaptchaField()
     id = forms.IntegerField(widget=forms.HiddenInput(),
             required=False)
+    parent = forms.IntegerField(widget=forms.HiddenInput(attrs={'id':'cmt_parent'}),
+            initial=-1)
     writer = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control input-sm'}))
     password = forms.CharField(
             widget=forms.PasswordInput(attrs={'class':'form-control input-sm'}),
@@ -73,7 +75,7 @@ class CommentDeleteForm(forms.Form):
             if (pass_cur == ""):
                 pass_cur = ip
             if (pass_cur != password and attr != 2):
-                self.add_error(None, u"Cannot delete post.")
+                self.add_error(None, u"패스워드가 틀립니다.")
                 return False
         else:
             self.add_error(None, u"Invalid action parameter given. something wrong happened.")
@@ -106,7 +108,19 @@ class PostForm(forms.Form):
             'placeholder':u'내용을 입력하세요'}
         ))
 
-    def check_valid_modify_or_add(self, ip):
+    def is_valid_with_ip(self, ip, attr=0, password=None):
+        mode = self.data["mode"]
+        if (mode != "delete" and not self.is_valid()):
+            return False
+
+        elif (mode == "modify"):
+            pass_cur = self.data['password']
+            if (pass_cur == ""):
+                pass_cur = ip
+            if (pass_cur != password and attr != 2):
+                self.add_error(None, u"패스워드가 틀립니다.")
+                return False
+
         if (len(self.data['title']) <= 0):
             self.add_error(None, u"제목이 너무 짧습니다.")
             return False
@@ -119,33 +133,32 @@ class PostForm(forms.Form):
         if (models.BannedUser.objects.filter(ip=ip).count()):
             self.add_error(None, u"차단당한 유저IP입니다.")
             return False
+
         return True
 
-    def is_valid_with_ip(self, ip, attr=0, password=None):
-        mode = self.data["mode"]
-        if (mode != "delete" and not self.is_valid()):
-            return False
+    def get_error_msg(self):
+        ret = self.errors.as_text() + self.non_field_errors().as_text()
+        return ret.replace("\n", "<br>")
 
+
+class PostDeleteForm(forms.Form):
+    id = forms.IntegerField(widget=forms.HiddenInput())
+    password = forms.CharField(
+            widget=forms.PasswordInput(attrs={'class':'form-control input-sm'}),
+            required=False)
+
+    def is_valid_with_ip(self, ip, attr, password):
+        mode = self.data["mode"]
         if (mode == "delete"):
-            if (self.data['password'] != password and attr != 2):
-                self.add_error(None, u"Cannot delete post.")
-                return False
-        elif (mode == "modify"):
-            if (not self.check_valid_modify_or_add(ip)):
-                return False
             pass_cur = self.data['password']
             if (pass_cur == ""):
                 pass_cur = ip
             if (pass_cur != password and attr != 2):
-                self.add_error(None, u"Cannot modify post.")
-                return False
-        elif (mode == "add"):
-            if (not self.check_valid_modify_or_add(ip)):
+                self.add_error(None, u"패스워드가 틀립니다.")
                 return False
         else:
             self.add_error(None, u"Invalid action parameter given. something wrong happened.")
             return False
-
         return True
 
     def get_error_msg(self):
