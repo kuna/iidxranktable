@@ -2,11 +2,14 @@
 from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
-from django.shortcuts import render, render_to_response
+from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.core.paginator import Paginator
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
 import models
+import forms
 import board.models
 import settings
 
@@ -34,7 +37,7 @@ def mainpage(request):
     freetalk = freetalk_board.posts.order_by('-time')[:5]
     comments = board.models.BoardComment.objects.order_by('-time')[:5]
     votes = []
-    return render_to_response('index.html', {
+    return render(request, 'index.html', {
         'hidesearch': True, 'mobileview':True,
         'noticepost': post,
         'freetalk': freetalk,
@@ -62,10 +65,10 @@ def userpage(request, username="!"):
             # invalid user!
             raise Http404
     playerinfo = rp.getUserInfo(player, username)
-    return render_to_response('user/userpage.html', {'userinfo': playerinfo})
+    return render(request, 'user/userpage.html', {'userinfo': playerinfo})
 
 # common for rankpage
-def retrieve_userdata(username, tablename):
+def retrieve_userdata(request, username, tablename):
     # check is argument valid
     tablename = tablename.upper()
     try:
@@ -76,7 +79,12 @@ def retrieve_userdata(username, tablename):
 
     # load player json data
     if (username == "!"):
+        # load player information from DB
         player = None
+        if (request.user.is_authenticated):
+            pobj = models.Player.objects.filter(user=request.user).first()
+            if (pobj):
+                player = rp.get_player_data(pobj, ranktable)
     else:
         #userjson_url = "http://json.iidx.me/%s/%s/level/%d/" % (username, ranktable.type.lower(), ranktable.level)
         #player = jsondata.loadJSONurl(userjson_url)
@@ -96,17 +104,30 @@ def retrieve_userdata(username, tablename):
         }
 
     return {'score': songdata, 
-        'tabledata_json': json.dumps(tabledata),
+        'ranktable': tabledata,
         'userinfo': userinfo, 
         'pageinfo': pageinfo}
 
 def rankpage(request, username="!", tablename="SP12"):
-    d = retrieve_userdata(username, tablename)
+    d = retrieve_userdata(request, username, tablename)
+    tabledata = d['ranktable']
+    del d['ranktable']
+    d['tabledata_json'] = json.dumps(tabledata)
     return render(request, 'user/rankview.html', d)
 
+"""
 def detailpage(request, username="!", tablename="SP12"):
     d = retrieve_userdata(username, tablename)
     return render(request, 'user/detailview.html', d)
+"""
+
+def ranktable(request, username="!", tablename="SP12"):
+    d = retrieve_userdata(request, username, tablename)
+    return render(request, 'ranktable.html', d)
+
+def rankjson(request, username="!", tablename="SP12"):
+    d = retrieve_userdata(request, username, tablename)
+    return JsonResponse(d)
 
 def rankedit(request, tablename):
     tablename = tablename.upper()
@@ -137,14 +158,14 @@ def songcomment_all(request, page=1):
         # invalid pagenation!
         raise Http404
 
-    return render_to_response('recentcomment.html', {"comments": songcomments})
+    return render(request, 'recentcomment.html', {"comments": songcomments})
 
 
 # /iidx/musiclist
 #@xframe_options_exempt
 def musiclist(request):
     # all the other things will done in json & html
-    return render_to_response('musiclist.html')
+    return render('musiclist.html')
 
 # /iidx/(username)/recommend/
 def recommend(request, username):
@@ -153,7 +174,7 @@ def recommend(request, username):
     if (not checkValidPlayer(player)):
         raise Http404
     userinfo = rp.getUserInfo(player, username)
-    return render_to_response('user/recommend.html', {"userinfo": userinfo})
+    return render('user/recommend.html', {"userinfo": userinfo})
 
 # /iidx/(username)/skillrank
 def skillrank(request, username):
@@ -162,16 +183,133 @@ def skillrank(request, username):
     if (not checkValidPlayer(player)):
         raise Http404
     userinfo = rp.getUserInfo(player, username)
-    return render_to_response('user/skillrank.html', {"userinfo": userinfo})
+    return render('user/skillrank.html', {"userinfo": userinfo})
 
 # /iidx/!/songrank/
 def songrank(request):
-    return render_to_response('songrank.html')
+    return render('songrank.html')
 
 # /iidx/!/userrank/
 def userrank(request):
-    return render_to_response('userrank.html')
+    return render('userrank.html')
 
+
+"""
+user related part
+"""
+
+# /!/login/
+login_django = login
+def login(request):
+    if (request.user.is_authenticated()):
+        return redirect('main')
+    if (request.method == "POST"):
+        form = forms.LoginForm(request.POST)
+        if (form.is_valid()):
+            user = authenticate(username=form.data['id'], password=form.data['password'])
+            login_django(request, user)
+            return redirect('main')
+    else:
+        form = forms.LoginForm()
+
+    return render(request, 'user/login.html', {'form': form})
+
+# /!/join/
+def join(request):
+    if (request.user.is_authenticated()):
+        return redirect('main')
+    if (request.method == "POST"):
+        form = forms.JoinForm(request.POST)
+        if (form.is_valid()):
+            user = User.objects.create_user(
+                    username=form.data['id'],
+                    email=form.data['email'],
+                    password=form.data['password'])
+            user = authenticate(username=form.data['id'], password=form.data['password'])
+            login_django(request, user)
+            return redirect('main')
+    else:
+        form = forms.JoinForm()
+    return render(request, 'user/join.html', {'form': form})
+
+# /!/logout/
+logout_django = logout
+def logout(request):
+    logout_django(request)
+    return redirect('main')
+
+# /!/withdraw/
+def withdraw(request):
+    if (request.user.is_superuser):
+        raise Exception("Superuser CANNOT withdraw!")
+    if (not request.user.is_authenticated()):
+        return redirect('login')
+    if (request.method == "POST"):
+        form = forms.WithdrawForm(request.POST)
+        if (form.is_valid()):
+            user = request.user
+            user.delete()
+            logout_django(request)
+            return redirect('main')
+    else:
+        form = forms.WithdrawForm(initial={'id': request.user.username})
+    return render(request, 'user/withdraw.html', {'form': form})
+
+# JSON
+# /!/modify/
+def modify(request):
+    if (not request.user.is_authenticated()):
+        return JsonResponse({'code': 1, 'message': 'please log in'})
+    user = request.user
+    player = models.Player.objects.get(user=user)
+    if (player == None):
+        player = models.Player.objects.create(
+                iidxmeid='',
+                iidxid='-',
+                iidxnick=user.username,
+                user=user
+                )
+    action = request.GET.get('action', '')
+    v = request.GET.get('v', '')
+    if (action == 'record'):
+        try:
+            lst = json.loads(v)
+            for l in lst:
+                sid = int(l['sid'])
+                song = models.Song.objects.get(id=sid)
+                pr = models.PlayRecord.objects.get_or_create(song=song,player=player)
+                pr.playclear = int(l['clear'])
+                pr.playscore = int(l['score'])
+                pr.save()
+        except Exception as e:
+            return JsonResponse({'code': 1, 'message': 'Invalid Song modification'})
+    if (action == 'recorddelete'):
+        try:
+            sid = int(v)
+            song = models.Song.objects.get(id=sid)
+            pr = models.PlayRecord.objects.filter(song=song,player=player).first()
+            if (pr):
+                pr.delete()
+        except Exception as e:
+            return JsonResponse({'code': 1, 'message': 'Invalid, or not existing Song ID'})
+    elif (action == 'djname'):
+        player.iidxnick = v
+        player.save()
+    elif (action == 'iidxid'):
+        player.iidxid = v
+        player.save()
+    elif (action == 'spclass'):
+        player.spclass = int(v)
+        player.save()
+    elif (action == 'dpclass'):
+        player.dpclass = int(v)
+        player.save()
+    else:
+        return JsonResponse({'code': 1, 'message': 'invalid action'})
+    return JsonResponse({'code': 0, 'message': 'Done'})
+"""
+user end
+"""
 
 # imgdownload/
 @csrf_exempt

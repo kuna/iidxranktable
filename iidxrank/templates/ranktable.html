@@ -1,0 +1,17 @@
+<!--
+  ranktable in html form - information should be minimized for ease of parsing
+-->
+
+<div id="ranktable" class="ranktable {{ type }}" data-name="{{ ranktable.title }}">
+  {% for category in ranktable.categories %}
+  <div class="rank-category">{{ category.category }}</div>
+  <div class="rank-items">
+    {% for item in category.items %}
+    <div class="rank-item" data-id="{{ item.id }}" data-title="{{ item.title }}" data-tag="{{ item.tag }}" data-rate="{{ item.rate }}">
+      <span class="title">{{ item.data.title }}</span>
+      <span class="img"></span>
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</table>

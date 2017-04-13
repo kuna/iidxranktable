@@ -30,7 +30,7 @@ http://mplus.font-face.jp/#/
 .notice-boards ul { list-style: none; font-size: 10pt; }
 .notice-boards ul a { color: #666; }
 .notice-boards ul a:hover { color: #999; }
-.notice-boards ul li { clear:both; }
+.notice-boards ul li { clear:both; overflow:hidden; }
 .notice-boards ul li .title {
   float: left;max-width:200px;
   display: block; white-space:nowrap; overflow: hidden; text-overflow: ellipsis;}

@@ -59,14 +59,22 @@ urlpatterns = [
                     url(r'^recommend/(?P<username>(\w|-)+)/(?P<type>\w+)/(?P<level>[0-9]+)/$', views_json.json_recommend),
             ])),
 
-    # common urls (mainpage, userpage, rankpage)
-            url(r'^$', views.mainpage),
+        # membership
+            url(r'^!/login/$', views.login, name='login'),
+            url(r'^!/join/$', views.join),
+            url(r'^!/logout/$', views.logout),
+            url(r'^!/withdraw/$', views.withdraw),
+
+
+        # common urls (mainpage, userpage, rankpage)
+            url(r'^$', views.mainpage, name="main"),
             #url(r'^!/$', RedirectView.as_view(url='/')),
             url(r'^!/$', views.userpage),
             url(r'^!/songrank/$', views.songrank),
             url(r'^!/userrank/$', views.userrank),
             url(r'^!/(?P<tablename>\w+)/$', views.rankpage, name="rankpage"),
-            url(r'^!/(?P<tablename>\w+)/detail/$', views.detailpage),
+            url(r'^!/(?P<tablename>\w+)/table/$', views.ranktable),
+            url(r'^!/(?P<tablename>\w+)/json/$', views.rankjson),
             # username
             url(r'^(?P<username>(\w|-)+)/', include([
                     url(r'^$', views.userpage),
@@ -74,7 +82,8 @@ urlpatterns = [
                     url(r'^stat/recm/$', views.recommend),
                     url(r'^stat/skill/$', views.skillrank),
                     url(r'^(?P<tablename>\w+)/$', views.rankpage, name="rankpage"),
-                    url(r'^(?P<tablename>\w+)/detail/$', views.detailpage),
+                    url(r'^(?P<tablename>\w+)/table/$', views.ranktable),
+                    url(r'^(?P<tablename>\w+)/json/$', views.rankjson),
             ])),
 	])),
 ]

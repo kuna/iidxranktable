@@ -5,6 +5,7 @@ from datetime import datetime, date
 from django.db import models    # whether to use django?
 from django.db.models import CASCADE
 from django.utils.timezone import now
+from django.contrib.auth.models import User
 
 class Song(models.Model):
     songid = models.IntegerField(default=0)
@@ -42,7 +43,12 @@ class Song(models.Model):
         unique_together = ['songid', 'songtype',]
 
 class Player(models.Model):
+    """
+    not log-in-available user. only for score retaining.
+    also can relate with logged-in user.
+    """
     time = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(User, null=True, on_delete=CASCADE)
 
     iidxid = models.CharField(max_length=20)
     iidxmeid = models.CharField(max_length=20)

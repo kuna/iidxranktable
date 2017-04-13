@@ -1,0 +1,16 @@
+{% if not form.is_valid %}
+{{ form.errors }}
+{% endif %}
+
+<form method="POST" action="./">
+  {% csrf_token %}
+  <div class="row">
+    <label>ID {{ form.id }}</label>
+  </div>
+  <div class="row">
+    <label>PASS {{ form.password }}</label>
+  </div>
+  <a href="../../"><button type="button" class="btn btn-default">돌아가기</button></a>
+  <a href="../join/"><button type="button" class="btn btn-default">가입하기</button></a>
+  <button class="btn btn-primary">로그인하기</button>
+</form>

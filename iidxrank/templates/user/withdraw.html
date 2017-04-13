@@ -1,0 +1,21 @@
+{% if not form.is_valid %}
+{{ form.errors }}
+{% endif %}
+
+<p>이메일은 회원가입 외 다른 용도(제 3자에게 제공 등)로 사용되지 않습니다.</p>
+
+<form method="POST" action="./">
+  {% csrf_token %}
+  <div class="row">
+    <label>ID {{ form.id }}</label>
+  </div>
+  <div class="row">
+    <label>PASS {{ form.password }}</label>
+  </div>
+  <div class="row">
+    <label>PASS AGAIN {{ form.password_again }}</label>
+  </div>
+  <p><b>탈퇴시 저장된 데이터가 영구적으로 삭제됩니다.</b></p>
+  <a href="../../"><button type="button" class="btn btn-default">돌아가기</button></a>
+  <button class="btn btn-primary">탈퇴하기</button>
+</form>
