@@ -1,0 +1,13 @@
+<div class="container">
+  <ul class="poll-list">
+    {% for poll in polls %}
+    <li>
+      <span class="title">{{ poll.title }}</span>
+      <span class="summary">{{ poll.summary }}</span>
+      <span class="result">
+        {{ poll.top_result }}
+      </span>
+    </li>
+    {% endfor %}
+  </ul>
+</div>

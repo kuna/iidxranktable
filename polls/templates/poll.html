@@ -1,0 +1,17 @@
+<div class="container">
+  <h3 class="title-poll">{{ poll.title }}</h3>
+  <span class="writer">{{ poll.writer }}</span>
+  <span class="summary">{{ poll.summary }}</span>
+  <div class="text">
+    {{ poll.text|linebreaks }}
+  </div>
+  
+  <!-- vote part -->
+  <div class="vote">
+  </div>
+  <!-- vote end -->
+
+  <!-- comment part -->
+  {% include 'comment.html' %}
+  <!-- comment end -->
+</div>

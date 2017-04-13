@@ -1,0 +1,64 @@
+  <!-- comments -->
+  <div class="comments">
+		<div class="list-group-item writeform">
+      <form role="form" action="/board/comment/add/{{ post.id }}/" method="post">
+				{% csrf_token %}
+				<input type="hidden" name="mode" value="add">
+        {{ form.parent }}
+
+				<div class="writer">
+					<label for="writer" class="control-label">name</label>
+          {{ form.writer }}
+				</div>
+				<div class="password">
+					<label for="password" class="control-label">password (비우면 ip로 인증됩니다)</label>
+          {{ form.password }}
+				</div>
+        <div class="clear"></div>
+				<div class="text">
+          {{ form.text }}
+				</div>
+				<div class="submit">
+					<input class="form-control btn-default" type="submit" value="OK">
+				</div>
+        <div style="clear: both;"></div>
+        <div style="transform:scale(0.7); transform-origin:0; float: left;">
+          {{ form.captcha }}
+        </div>
+			</form>
+		</div>
+
+    <div class="clear"></div>
+
+    {% for comment in comments %}
+    <div class="list-group-item">
+      <div class="comment">
+        <div class="clear info">
+          <div class="left">
+            <span class="writer{% if comment.attr == 2 %} admin{% endif %}">{{ comment.writer }}</span>
+            <div class="detail">
+              <span class="date">[{{ comment.time|date:"y-m-d H:i:s" }}]</span>
+              <span class="ip">{{ comment.ip_public }}</span>
+            </div>
+          </div>
+          <div class="right">
+            <form role="form" action="/board/comment/delete/" method="post">
+              {% csrf_token %}
+              <input id="mode" type="hidden" name="mode" value="delete">
+              <input id="id" type="hidden" name="id" value="{{ comment.id }}">
+              <div class="input-group">
+                  <input id="password" type="password" name="password" value="" class="form-control">
+                  <button type="submit" class="btn btn-danger btn-xs"><span class="glyphicon glyphicon-remove"></span></button>
+                  <button type="button" class="btn btn-default btn-xs" onclick="childComment({{ comment.id }}); return false;"><span class="glyphicon glyphicon glyphicon-registration-mark"></span></button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="clear">
+          <span class="text">{{ comment.text|linebreaks }}</span>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <!-- end comments -->
