@@ -131,6 +131,18 @@ function DefaultRenderer(ctx) {
   }
 
   self.drawTableBefore = function(d,x,y,w,h) {
+    var userdata = d.userdata;
+    var tableinfo = d.tableinfo;
+
+    var title = d.tableinfo.title;
+    if (!title) title = d.title;
+    var username = d.userdata.djname;
+    if (!username) username = d.username;
+    var spclass = d.userdata.spclass;
+    var dpclass = d.userdata.dpclass;
+    var spclassstr = d.userdata.spclassstr;
+    var dpclassstr = d.userdata.dpclassstr;
+
     // init
     self.rank_count = [0,0,0,0,0,0,0,0];
 
@@ -144,15 +156,15 @@ function DefaultRenderer(ctx) {
     self.ctx.strokeStyle="#333";
     self.ctx.lineWidth=8;
     self.ctx.miterLimit=2;
-    self.ctx.strokeText(d.title, x+w/2, 70);
+    self.ctx.strokeText(title, x+w/2, 70);
     self.ctx.fillStyle="#EEE";
-    self.ctx.fillText(d.title, x+w/2, 70);
+    self.ctx.fillText(title, x+w/2, 70);
 
     // DJ name, clear status
     self.ctx.font = "bold 14px Arial";
     self.ctx.textAlign="left";
     self.ctx.fillStyle="#000";
-    self.ctx.fillText("DJ " + d.username, x + 12, 132);
+    self.ctx.fillText("DJ " + username, x + 12, 132);
 
     var gradecolor = [
       "#000000",
@@ -177,13 +189,13 @@ function DefaultRenderer(ctx) {
       "#999999",  // 19
       "#DDDD33",  // 20
       ]
-    if (d.spclass > 0) {
-      self.ctx.fillStyle=gradecolor[d.spclass];
-      self.ctx.fillText("SP" + d.spclassstr, x+w-120, 132);
+    if (spclass > 0) {
+      self.ctx.fillStyle=gradecolor[spclass];
+      self.ctx.fillText("SP" + spclassstr, x+w-120, 132);
       self.ctx.fillStyle="#000";
       self.ctx.fillText("/", x+w-68, 132);
-      self.ctx.fillStyle=gradecolor[d.dpclass];
-      self.ctx.fillText("DP" + d.dpclassstr, x+w-60, 132);
+      self.ctx.fillStyle=gradecolor[dpclass];
+      self.ctx.fillText("DP" + dpclassstr, x+w-60, 132);
     }
   }
 
@@ -197,6 +209,9 @@ function DefaultRenderer(ctx) {
   }
 
   self.drawTableAfter = function(d,x,y,w,h) {
+    var tabletime = d.tableinfo.time;
+    var copyright = d.tableinfo.copyright;
+
     // very bottom line
     self.ctx.beginPath();
     drawBLine(x, y+h, x+w, y+h);
@@ -206,47 +221,48 @@ function DefaultRenderer(ctx) {
     self.ctx.font = "13px Arial";
     self.ctx.textAlign="right";
     console.log(d);
-    var tdate = new Date(d.tabletime * 1000);
+    var tdate = new Date(tabletime * 1000);
     self.ctx.fillText("Today: " + formatDate(new Date()) + " / Updated: " + formatDate(tdate),
         x+w, y+h+20);
     // copyright
-    if (d.copyright) {
+    if (copyright) {
       self.ctx.textAlign="left";
-      self.ctx.fillText(d.copyright, x, y+h+20);
+      self.ctx.fillText(copyright, x, y+h+20);
     }
+    self.ctx.textAlign="center";
     // rank count
     var ey = y+h;
     self.ctx.fillStyle="#ddd";
     self.ctx.fillRect(x+150,ey+6,30,20);
     self.ctx.fillStyle="#fff";
-    self.ctx.fillText(self.rank_count[0], x+155, ey+20);
+    self.ctx.fillText(self.rank_count[0], x+165, ey+20);
     self.ctx.fillStyle="#bbb";
     self.ctx.fillRect(x+190,ey+6,30,20);
     self.ctx.fillStyle="#fff";
-    self.ctx.fillText(self.rank_count[1], x+195, ey+20);
+    self.ctx.fillText(self.rank_count[1], x+205, ey+20);
     self.ctx.fillStyle="#ca9";
     self.ctx.fillRect(x+230,ey+6,30,20);
     self.ctx.fillStyle="#fff";
-    self.ctx.fillText(self.rank_count[2], x+235, ey+20);
+    self.ctx.fillText(self.rank_count[2], x+245, ey+20);
     self.ctx.fillStyle="#9c9";
     self.ctx.fillRect(x+270,ey+6,30,20);
     self.ctx.fillStyle="#fff";
-    self.ctx.fillText(self.rank_count[3], x+275, ey+20);
+    self.ctx.fillText(self.rank_count[3], x+285, ey+20);
     self.ctx.fillStyle="#9ac";
     self.ctx.fillRect(x+310,ey+6,30,20);
     self.ctx.fillStyle="#fff";
-    self.ctx.fillText(self.rank_count[4], x+315, ey+20);
+    self.ctx.fillText(self.rank_count[4], x+325, ey+20);
     self.ctx.fillStyle="#c99";
     self.ctx.fillRect(x+350,ey+6,30,20);
     self.ctx.fillStyle="#fff";
-    self.ctx.fillText(self.rank_count[5], x+355, ey+20);
+    self.ctx.fillText(self.rank_count[5], x+365, ey+20);
     self.ctx.fillStyle="#cc9";
     self.ctx.fillRect(x+390,ey+6,30,20);
     self.ctx.fillStyle="#fff";
-    self.ctx.fillText(self.rank_count[6], x+395, ey+20);
+    self.ctx.fillText(self.rank_count[6], x+405, ey+20);
     self.ctx.fillStyle="#9cc";
     self.ctx.fillRect(x+430,ey+6,30,20);
     self.ctx.fillStyle="#fff";
-    self.ctx.fillText(self.rank_count[7], x+435, ey+20);
+    self.ctx.fillText(self.rank_count[7], x+445, ey+20);
   }
 }

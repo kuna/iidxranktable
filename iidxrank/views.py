@@ -81,7 +81,7 @@ def retrieve_userdata(request, username, tablename):
     if (username == "!"):
         # load player information from DB
         player = None
-        if (request.user.is_authenticated):
+        if (request.user.is_authenticated()):
             pobj = models.Player.objects.filter(user=request.user).first()
             if (pobj):
                 player = rp.get_player_data(pobj, ranktable)
@@ -108,12 +108,38 @@ def retrieve_userdata(request, username, tablename):
         'userinfo': userinfo, 
         'pageinfo': pageinfo}
 
+"""
 def rankpage(request, username="!", tablename="SP12"):
     d = retrieve_userdata(request, username, tablename)
     tabledata = d['ranktable']
     del d['ranktable']
     d['tabledata_json'] = json.dumps(tabledata)
     return render(request, 'user/rankview.html', d)
+"""
+def rankpage(request, username="!", tablename="SP12"):
+    table = rp.get_ranktable(tablename)
+    if (table == None):
+        raise Http404
+    player = None
+    if (username == "!"):
+        player = rp.get_player_from_request(request)
+        pdata = rp.get_pdata_from_player(player,table)
+    else:
+        #userjson_url = "http://json.iidx.me/%s/%s/level/%d/" % (username, table.type.lower(), table.level)
+        #iidxme_data = jsondata.loadJSONurl(userjson_url)
+        userpage_url = "http://iidx.me/%s/%s/level/%d/" % (username, table.type.lower(), table.level)
+        iidxme_data = iidxme.parse_iidxme_http(userpage_url)
+        if (not checkValidPlayer(iidxme_data)):
+            raise Http404
+        pdata = rp.get_pdata_from_iidxme(iidxme_data,table)
+    # only session authorized user can edit table.
+    if (player):
+        pdata['editable']=True
+    else:
+        pdata['editable']=False
+    # append additional data
+    pdata['tabledata_json'] = rp.serialize_ranktable(pdata)
+    return render(request, 'user/rankview.html', pdata)
 
 """
 def detailpage(request, username="!", tablename="SP12"):

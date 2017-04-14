@@ -141,6 +141,7 @@ def parse_iidxme_http(url):
         soup = BeautifulSoup(html, "lxml")
         # userdata part
         userobj = soup.find('div', attrs={'id': 'playernav_toggle'})
+        userdata['iidxmeid'] = url.split('/')[1]
         userdata['djname'] = userobj.find('div', class_='djname').get_text().strip()
         userdata['iidxid'] = userobj.find('div', class_='iidxid').get_text().strip()
         userdata['spclass'] = int(userobj.find('div', class_='spclass').find('span')['class'][1][5:])

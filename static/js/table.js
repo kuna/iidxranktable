@@ -103,20 +103,20 @@ var TableRenderer = function(renderer) {
   };
   self.RenderTable = function(tdata) {
     // check tdata validation
-    if (!('categories' in tdata) || !('info' in tdata))
+    if (!('categories' in tdata))
       return false;
     // calculate total table size at very first
     _Reset();
     _CalculateHeight(tdata.categories);
     // before rendering
-    self.renderer.drawTableBefore(tdata.info,self._margin,self._margin_top,
+    self.renderer.drawTableBefore(tdata,self._margin,self._margin_top,
       self._width-self._margin*2,self._height-self.renderer.margin_bottom-self._margin_top);
     // render table
     for (var i in tdata.categories) {
       self.RenderColumn(tdata.categories[i]);
     }
     // after rendering
-    self.renderer.drawTableAfter(tdata.info,self._margin,self.renderer.margin_top,
+    self.renderer.drawTableAfter(tdata,self._margin,self.renderer.margin_top,
       self._width-self._margin*2,self._height-self.renderer.margin_bottom-self.renderer.margin_top);
     return true;
   }

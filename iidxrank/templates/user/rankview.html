@@ -2,9 +2,9 @@
 {% block subtitle %} - {{ pageinfo.title }}{% endblock %}
 {% block head %}
 {% load staticfiles %}
-<script type="text/javascript" src="{% static 'js/table.default.skin.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/table.defscore.skin.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/table.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/table.default.skin.js' %}?v=170415"></script>
+<script type="text/javascript" src="{% static 'js/table.defscore.skin.js' %}?v=170415"></script>
+<script type="text/javascript" src="{% static 'js/table.js' %}?v=170415"></script>
 
 <link href='https://fonts.googleapis.com/css?family=Comfortaa' rel='stylesheet' type='text/css'>
 <script language="javascript">
@@ -29,8 +29,8 @@ function sortTabledata(type) {
   type = type !== undefined ? type : "name";
   // type: clear, rate, name
 
-  for (var i in tabledata.categories) {
-    cate = tabledata.categories[i];
+  for (var i in tabledata.tabledata) {
+    cate = tabledata.tabledata[i];
     cate.items.sort(function (a,b) {
       if (type == "name") {
         var str1 = a.data.title.toLowerCase();
@@ -128,7 +128,7 @@ $(function () {
 	// activate function
 	// and load setting when page loads
 	// and save setting when exit
-  if ({{userinfo.iidxid}} == 0) {
+  if ({{userdata.iidxid}} == 0) {
     // clone data
     tabledata_orig = jQuery.extend(true, {}, tabledata);
 		$(window).on('beforeunload', function () {
