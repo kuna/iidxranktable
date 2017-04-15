@@ -474,19 +474,23 @@ $(function() {
   /* If web cache exists, then ask and remove it */
   var tname =tablename;
   if (tname && editmode) {
-    var savedata = loadSetting(tname + "_data");
+    var key = tname+"_data";
+    var savedata = loadSetting(key);
     if (savedata) {
-      var chk = confirm("기존에 저장된 데이터를 발견했습니다.\n불러오시겠습니까? [y/n]");
-      if (chk == 'n') {
-      } else if (chk == 'y') {
-        var savedata = JSON.parse(str);
-        if (savedata.savedata_version == 1.0) {
+      var chk = confirm("기존에 저장된 데이터를 발견했습니다.\n취소시 기존 데이터를 삭제합니다.\n불러오시겠습니까? [y/n]");
+      if (chk == false) {
+        localStorage.removeItem(key);
+        alert('삭제 완료');
+      } else if (chk == true) {
+        var savedata = JSON.parse(savedata);
+        if (savedata.savedata_version != 1.0) {
+          console.log(savedata.savedata_version);
           alert("버전이 호환되지 않아 불러올 수 없습니다.");
           return;
         }
         var param = [];
         for (var pkid in savedata.songs) {
-          var sitem = savedata.songs[item.pkid];
+          var sitem = savedata.songs[pkid];
           var item = {
             'id': pkid,
             'clear': sitem.clear,
@@ -494,7 +498,9 @@ $(function() {
           };
           param.push(item);
         }
-        submit('edit',JSON.stringify(param))
+        console.log(param);
+        submit('edit',JSON.stringify(param));
+        alert("불러오기 완료");
       }
     }
   }

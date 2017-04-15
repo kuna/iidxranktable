@@ -134,7 +134,7 @@ $(function () {
     // clone data
     tabledata_orig = jQuery.extend(true, {}, tabledata);
 		$(window).on('beforeunload', function () {
-			saveSetting("{{ tableinfo.tablename }}_data", createSaveString(tabledata));
+			//saveSetting("{{ tableinfo.tablename }}_data", createSaveString(tabledata));
 		});
 		var savedata = loadSetting("{{ tableinfo.tablename }}_data");
     if (savedata) {
