@@ -122,90 +122,6 @@ var dorender = function(_rendermode) {
 
 
 
-///////////////////////////////////
-// save & load script, in case of not-logged in user
-
-$(function () {
-	// if not logined state then -
-	// activate function
-	// and load setting when page loads
-	// and save setting when exit
-  if ({{userdata.iidxid}} == 0) {
-    // clone data
-    tabledata_orig = jQuery.extend(true, {}, tabledata);
-		$(window).on('beforeunload', function () {
-			//saveSetting("{{ tableinfo.tablename }}_data", createSaveString(tabledata));
-		});
-		var savedata = loadSetting("{{ tableinfo.tablename }}_data");
-    if (savedata) {
-      if (!loadSaveString(savedata, tabledata)) {
-        alert("저장된 데이터 불러오기에 실패하였습니다.\n기존작 저장 정보가 새 서열표 시스템과 호환되지 않습니다.");
-      }
-    }
-
-    // ***********************
-    // modify part
-
-    $('#edit_reset').click(function () {
-      if (confirm("정말로 모든 기록을 초기화 하시겠습니까?")) {
-        tabledata = tabledata_orig;
-        dorender();
-      }
-    });
-
-    var item = undefined;
-    var canvas = t.getCanvas();
-    $(canvas).click(function(e) {
-      var offset = $(this).offset();
-      var x = e.pageX - offset.left;
-      var y = e.pageY - offset.top;
-      item = t.Click(tabledata, x, y);
-      console.log(item);
-      if (item) {
-        console.log(item.data.title);
-        $('#current_item').val(item.data.title);
-        $('#edittool').show();
-      } else {
-        $('#edittool').hide();
-      }
-    });
-    $('.edit_clear').click(function (e) {
-      item.clear = parseInt($(this).attr('data-value'));
-      dorender();
-    });
-    $('.edit_rank').click(function (e) {
-      item.rate = parseInt($(this).attr('data-value'));
-      item.rank = getRank(item.rate);
-      dorender();
-    });
-    $(document).keypress(function(e) {
-      if (item == undefined) return;
-      console.log(e.which);
-      if (e.which == 113) { // Q
-        item.clear--;
-        if (item.clear < 0) item.clear += 8;
-      }
-      else if (e.which == 119) { // W
-        item.clear++;
-        if (item.clear > 8) item.clear -= 8;
-      }
-      else if (e.which == 97) { // A
-        item.rate -= 10;
-        if (item.rate < 0) item.rate += 100;
-        item.rank = getRank(item.rate);
-      }
-      else if (e.which == 115) { // S
-        item.rate += 10;
-        if (item.rate > 100) item.rate -= 100;
-        item.rank = getRank(item.rate);
-      }
-      dorender();
-    });
-	} else {
-    $('#edittool').hide();
-	}
-
-});
 
 
 
@@ -282,73 +198,6 @@ $(function (){
 {% include "profileheader.html" %}
 
 <div id="container" class="fixed">
-  <!-- edit tool for guest -->
-  <div class="right clear" id="edittool">
-    <h4><b>서열표 편집기</b></h4>
-    <div class="clear">
-      <input id="current_item" disabled="1" value="(곡을 선택해 주세요)"/>
-    </div>
-    <div class="clear">
-      <button data-value="0" class="btn btn-xs edit_clear">X</button>
-      <button data-value="1" class="btn btn-xs edit_clear">FAILED</button>
-      <button data-value="2" class="btn btn-xs edit_clear">ASSIST</button>
-      <button data-value="3" class="btn btn-xs edit_clear">EASY</button>
-      <button data-value="4" class="btn btn-xs edit_clear">GROOVE</button>
-      <button data-value="5" class="btn btn-xs edit_clear">HARD</button>
-      <button data-value="6" class="btn btn-xs edit_clear">EXH</button>
-      <button data-value="7" class="btn btn-xs edit_clear">FC</button>
-    </div>
-    <div class="clear">
-      <button data-value="0" class="btn btn-xs edit_rank">F</button>
-      <button data-value="30" class="btn btn-xs edit_rank">E</button>
-      <button data-value="40" class="btn btn-xs edit_rank">D</button>
-      <button data-value="50" class="btn btn-xs edit_rank">C</button>
-      <button data-value="60" class="btn btn-xs edit_rank">B</button>
-      <button data-value="70" class="btn btn-xs edit_rank">A</button>
-      <button data-value="80" class="btn btn-xs edit_rank">AA</button>
-      <button data-value="90" class="btn btn-xs edit_rank">AAA</button>
-    </div>
-    <p>마우스로 곡 선택 후,<br>Q/W: 난이도 수정, A/S: 랭크 수정 으로도 변경 가능.</p>
-    <!--<p>[:DJ명 수정.</p>-->
-    <p>페이지 이동시 자동으로 변경사항이 저장됩니다.</p>
-    <div class="clear">
-      <button id="edit_djname" class="btn btn-xs">DJ name</button>
-      <button id="edit_spclass" class="btn btn-xs">SP class</button>
-      <button id="edit_dpclass" class="btn btn-xs">DP class</button>
-    </div>
-    <script language="javascript">
-      $('#edit_djname').click(function () {
-        var s = prompt("새 DJ명을 입력해 주세요");
-        if (s.length) {
-          tabledata.info.username = s;
-          dorender();
-        }
-      });
-      $('#edit_spclass').click(function () {
-        var s = prompt("숫자를 입력하세요 (미취득(1), 7級(2)~1級(8), 初段(9)~十段(18), 中伝(19), 皆伝(20))");
-        if (s.length) {
-          var i = parseInt(s);
-          tabledata.info.spclass = i;
-          tabledata.info.spclassstr = getClassstr(i);
-          dorender();
-        }
-      });
-      $('#edit_dpclass').click(function () {
-        var s = prompt("숫자를 입력하세요 (미취득(1), 7級(2)~1級(8), 初段(9)~十段(18), 中伝(19), 皆伝(20))");
-        if (s.length) {
-          var i = parseInt(s);
-          tabledata.info.dpclass = i;
-          tabledata.info.dpclassstr = getClassstr(i);
-          dorender();
-        }
-      });
-    </script>
-    <div class="clear">
-      <button id="edit_reset" class="btn btn-xs">reset</button>
-    </div>
-  </div>
-  <!-- edit tool end -->
-
   <div class="left">
     <!--<a href="./detail/" class="btn btn-default">난이도 제안 & 자세한 정보</a>-->
   </div>
@@ -374,6 +223,9 @@ $(function (){
   </div>
   <div class="clear"></div>
 
+
+
+  <!-- rank table -->
   <div id="rankimg">
   </div>
   <div class="hidden">
@@ -384,6 +236,9 @@ $(function (){
     </form>
   </div>
 
+
+
+  <!-- edit tool -->
   {% if editable %}
   <div id="editwidget" class="beforeedit">
     <div id="editstart" class="beforeedit widget-title widget-click">서열표 편집하기</div>
