@@ -2,15 +2,15 @@
 {% load staticfiles %}
 <div id="header"><div class="inner">
   <div class="user">
-    <div class="userimage"><img src="/qpro/{{ userinfo.iidxid }}/"></div>
+    <div class="userimage"><img src="/qpro/{{ userdata.iidxid }}/"></div>
     <div class="userinfo">
-      <h3 class="username">DJ {{ userinfo.username }}</h3>
-      <div class="userid">{{ userinfo.iidxid }}</div>
+      <h3 class="username">DJ {{ userdata.djname }}</h3>
+      <div class="userid">{{ userdata.iidxid }}</div>
       <div class="usergrade">
-        <span class="label spdan dan{{ userinfo.spclass }}">{{ userinfo.spclassstr }}</span><span class="label dpdan dan{{ userinfo.dpclass }}">{{ userinfo.dpclassstr }}</span>
+        <span class="label spdan dan{{ userdata.spclass }}">{{ userdata.spclassstr }}</span><span class="label dpdan dan{{ userdata.dpclass }}">{{ userdata.dpclassstr }}</span>
       </div>
       <div class="userlevel">
-        <span class="level" onclick="if (confirm('점수를 갱신하시겠습니까?')) { updateuser('{{ userinfo.userid }}'); }"><span class="label label-default">★{{ userinfo.splevel }} / ★{{ userinfo.dplevel }}</span></span>
+        <span class="level" onclick="if (confirm('점수를 갱신하시겠습니까?')) { updateuser('{{ userdata.iidxmeid }}'); }"><span class="label label-default">★{{ userdata.splevel }} / ★{{ userdata.dplevel }}</span></span>
         <img src="{% static 'img/loading_small.gif' %}" width="20" id="loading_animation" style="display:none;">
       </div>
       <div class="userlevel"></div>
@@ -21,28 +21,28 @@
   </div>
   <div id="menu">
     <ul class="list sp">
-      <!--<a href="/{{ userinfo.iidxmeid }}/sp12_7"><li>SP12.7</li></a>-->
-      <a href="/{{ userinfo.iidxmeid }}/sp12"><li>SP12H</li></a>
-      <a href="/{{ userinfo.iidxmeid }}/sp12N"><li>SP12N</li></a>
-      <a href="/{{ userinfo.iidxmeid }}/sp11exh"><li>SP11EXH</li></a>
-      <a href="/{{ userinfo.iidxmeid }}/sp11h"><li>SP11H</li></a>
-      <a href="/{{ userinfo.iidxmeid }}/sp11N"><li>SP11N</li></a>
-      <a href="/{{ userinfo.iidxmeid }}/sp10"><li>SP10</li></a>
-      <!--<a href="/{{ userinfo.iidxmeid }}/sp9"><li>SP9</li></a>
-        <a href="/{{ userinfo.iidxmeid }}/sp8"><li>SP8</li></a>-->
+      <!--<a href="/{{ userdata.iidxmeid }}/sp12_7"><li>SP12.7</li></a>-->
+      <a href="/{{ userdata.iidxmeid }}/sp12"><li>SP12H</li></a>
+      <a href="/{{ userdata.iidxmeid }}/sp12N"><li>SP12N</li></a>
+      <a href="/{{ userdata.iidxmeid }}/sp11exh"><li>SP11EXH</li></a>
+      <a href="/{{ userdata.iidxmeid }}/sp11h"><li>SP11H</li></a>
+      <a href="/{{ userdata.iidxmeid }}/sp11N"><li>SP11N</li></a>
+      <a href="/{{ userdata.iidxmeid }}/sp10"><li>SP10</li></a>
+      <!--<a href="/{{ userdata.iidxmeid }}/sp9"><li>SP9</li></a>
+        <a href="/{{ userdata.iidxmeid }}/sp8"><li>SP8</li></a>-->
     </ul>
     <ul class="list dp">
-      <a href="/{{ userinfo.iidxmeid }}/dp12"><li>DP12</li></a>
-      <a href="/{{ userinfo.iidxmeid }}/dp12h"><li>DP12H</li></a>
-      <a href="/{{ userinfo.iidxmeid }}/dp11"><li>DP11</li></a>
-      <a href="/{{ userinfo.iidxmeid }}/dp11h"><li>DP11H</li></a>
-      <a href="/{{ userinfo.iidxmeid }}/dp10"><li>DP10</li></a>
-      <!--<a href="/{{ userinfo.iidxmeid }}/dp9"><li>DP9</li></a>
-        <a href="/{{ userinfo.iidxmeid }}/dp8"><li>DP8</li></a>-->
+      <a href="/{{ userdata.iidxmeid }}/dp12"><li>DP12</li></a>
+      <a href="/{{ userdata.iidxmeid }}/dp12h"><li>DP12H</li></a>
+      <a href="/{{ userdata.iidxmeid }}/dp11"><li>DP11</li></a>
+      <a href="/{{ userdata.iidxmeid }}/dp11h"><li>DP11H</li></a>
+      <a href="/{{ userdata.iidxmeid }}/dp10"><li>DP10</li></a>
+      <!--<a href="/{{ userdata.iidxmeid }}/dp9"><li>DP9</li></a>
+        <a href="/{{ userdata.iidxmeid }}/dp8"><li>DP8</li></a>-->
     </ul>
     <ul class="list table">
-      <a href="/{{ userinfo.iidxmeid }}/stat/skill"><li>Best</li></a>
-      <a href="/{{ userinfo.iidxmeid }}/stat/recm"><li>Recommend</li></a>
+      <a href="/{{ userdata.iidxmeid }}/stat/skill"><li>Best</li></a>
+      <a href="/{{ userdata.iidxmeid }}/stat/recm"><li>Recommend</li></a>
     </ul>
   </div>
 </div></div>

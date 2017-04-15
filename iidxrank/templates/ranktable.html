@@ -2,16 +2,19 @@
   ranktable in html form - information should be minimized for ease of parsing
 -->
 
-<div id="ranktable" class="ranktable {{ type }}" data-name="{{ ranktable.title }}">
-  {% for category in ranktable.categories %}
-  <div class="rank-category">{{ category.category }}</div>
-  <div class="rank-items">
-    {% for item in category.items %}
-    <div class="rank-item" data-id="{{ item.id }}" data-title="{{ item.title }}" data-tag="{{ item.tag }}" data-rate="{{ item.rate }}">
-      <span class="title">{{ item.data.title }}</span>
-      <span class="img"></span>
-    </div>
-    {% endfor %}
+{% for category in categories %}
+<div class="rank-category">{{ category.category }}</div>
+<div class="rank-items">
+  {% for item in category.items %}
+  <div class="rank-item rank-item-{{ item.data.diff }}" data-id="{{ item.pkid }}" data-title="{{ item.title }}" data-tag="{{ item.tag }}" data-rate="{{ item.rate }}">
+    <span class="level">{{ item.data.level }}</span>
+    <span class="title">{{ item.data.title }}</span>
+    <span class="img"></span>
+    {% if edit %}
+    <button class="btn edit-button edit-rank edit-rank-{{ item.rank }}" data-rank="{{ item.rank }}"></button>
+    <button class="btn edit-button edit-clear edit-clear-{{ item.clear }}" data-clear="{{ item.clear }}"></button>
+    {% endif %}
   </div>
   {% endfor %}
-</table>
+</div>
+{% endfor %}

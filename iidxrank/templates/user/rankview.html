@@ -13,7 +13,9 @@
 // django csrf token
 
 window.csrftoken="{{ csrf_token }}";
-var ftitle = "{{ pageinfo.title }} - DJ {{ userinfo.name }}"
+var tablename = "{{ tableinfo.tablename }}";
+var editmode = ("{{ editable }}"=="True");
+var ftitle = "{{ tableinfo.title }} - DJ {{ userdata.name }}"
 var fname = ftitle + ".png";
 
 
@@ -132,9 +134,9 @@ $(function () {
     // clone data
     tabledata_orig = jQuery.extend(true, {}, tabledata);
 		$(window).on('beforeunload', function () {
-			saveSetting("{{ pageinfo.tablename }}_data", createSaveString(tabledata));
+			saveSetting("{{ tableinfo.tablename }}_data", createSaveString(tabledata));
 		});
-		var savedata = loadSetting("{{ pageinfo.tablename }}_data");
+		var savedata = loadSetting("{{ tableinfo.tablename }}_data");
     if (savedata) {
       if (!loadSaveString(savedata, tabledata)) {
         alert("저장된 데이터 불러오기에 실패하였습니다.\n기존작 저장 정보가 새 서열표 시스템과 호환되지 않습니다.");
@@ -381,6 +383,22 @@ $(function (){
       <input type="hidden" id="imgname" name="name">
     </form>
   </div>
+
+  {% if editable %}
+  <div id="editwidget" class="beforeedit">
+    <div id="editstart" class="beforeedit widget-title widget-click">서열표 편집하기</div>
+    <a href="./"><div id="editfinish" class="afteredit widget-title widget-click">서열표 새로고침</div></a>
+    <div id="editsonglist" class="songlist afteredit">
+    </div>
+    <div style="display:none;">
+      <form id="editform">
+        {% csrf_token %}
+        <input id="editform-action" name="action">
+        <input id="editform-v" name="v">
+      </form>
+    </div>
+  </div>
+  {% endif %}
 
 </div>
 {% endblock %}

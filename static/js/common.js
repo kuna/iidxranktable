@@ -1,12 +1,3 @@
-/* comment part */
-function openComment(url) {
-	if (url.indexOf("/-1/") > 0) {
-		alert("유효하지 않은 곡 번호입니다. DB 업데이트가 필요합니다.\n사이트 관리자에게 문의하세요.");
-		return false;
-	}
-	window.open(url, 'insane_newwindow', 'width=600, height=600');
-	return false;
-}
 
 /* load json (for datatable) */
 function loadJSON(json_url, processor, onload) {
@@ -214,10 +205,10 @@ function createSaveString(tabledata) {
   savedata['info'] = {};
   savedata['songs'] = {};
 
-  savedata['info']['username'] = tabledata.info.username;
-  savedata['info']['spclass'] = tabledata.info.spclass;
-  savedata['info']['dpclass'] = tabledata.info.dpclass;
-  savedata['info']['iidxid'] = tabledata.info.iidxid;
+  savedata['info']['username'] = tabledata.userdata.username;
+  savedata['info']['spclass'] = tabledata.userdata.spclass;
+  savedata['info']['dpclass'] = tabledata.userdata.dpclass;
+  savedata['info']['iidxid'] = tabledata.userdata.iidxid;
 
   for (var i in tabledata.categories) {
     var cate = tabledata.categories[i];
@@ -235,12 +226,13 @@ function createSaveString(tabledata) {
 function loadSaveString(str, tabledata) {
   var savedata = JSON.parse(str);
   if (savedata.savedata_version == 1.0) {
-    tabledata.info.username = savedata.info.username;
-    tabledata.info.spclass = savedata.info.spclass;
-    tabledata.info.dpclass = savedata.info.dpclass;
-    tabledata.info.spclassstr = getClassstr(savedata.info.spclass);
-    tabledata.info.dpclassstr = getClassstr(savedata.info.dpclass);
-    tabledata.info.iidxid = savedata.info.iidxid;
+    console.log(savedata);
+    tabledata.userdata.username = savedata.info.username;
+    tabledata.userdata.spclass = savedata.info.spclass;
+    tabledata.userdata.dpclass = savedata.info.dpclass;
+    tabledata.userdata.spclassstr = getClassstr(savedata.info.spclass);
+    tabledata.userdata.dpclassstr = getClassstr(savedata.info.dpclass);
+    tabledata.userdata.iidxid = savedata.info.iidxid;
 
     for (var i in tabledata.categories) {
       var cate = tabledata.categories[i];
@@ -255,7 +247,6 @@ function loadSaveString(str, tabledata) {
       }
     }
 
-    // set some properties from tabledata (TODO)
     return true;
   } else {
     console.log("invalid save data");
@@ -418,4 +409,93 @@ $(function() {
       dorender($(this).attr("data-value"));
     });
   });
+});
+
+
+
+
+
+
+/*
+ * edit tool
+ */
+$(function() {
+  function submit(action,v) {
+    $('#editform-action').val(action);
+    $('#editform-v').val(v);
+    var jstr = $('#editform').serialize();
+    console.log(jstr);
+    $.ajax({
+      url: "/!/modify/",
+      type: "POST",
+      data: jstr,
+      success: function(r) {
+        console.log(r);
+        showMessage(r.message);
+      }
+    });
+  }
+
+  $('#editstart').click(function () {
+    var clears = ['0','1','2','3','4','5','6','7'];
+    var ranks = ['F','E','D','C','B','A','AA','AAA'];
+    $('#editwidget').removeClass('beforeedit');
+    $('#editwidget').addClass('afteredit');
+    /* load ranktable from webpage */
+    $('#editsonglist').load('./table/?edit=1', function () {
+      /* attach edit button to each songs */
+      $('.edit-rank').click(function(e) {
+        var rank_str = $(this).attr('data-rank');
+        var rank = ranks.indexOf(rank_str);
+        if (rank < 0) {
+          alert('error');
+          return;
+        }
+        $(this).removeClass('edit-rank-'+ranks[rank]);
+        rank = (rank+1)%9;
+        $(this).addClass('edit-rank-'+ranks[rank]);
+        $(this).attr('data-rank', ranks[rank]);
+        var param = [{'id':parseInt($(this).parent().attr('data-id')),'rank':rank}];
+        submit('edit',JSON.stringify(param));
+      });
+      $('.edit-clear').click(function(e) {
+        var clear = parseInt($(this).attr('data-clear'));
+        $(this).removeClass('edit-clear-'+clears[clear]);
+        clear = (clear+1)%8;
+        $(this).addClass('edit-clear-'+clears[clear]);
+        $(this).attr('data-clear', clear);
+        var param = [{'id':parseInt($(this).parent().attr('data-id')),'clear':clear}]
+        submit('edit',JSON.stringify(param));
+      });
+    });
+    
+  });
+
+  /* If web cache exists, then ask and remove it */
+  var tname =tablename;
+  if (tname && editmode) {
+    var savedata = loadSetting(tname + "_data");
+    if (savedata) {
+      var chk = confirm("기존에 저장된 데이터를 발견했습니다.\n불러오시겠습니까? [y/n]");
+      if (chk == 'n') {
+      } else if (chk == 'y') {
+        var savedata = JSON.parse(str);
+        if (savedata.savedata_version == 1.0) {
+          alert("버전이 호환되지 않아 불러올 수 없습니다.");
+          return;
+        }
+        var param = [];
+        for (var pkid in savedata.songs) {
+          var sitem = savedata.songs[item.pkid];
+          var item = {
+            'id': pkid,
+            'clear': sitem.clear,
+            'rate': sitem.rate
+          };
+          param.push(item);
+        }
+        submit('edit',JSON.stringify(param))
+      }
+    }
+  }
 });

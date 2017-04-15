@@ -16,7 +16,16 @@ def get_ranktable(tablename):
 
 def get_player_from_request(request):
     if (request.user.is_authenticated()):
-        return models.Player.objects.filter(user=request.user).first()
+        player = models.Player.objects.filter(user=request.user).first()
+        if (player == None):
+            user = request.user
+            player = models.Player.objects.create(
+                    iidxmeid=user.username,
+                    iidxid='00000000',
+                    iidxnick=user.username,
+                    user=user
+                    )
+        return player
     else:
         return None
 
@@ -58,9 +67,10 @@ def generate_prdata_from_song(song):
         'clear': 0,
         'clearstring': iidx.getclearstring(0),
         'data': {
-            'diff_detail': song.songtype,
-            'diff': song.songtype[-1:],
+            'diff': song.songtype,
+            'type': song.songtype[-1:],
             'title': song.songtitle,
+            'level': song.songlevel,
             'id': song.songid,
             'version': song.version,
             'notes': 0,
@@ -168,15 +178,12 @@ class DateTimeEncoder(json.JSONEncoder):
 def serialize_ranktable(ranktable):
     return json.dumps(ranktable, cls=DateTimeEncoder)
 
-"""
-get pdata from iidx.me object
-- add 'pkid', 'tag' for future processing
-"""
-def get_pdata_from_iidxme(data, ranktable):
-    musicdata = []
-    userdata = {}
-    tabledata = []
 
+"""
+only get userdata
+"""
+def get_udata_from_iidxme(data):
+    userdata = {}
     spclass = data['userdata']['spclass']
     dpclass = data['userdata']['dpclass']
     spclassstr = iidx.getdanstring(spclass)
@@ -206,6 +213,17 @@ def get_pdata_from_iidxme(data, ranktable):
         pass
     userdata['splevel'] = splevel
     userdata['dplevel'] = dplevel
+    return userdata
+
+
+"""
+get pdata from iidx.me object
+- add 'pkid', 'tag' for future processing
+"""
+def get_pdata_from_iidxme(data, ranktable):
+    musicdata = []
+    tabledata = []
+    userdata = get_udata_from_iidxme(data);
 
 
     for music in data['musicdata']:
@@ -234,24 +252,41 @@ def get_pdata_from_iidxme(data, ranktable):
 
 
 """
+get only userdata from player object
+"""
+def get_udata_from_player(player):
+    userdata = {}
+    if (player == None):
+        userdata['djname'] = 'NONAME'
+        userdata['iidxid'] = '00000000'
+        userdata['iidxmeid'] = '!'
+        userdata['spclass'] = 1
+        userdata['dpclass'] = 1
+        userdata['spclassstr'] = iidx.getdanstring(1)
+        userdata['dpclassstr'] = iidx.getdanstring(1)
+    else:
+        userdata['djname'] = player.iidxnick
+        userdata['iidxid'] = player.iidxid.replace('-','')
+        userdata['iidxmeid'] = '!'
+        userdata['spclass'] = player.spclass
+        userdata['dpclass'] = player.dpclass
+        userdata['spclassstr'] = iidx.getdanstring(player.spclass)
+        userdata['dpclassstr'] = iidx.getdanstring(player.dpclass)
+    return userdata
+
+
+"""
 get pdata from player object
 - if player==None, then return DJ NONAME (empty player)
 """
 def get_pdata_from_player(player, ranktable):
     musicdata = []
-    userdata = {}
     tabledata = []
+    userdata = get_udata_from_player(player)
 
-    # generate player data
+
+    # generate player records
     if (player == None):
-        userdata['djname'] = 'NONAME'
-        userdata['iidxid'] = '00000000'
-        userdata['spclass'] = 1
-        userdata['dpclass'] = 1
-        userdata['spclassstr'] = iidx.getdanstring(1)
-        userdata['dpclassstr'] = iidx.getdanstring(1)
-
-        # generate player records
         songs = get_songs_from_ranktable(ranktable)
         for song in songs:
             music = {
@@ -261,9 +296,10 @@ def get_pdata_from_player(player, ranktable):
                 'clear': 0,
                 'clearstring': iidx.getclearstring(0),
                 'data': {
-                    'diff_detail': song.songtype,
-                    'diff': song.songtype[-1:],
+                    'diff': song.songtype,
+                    'type': song.songtype[-1:],
                     'title': song.songtitle,
+                    'level': song.songlevel,
                     'id': song.songid,
                     'version': song.version,
                     'notes': 0,
@@ -276,6 +312,7 @@ def get_pdata_from_player(player, ranktable):
     else:
         userdata['djname'] = player.iidxnick
         userdata['iidxid'] = player.iidxid.replace('-','')
+        userdata['iidxmeid'] = '!'
         userdata['spclass'] = player.spclass
         userdata['dpclass'] = player.dpclass
         userdata['spclassstr'] = iidx.getdanstring(player.spclass)
@@ -306,9 +343,10 @@ def get_pdata_from_player(player, ranktable):
                 'clear': clear,
                 'clearstring': iidx.getclearstring(clear),
                 'data': {
-                    'diff_detail': song.songtype,
+                    'type': song.songtype,
                     'diff': song.songtype[-1:],
                     'title': song.songtitle,
+                    'level': song.songlevel,
                     'id': song.songid,
                     'version': song.version,
                     'notes': notes,

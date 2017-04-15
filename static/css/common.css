@@ -15,6 +15,8 @@ http://mplus.font-face.jp/#/
   margin:0;
 }
 
+html,body { height:100%; }
+
 .hidden { display:none; }
 
 /* index & post style */
@@ -169,6 +171,52 @@ table .loading { color:#999; text-align: center; padding:20px; }
   background-color: #9cf;
   height: 24px;
 }
+
+#editwidget.beforeedit .afteredit { display:none; }
+#editwidget.afteredit .beforeedit { display:none; }
+/*mobile: full screen*/
+#editwidget { position: fixed; left:none; right:60px; width:420px; bottom: 0px; background: rgba(0,0,0,0.8);
+  color: #fff; font-size:12pt; }
+#editsonglist { padding: 0; overflow-y: scroll; max-height: 560px; font-weight: normal; }
+@media screen and (max-width: 768px) {
+  #editwidget { max-height: 100%; width: 100%; left: 0%; right: 0; overflow-y: scroll; }
+  #editsonglist { max-height: none; overflow-y: visible; }
+}
+#editwidget .widget-click { cursor: pointer; }
+#editwidget .widget-title { font-weight: bold; padding: 10px; }
+#editsonglist .rank-category,
+#editsonglist .rank-item { padding: 6px 0px; overflow: hidden; clear: both; }
+#editsonglist .rank-category { background-color: #666; padding-left: 20px; padding-right: 20px; }
+#editsonglist .rank-item .level { cursor:default; letter-spacing:-1px; text-align: center; display: block; width:40px; float: left; font-weight:bold; }
+#editsonglist .rank-item .title { cursor:default; font-weight: normal; display: block; width:200px; float: left; overflow:hidden; white-space:nowrap; text-overflow: ellipsis; }
+#editsonglist .rank-item-L .level { color:#633; }
+#editsonglist .rank-item-A .level { color:#C99; }
+#editsonglist .rank-item-H .level { color:#CC9; }
+#editsonglist .rank-item-N .level { color:#69C; }
+#editsonglist .edit-button { background:none; border: 1px solid #666; line-height: 10px; padding: 5px; width: 80px; text-align: center; float: right; margin-right: 10px; }
+#editsonglist .edit-rank { width: 40px; }
+#editsonglist .edit-clear-0:before { content:'NOPLAY'; color:#666; }
+#editsonglist .edit-clear-1:before { content:'FAILED'; color:#999; }
+#editsonglist .edit-clear-2:before { content:'ASSIST'; color:#CAA; }
+#editsonglist .edit-clear-3:before { content:'EASY'; color:#9C6; }
+#editsonglist .edit-clear-4:before { content:'NORMAL'; color:#69C; }
+#editsonglist .edit-clear-5:before { content:'HARD'; color:#C99; }
+#editsonglist .edit-clear-6:before { content:'EXHARD'; color:#CC9; }
+#editsonglist .edit-clear-7:before { content:'FC'; color:#FFF; }
+#editsonglist .edit-rank-F:before { content:'F'; color:#666; }
+#editsonglist .edit-rank-E:before { content:'E'; color:#666; }
+#editsonglist .edit-rank-D:before { content:'D'; color:#666; }
+#editsonglist .edit-rank-C:before { content:'C'; color:#666; }
+#editsonglist .edit-rank-B:before { content:'B'; color:#CCC; }
+#editsonglist .edit-rank-A:before { content:'A'; color:#FCC; }
+#editsonglist .edit-rank-AA:before { content:'AA'; color:#FFC; }
+#editsonglist .edit-rank-AAA:before { content:'AAA'; color:#FFF; }
+@media screen and (max-width: 768px) {
+  #editsonglist .rank-item .title { width: auto; overflow:visible; }
+  #editsonglist .edit-button { width: 200px; line-height: 30px; }
+  #editsonglist .edit-rank { width: 100px; }
+}
+
 
 /* some nasty things ... */
 .type span:before { content: "미정"; }

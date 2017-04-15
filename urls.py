@@ -65,6 +65,7 @@ urlpatterns = [
             url(r'^!/logout/$', views.logout),
             url(r'^!/withdraw/$', views.withdraw),
 
+            url(r'^!/modify/$', views.modify),
 
         # common urls (mainpage, userpage, rankpage)
             url(r'^$', views.mainpage, name="main"),

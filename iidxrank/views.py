@@ -53,8 +53,9 @@ def userjson(request, username="!"):
 
 def userpage(request, username="!"):
     if (username == "!"):
-        # make dummy data
-        player = None
+        # load player information from DB
+        pobj = rp.get_player_from_request(request)
+        userinfo = rp.get_udata_from_player(pobj)
     else:
         # check recent json to get player info
         #userjson_url = "http://json.iidx.me/%s/recent/" % username
@@ -64,8 +65,8 @@ def userpage(request, username="!"):
         if (not checkValidPlayer(player)):
             # invalid user!
             raise Http404
-    playerinfo = rp.getUserInfo(player, username)
-    return render(request, 'user/userpage.html', {'userinfo': playerinfo})
+        userinfo = rp.get_udata_from_iidxme(player)
+    return render(request, 'user/userpage.html', {'userdata': userinfo})
 
 # common for rankpage
 def retrieve_userdata(request, username, tablename):
@@ -116,10 +117,11 @@ def rankpage(request, username="!", tablename="SP12"):
     d['tabledata_json'] = json.dumps(tabledata)
     return render(request, 'user/rankview.html', d)
 """
-def rankpage(request, username="!", tablename="SP12"):
+def get_pdata(request,username,tablename):
     table = rp.get_ranktable(tablename)
     if (table == None):
-        raise Http404
+        #raise Http404
+        return None
     player = None
     if (username == "!"):
         player = rp.get_player_from_request(request)
@@ -130,13 +132,20 @@ def rankpage(request, username="!", tablename="SP12"):
         userpage_url = "http://iidx.me/%s/%s/level/%d/" % (username, table.type.lower(), table.level)
         iidxme_data = iidxme.parse_iidxme_http(userpage_url)
         if (not checkValidPlayer(iidxme_data)):
-            raise Http404
+            #raise Http404
+            return None
         pdata = rp.get_pdata_from_iidxme(iidxme_data,table)
     # only session authorized user can edit table.
     if (player):
         pdata['editable']=True
     else:
         pdata['editable']=False
+    return pdata
+
+def rankpage(request, username="!", tablename="SP12"):
+    pdata = get_pdata(request,username,tablename)
+    if (pdata == None):
+        raise Http404
     # append additional data
     pdata['tabledata_json'] = rp.serialize_ranktable(pdata)
     return render(request, 'user/rankview.html', pdata)
@@ -148,12 +157,18 @@ def detailpage(request, username="!", tablename="SP12"):
 """
 
 def ranktable(request, username="!", tablename="SP12"):
-    d = retrieve_userdata(request, username, tablename)
-    return render(request, 'ranktable.html', d)
+    pdata = get_pdata(request,username,tablename)
+    if (pdata == None):
+        raise Http404
+    if (request.GET.get('edit') != None):
+        pdata['edit'] = True
+    return render(request, 'ranktable.html', pdata)
 
 def rankjson(request, username="!", tablename="SP12"):
-    d = retrieve_userdata(request, username, tablename)
-    return JsonResponse(d)
+    pdata = get_pdata(request,username,tablename)
+    if (pdata == None):
+        raise Http404
+    return JsonResponse(pdata)
 
 def rankedit(request, tablename):
     tablename = tablename.upper()
@@ -287,29 +302,37 @@ def modify(request):
     if (not request.user.is_authenticated()):
         return JsonResponse({'code': 1, 'message': 'please log in'})
     user = request.user
-    player = models.Player.objects.get(user=user)
-    if (player == None):
-        player = models.Player.objects.create(
-                iidxmeid='',
-                iidxid='-',
-                iidxnick=user.username,
-                user=user
-                )
-    action = request.GET.get('action', '')
-    v = request.GET.get('v', '')
-    if (action == 'record'):
+    player = rp.get_player_from_request(request)
+    if (request.method == "POST"):
+        action = request.POST.get('action', '')
+        v = request.POST.get('v', '')
+    else:
+        action = request.GET.get('action', '')
+        v = request.GET.get('v', '')
+    if (action == 'edit'):
         try:
             lst = json.loads(v)
+            print lst
             for l in lst:
-                sid = int(l['sid'])
+                sid = int(l['id'])
                 song = models.Song.objects.get(id=sid)
-                pr = models.PlayRecord.objects.get_or_create(song=song,player=player)
-                pr.playclear = int(l['clear'])
-                pr.playscore = int(l['score'])
+                (pr,_) = models.PlayRecord.objects.get_or_create(song=song,player=player)
+                if ('clear' in l):
+                    pr.playclear = int(l['clear'])
+                rate = None
+                if ('rate' in l):
+                    rate = float(l['rate'])
+                if ('rank' in l):
+                    ranks = [11.12,22.23,33.34,44.45,55.56,66.67,77.78,88.89,100]
+                    rate = ranks[l['rank']]
+                if ('score' in l):
+                    pr.playscore = int(l['score'])
+                elif (rate != None):
+                    pr.playscore = int(song.songnotes * rate / 100)
                 pr.save()
         except Exception as e:
-            return JsonResponse({'code': 1, 'message': 'Invalid Song modification'})
-    if (action == 'recorddelete'):
+            return JsonResponse({'code': 1, 'message': 'Invalid Song modification', 'detail':str(e)})
+    elif (action == 'delete'):
         try:
             sid = int(v)
             song = models.Song.objects.get(id=sid)
