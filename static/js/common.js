@@ -436,7 +436,7 @@ $(function() {
     });
   }
 
-  $('#editstart').click(function () {
+  $('#editstart').on('click touch', function () {
     var clears = ['0','1','2','3','4','5','6','7'];
     var ranks = ['F','E','D','C','B','A','AA','AAA'];
     $('#editwidget').removeClass('beforeedit');
@@ -444,7 +444,7 @@ $(function() {
     /* load ranktable from webpage */
     $('#editsonglist').load('./table/?edit=1', function () {
       /* attach edit button to each songs */
-      $('.edit-rank').click(function(e) {
+      $('.edit-rank').on('click touch', function(e) {
         var rank_str = $(this).attr('data-rank');
         var rank = ranks.indexOf(rank_str);
         if (rank < 0) {
@@ -457,8 +457,9 @@ $(function() {
         $(this).attr('data-rank', ranks[rank]);
         var param = [{'id':parseInt($(this).parent().attr('data-id')),'rank':rank}];
         submit('edit',JSON.stringify(param));
+        return false;
       });
-      $('.edit-clear').click(function(e) {
+      $('.edit-clear').on('click touch', function(e) {
         var clear = parseInt($(this).attr('data-clear'));
         $(this).removeClass('edit-clear-'+clears[clear]);
         clear = (clear+1)%8;
@@ -466,14 +467,17 @@ $(function() {
         $(this).attr('data-clear', clear);
         var param = [{'id':parseInt($(this).parent().attr('data-id')),'clear':clear}]
         submit('edit',JSON.stringify(param));
+        return false;
       });
     });
-    
+    return false;
   });
 
   /* If web cache exists, then ask and remove it */
-  var tname =tablename;
-  if (tname && editmode) {
+  if (typeof tablename !== "undefined" &&
+      typeof editmode !== "undefined" && 
+      editmode) {
+    var tname =tablename;
     var key = tname+"_data";
     var savedata = loadSetting(key);
     if (savedata) {
