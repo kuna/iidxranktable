@@ -156,15 +156,15 @@ function DefaultScoreRenderer(ctx) {
     self.ctx.strokeStyle="#333";
     self.ctx.lineWidth=8;
     self.ctx.miterLimit=2;
-    self.ctx.strokeText(d.title, x+w/2, 70);
+    self.ctx.strokeText(d.tableinfo.title, x+w/2, 70);
     self.ctx.fillStyle="#EEE";
-    self.ctx.fillText(d.title, x+w/2, 70);
+    self.ctx.fillText(d.tableinfo.title, x+w/2, 70);
 
     // DJ name, clear status
     self.ctx.font = "bold 14px Arial";
     self.ctx.textAlign="left";
     self.ctx.fillStyle="#000";
-    self.ctx.fillText("DJ " + d.username, x + 12, 132);
+    self.ctx.fillText("DJ " + d.userdata.djname, x + 12, 132);
 
     var gradecolor = [
       "#000000",
@@ -189,13 +189,13 @@ function DefaultScoreRenderer(ctx) {
       "#999999",  // 19
       "#DDDD33",  // 20
       ]
-    if (d.spclass > 0) {
-      self.ctx.fillStyle=gradecolor[d.spclass];
-      self.ctx.fillText("SP" + d.spclassstr, x+w-120, 132);
+    if (d.userdata.spclass > 0) {
+      self.ctx.fillStyle=gradecolor[d.userdata.spclass];
+      self.ctx.fillText("SP" + d.userdata.spclassstr, x+w-120, 132);
       self.ctx.fillStyle="#000";
       self.ctx.fillText("/", x+w-68, 132);
-      self.ctx.fillStyle=gradecolor[d.dpclass];
-      self.ctx.fillText("DP" + d.dpclassstr, x+w-60, 132);
+      self.ctx.fillStyle=gradecolor[d.userdata.dpclass];
+      self.ctx.fillText("DP" + d.userdata.dpclassstr, x+w-60, 132);
     }
   }
 
@@ -218,7 +218,7 @@ function DefaultScoreRenderer(ctx) {
     self.ctx.font = "13px Arial";
     self.ctx.textAlign="right";
     console.log(d);
-    var tdate = new Date(d.tabletime * 1000);
+    var tdate = new Date(d.tableinfo.tabletime * 1000);
     self.ctx.fillText("Today: " + formatDate(new Date()) + " / Updated: " + formatDate(tdate),
         x+w, y+h+20);
     // copyright

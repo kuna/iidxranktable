@@ -85,8 +85,8 @@ common processor of 'playrecord data'
 """
 def process_prdata(music):
     # make diff(DP + A) string upper
-    music['data']['diff_detail'] = music['data']['diff']
-    music['data']['diff'] = music['data']['diff'][-1:].upper()
+    music['data']['diff'] = music['data']['diff']
+    music['data']['type'] = music['data']['diff'][-1:].upper()
     # add clear metadata (number to readable string)
     clear = int(music['clear'])
     music['clearstring'] = iidx.getclearstring(clear)
@@ -234,7 +234,7 @@ def get_pdata_from_iidxme(data, ranktable):
         # add song pk/tag
         song_query = models.Song.objects
         try:
-            song_obj = song_query.get(songid=music['data']['id'], songtype=music['data']['diff_detail'])
+            song_obj = song_query.get(songid=music['data']['id'], songtype=music['data']['diff'])
             music['pkid'] = song_obj.id
             music['tags'] = song_obj.get_tags()
         except Exception as e:

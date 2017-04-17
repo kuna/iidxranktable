@@ -119,6 +119,10 @@ def parse_iidxme_http_musicdata(html):
                 obj['data']['notes'] = int(cells[3].get_text())
             except ValueError:
                 obj['data']['notes'] = 0
+            if ('noscore' in cells[6]['class']):
+                obj['score'] = 0
+            else:
+                obj['score'] = int(cells[6].find('span',class_='scorenum').get_text())
             obj['rate'] = float(cells[7].find('span').get_text()[:-1])
             try:
                 obj['miss'] = int(cells[8].get_text())
