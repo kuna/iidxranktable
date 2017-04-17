@@ -2,7 +2,7 @@
 {% block subtitle %} - board{% endblock %}
 {% block head %}
 {% load staticfiles %}
-<link rel="stylesheet" type="text/css" href="{% static 'css/board.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'css/board.css' %}?v=170417">
 <link rel="stylesheet" type="text/css" href="{% static 'MooEditable/MooEditable.css' %}">
 <script language="javascript" src="{% static 'js/mootools.js' %}"></script>
 <script language="javascript" src="{% static 'js/MooEditable.js' %}"></script>
@@ -28,14 +28,16 @@ $(function () {
       <ul class="postlist">
       {% block postlist %}
 			{% for post in posts %}
+      <a href="/board/view/{{ post.id }}">
       <li>
         <div class="no">{{ post.id }}</div>
-        <a href="/board/view/{{ post.id }}">
         <div class="title">{{ post.title }}</div>
-        </a>
-        <div class="writer{% if comment.attr == 2 %} admin{% endif %}">{{ post.writer }}</div>
-        <div class="date">{{ post.time|date:"m-d H:i" }}</div>
+        <div class="detail">
+          <div class="writer{% if comment.attr == 2 %} admin{% endif %}">{{ post.writer }}</div>
+          <div class="date">{{ post.time|date:"m-d H:i" }}</div>
+        </div>
       </li>
+      </a>
 			{% endfor %}
       {% endblock %}
       </ul>

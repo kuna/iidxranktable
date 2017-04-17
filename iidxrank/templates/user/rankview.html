@@ -114,6 +114,7 @@ var dorender = function(_rendermode) {
       return false;
     });
     */
+    $(canvas).addClass('mobile_img');
     $("#rankimg").append(canvas);
   }, 100)};
 
@@ -133,6 +134,7 @@ $(function (){
   var height_per_element = 30;
   var height = tabledata.categories.length * height_per_element + 60;
   var canvas = document.createElement("canvas");
+  $(canvas).addClass('mobile_img');
   var ctx = canvas.getContext("2d");
   canvas.width = 600;
   canvas.height = height;

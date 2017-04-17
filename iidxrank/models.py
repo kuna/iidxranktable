@@ -75,6 +75,8 @@ class Player(models.Model):
     def isRefreshable(self):
         #print (now() - self.time).total_seconds() / 60 / 60 / 24
         return ((now() - self.time).total_seconds() / 60 / 60 / 24) >= 1
+    def get_playrecord_count(self):
+        return self.playrecord_set.count()
 
 class PlayRecord(models.Model):
     # MUST use db_index for performance

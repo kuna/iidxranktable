@@ -17,17 +17,22 @@
 .navigation { text-align: right; overflow:hidden; margin-bottom: 20px; }
 .navigation .right .btn { margin-left:10px; float:right; }
 
-.board .postlist { list-style:none; padding: 0 20px; }
+.board .postlist { list-style:none; padding: 0; }
 .board .postlist a { color: #333; }
 .board .postlist li { padding: 10px 10px; border-bottom: 1px solid #ccc; overflow:hidden; }
 .board .postlist li:hover { background-color: #f0f0f0; }
-.board .postlist li:last-child { border-bottom: none; padding-bottom: 0; }
+.board .postlist a:last-child li { border-bottom: none; padding-bottom: 0; }
 .board .postlist li div { float:left; padding: 0 10px; }
-.board .postlist li .no { width:50px; text-align: center; }
 .board .postlist li .title { width: 600px; }
-.board .postlist li .writer { float: right; width: 100px; }
-.board .postlist li .date { float: right; width: 150px; }
-.board .postlist li .detail { width: 600px; font-size: 10pt; color:#999; }
+.board .postlist li .no { width:50px; text-align: center; color:#999; font-size:9pt; }
+.board .postlist li .detail { width: auto; float: right; font-size: 9pt; }
+.board .postlist li .cnt { color:#666; color:#999; }
+.board .postlist li .writer { color:#999; }
+.board .postlist li .date { letter-spacing:-1px; color:#999; }
+@media screen and (max-width: 768px) {
+  .board .postlist li .title { max-width: 240px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .board .postlist li .detail { clear: both; font-size: 8pt; padding-top: 5px; }
+}
 
 .post .info { overflow: hidden; padding-bottom: 10px; border-bottom: 1px solid #999; margin-bottom:20px; }
 .post .info .title {  }
@@ -45,11 +50,14 @@
 .writeform .submit { width: 100px; float: right; }
 #richedit { height:280px; }
 .mooeditable-container { background-color:#fff; }
+.recaptcha { clear:left; transform:scale(0.7); transform-origin:0; float:left; }
 
 /* for small screen, or songcomment */
 @media screen and (max-width: 768px) {
   .writeform .text { width: 100%; margin-bottom: 20px; }
   .writeform .writer { width: 40%; }
   .writeform .password { width: 40%; }
+  .password .control-label { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .recaptcha { transform:scale(1);  }
 }
 

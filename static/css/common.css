@@ -102,10 +102,18 @@ table .loading { color:#999; text-align: center; padding:20px; }
 .user .usergrade { float:left; margin-left: 50px; }
 .user .userlevel { float:left; margin-left: 10px; }
 .user .userlevel .level { cursor:pointer; margin:0; }
+#header #menu { position:absolute; margin-top: 88px; margin-left: 240px; }
+@media screen and (max-width: 768px) {
+  .user { margin-top: 10px; padding-left: 15px; }
+  .user .userimage img { width: 64px; height: 64px; padding:6px; }
+  .user .usergrade { clear:left; float:left; margin-left: 0px; }
+  .user .usergrade, .user .userlevel { margin-top: 10px; }
+  #header #menu { margin-left: 15px; }
+  .mobile_img { width: 100% !important; }
+}
 #sidemenu { position:absolute; margin-top: 40px; width: 1000px; }
 #sidemenu button { float:right; }
 #sidemenu #search { width:200px; margin-right:10px; float:right; }
-#header #menu { position:absolute; margin-top: 88px; margin-left: 240px; }
 .list { list-style:none; margin-bottom:10px; clear:both; overflow:hidden; }
 .list li { float:left; display:block; font-size:11px; padding:4px 6px; border:2px solid #036; border-right: none; }
 .list a:last-child li { border-right: 2px solid #036; }
@@ -281,6 +289,7 @@ table .loading { color:#999; text-align: center; padding:20px; }
 @media screen and (max-width: 768px) {
   #top { height: auto; }
   #top .inner { width: 100%; margin: 0; padding:5px 20px; }
+  #search { display: none; }
   #topmenu li { margin-top: 10px; float:none; clear:both; overflow:hidden; }
   #header .inner { width: 100%; margin: 0; }
   #container { width:100%; }

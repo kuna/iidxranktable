@@ -259,7 +259,6 @@ def modify(request):
     if (action == 'edit'):
         try:
             lst = json.loads(v)
-            print lst
             for l in lst:
                 sid = int(l['id'])
                 song = models.Song.objects.get(id=sid)
