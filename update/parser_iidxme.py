@@ -203,3 +203,15 @@ def parse_songs_http():
             music['data']['diff'] = music['data']['diff'].upper()
             ret.append(music['data'])
     return ret
+
+def parse_qpro(username):
+    url = "http://iidx.me/%s" % username
+    try:
+        data = urllib.urlopen(url)
+        html = data.read()
+        data.close()
+        soup = BeautifulSoup(html, "lxml")
+        return "http://iidx.me" + soup.find('div', class_='qpro').find('img')['src']
+    except Exception as e:
+        print e
+        return None

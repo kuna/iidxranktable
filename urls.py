@@ -26,7 +26,8 @@ urlpatterns = [
 	    url(r'^admin/', include(admin.site.urls)),
             url(r'^imgtl/$', views.imgtl),
             url(r'^imgdownload/$', views.imgdownload),
-            url(r'^qpro/(?P<iidxid>[0-9]+)/$', views.qpro),
+            #url(r'^qpro/(?P<iidxid>[0-9]+)/$', views.qpro),
+            url(r'^qpro/(?P<iidxid>\w+)/$', views.qpro),
 
 	# update (NOT WORKING NOW)
             url(r'^update/', include([

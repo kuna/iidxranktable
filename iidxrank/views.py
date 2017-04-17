@@ -400,7 +400,8 @@ def qpro(request, iidxid):
         return HttpResponse(img_blank, content_type="image/png")
 
     import urllib2
-    qpro_url = 'http://iidx.me/userdata/copula/%s/qpro.png' % iidxid
+    #qpro_url = 'http://iidx.me/userdata/copula/%s/qpro.png' % iidxid
+    qpro_url = iidxme.parse_qpro(iidxid)
     try:
         resp = urllib2.urlopen(qpro_url)
         if (resp.info().maintype == "image"):
