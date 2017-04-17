@@ -22,11 +22,16 @@ import base64
 import update.parser_iidxme as iidxme
 
 
-
+"""
+check is iidxme data is valid player data
+TODO: make this code in parser_iidxme module
+"""
 def checkValidPlayer(player):
     return not (player == None or 
         'userdata' not in player or 
         player['status'] != 'success')
+
+
 
 def mainpage(request):
     # get first notice
@@ -68,55 +73,6 @@ def userpage(request, username="!"):
         userinfo = rp.get_udata_from_iidxme(player)
     return render(request, 'user/userpage.html', {'userdata': userinfo})
 
-# common for rankpage
-def retrieve_userdata(request, username, tablename):
-    # check is argument valid
-    tablename = tablename.upper()
-    try:
-        ranktable = models.RankTable.objects.get(tablename=tablename)
-    except:
-        # invalid table!
-        raise Http404
-
-    # load player json data
-    if (username == "!"):
-        # load player information from DB
-        player = None
-        if (request.user.is_authenticated()):
-            pobj = models.Player.objects.filter(user=request.user).first()
-            if (pobj):
-                player = rp.get_player_data(pobj, ranktable)
-    else:
-        #userjson_url = "http://json.iidx.me/%s/%s/level/%d/" % (username, ranktable.type.lower(), ranktable.level)
-        #player = jsondata.loadJSONurl(userjson_url)
-        userpage_url = "http://iidx.me/%s/%s/level/%d/" % (username, ranktable.type.lower(), ranktable.level)
-        player = iidxme.parse_iidxme_http(userpage_url)
-        if (not checkValidPlayer(player)):
-            # invalid user!
-            raise Http404
-
-    # compile user data to render score
-    userinfo, songdata, pageinfo = rp.compile_data(ranktable, player, models.Song.objects)
-    userinfo['title'] = pageinfo['title']
-    userinfo['iidxmeid'] = username
-    tabledata = {
-        'info': userinfo,
-        'categories': songdata
-        }
-
-    return {'score': songdata, 
-        'ranktable': tabledata,
-        'userinfo': userinfo, 
-        'pageinfo': pageinfo}
-
-"""
-def rankpage(request, username="!", tablename="SP12"):
-    d = retrieve_userdata(request, username, tablename)
-    tabledata = d['ranktable']
-    del d['ranktable']
-    d['tabledata_json'] = json.dumps(tabledata)
-    return render(request, 'user/rankview.html', d)
-"""
 def get_pdata(request,username,tablename):
     table = rp.get_ranktable(tablename)
     if (table == None):
@@ -174,7 +130,8 @@ def rankedit(request, tablename):
     tablename = tablename.upper()
 
     # only admin can access it
-    # TODO
+    if (not request.user.is_staff):
+        raise PermissionDenied
     
     # in case of POST? -> return JSON result
     if (request.method == "POST"):
@@ -185,21 +142,11 @@ def rankedit(request, tablename):
     if (ranktable == None):
         raise Http404
     # compile table data
-    userinfo, songdata, pageinfo = rp.compile_data(ranktable, None, models.Song.objects, False)
-    return render(request, 'rankedit.html', { 'songdata': songdata, 'tableid': ranktable.id, 'pageinfo': pageinfo })
-
-
-def songcomment_all(request, page=1):
-    songcomment_list = models.SongComment.objects.order_by('-time').all()
-    paginator = Paginator(songcomment_list, 100)
-
-    try:
-        songcomments = paginator.page(page)
-    except:
-        # invalid pagenation!
-        raise Http404
-
-    return render(request, 'recentcomment.html', {"comments": songcomments})
+    songs = rp.search_songs_from_ranktable(ranktable)
+    prs = rp.generate_pr(songs)
+    categories = rp.categorize_musicdata(prs, ranktable, False)
+    tableinfo = rp.get_ranktable_metadata(ranktable)
+    return render(request, 'rankedit.html', { 'categories': categories, 'tableid': ranktable.id, 'tableinfo': tableinfo })
 
 
 # /iidx/musiclist
@@ -393,8 +340,8 @@ def imgtl(request):
 
 # iidx/qpro/<iidxid>/
 @csrf_exempt
-def qpro(request, iidxid):
-    if (iidxid.isdigit() and int(iidxid) == 0):
+def qpro(request, iidxid='!'):
+    if ((iidxid.isdigit() and int(iidxid) == 0) or iidxid=='!' ):
         with open('static/qpro/noname.png', 'r') as f:
             img_blank = f.read()
         return HttpResponse(img_blank, content_type="image/png")
