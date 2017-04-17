@@ -183,13 +183,9 @@ table .loading { color:#999; text-align: center; padding:20px; }
 #editwidget.beforeedit .afteredit { display:none; }
 #editwidget.afteredit .beforeedit { display:none; }
 /*mobile: full screen*/
-#editwidget { position: fixed; left:none; right:60px; width:420px; bottom: 0px; background: rgba(0,0,0,0.8);
+#editwidget { position: fixed; left:none; right:60px; width:420px; bottom: 0px; background: rgba(0,0,0,0.95);
   color: #fff; font-size:12pt; }
 #editsonglist { padding: 0; overflow-y: scroll; max-height: 560px; font-weight: normal; }
-@media screen and (max-width: 768px) {
-  #editwidget { max-height: 100%; width: 100%; left: 0%; right: 0; overflow-y: scroll; }
-  #editsonglist { max-height: none; overflow-y: visible; }
-}
 #editwidget .widget-click { cursor: pointer; }
 #editwidget .widget-title { font-weight: bold; padding: 10px; }
 #editsonglist .rank-category,
@@ -220,9 +216,26 @@ table .loading { color:#999; text-align: center; padding:20px; }
 #editsonglist .edit-rank-AA:before { content:'AA'; color:#FFC; }
 #editsonglist .edit-rank-AAA:before { content:'AAA'; color:#FFF; }
 @media screen and (max-width: 768px) {
-  #editsonglist .rank-item .title { width: auto; overflow:visible; }
-  #editsonglist .edit-button { width: 200px; line-height: 30px; }
+  /*
+  #editwidget { max-height: 100%; width: 100%; left: 0%; right: 0; overflow-y: scroll; }
+  #editsonglist { max-height: none; overflow-y: visible; }
+  */
+  #editwidget { width: 100%; left: 0%; right: 0;}
+  #editsonglist { max-height: 980px; }
+
+  #editsonglist .rank-item .title { width: 400px; }
+  #editsonglist .edit-button { width: 150px; line-height: 20px; }
   #editsonglist .edit-rank { width: 100px; }
+}
+@media screen and (max-width: 420px) {
+  #editsonglist .rank-item .title { width: 180px; }
+  #editsonglist { max-height: 600px; }
+  #editsonglist .edit-button { width: 100px;  }
+  #editsonglist .edit-rank { width: 50px; }
+}
+@media screen and (max-width: 360px) {
+  #editsonglist .rank-item .title { width: 150px; }
+  #editsonglist { max-height: 560px; }
 }
 
 
