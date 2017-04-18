@@ -19,12 +19,18 @@ def get_player_from_request(request):
         player = models.Player.objects.filter(user=request.user).first()
         if (player == None):
             user = request.user
-            player = models.Player.objects.create(
-                    iidxmeid=user.username,
-                    iidxid='00000000',
-                    iidxnick=user.username,
-                    user=user
-                    )
+            if (models.Player.objects.filter(iidxmeid=user.username).count()):
+                # maybe previous modeled data exists, link it
+                player = models.Player.objects.get(iidxmeid=user.username)
+                player.user = request.user
+                player.save()
+            else:
+                player = models.Player.objects.create(
+                        iidxmeid=user.username,
+                        iidxid='00000000',
+                        iidxnick=user.username,
+                        user=user
+                        )
         return player
     else:
         return None

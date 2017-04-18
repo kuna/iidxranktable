@@ -215,6 +215,7 @@ table .loading { color:#999; text-align: center; padding:20px; }
 #editsonglist .edit-rank-A:before { content:'A'; color:#FCC; }
 #editsonglist .edit-rank-AA:before { content:'AA'; color:#FFC; }
 #editsonglist .edit-rank-AAA:before { content:'AAA'; color:#FFF; }
+#editsonglist .edit-rank-MAX:before { content:'MAX'; color:#EFF; }
 @media screen and (max-width: 768px) {
   /*
   #editwidget { max-height: 100%; width: 100%; left: 0%; right: 0; overflow-y: scroll; }

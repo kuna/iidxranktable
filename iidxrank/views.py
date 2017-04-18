@@ -269,12 +269,12 @@ def modify(request):
                 if ('rate' in l):
                     rate = float(l['rate'])
                 if ('rank' in l):
-                    ranks = [11.12,22.23,33.34,44.45,55.56,66.67,77.78,88.89,100]
+                    ranks = [0,22.3,33.4,44.5,55.6,66.7,77.8,88.9,100]
                     rate = ranks[l['rank']]
                 if ('score' in l):
                     pr.playscore = int(l['score'])
                 elif (rate != None):
-                    pr.playscore = int(song.songnotes * rate / 100)
+                    pr.playscore = int(song.songnotes * rate * 2 / 100)
                 pr.save()
         except Exception as e:
             return JsonResponse({'code': 1, 'message': 'Invalid Song modification', 'detail':str(e)})

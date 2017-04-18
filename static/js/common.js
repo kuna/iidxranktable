@@ -438,7 +438,7 @@ $(function() {
 
   $('#editstart').on('click touch', function () {
     var clears = ['0','1','2','3','4','5','6','7'];
-    var ranks = ['F','E','D','C','B','A','AA','AAA'];
+    var ranks = ['F','E','D','C','B','A','AA','AAA','MAX'];
     $('#editwidget').removeClass('beforeedit');
     $('#editwidget').addClass('afteredit');
     /* load ranktable from webpage */
@@ -452,7 +452,7 @@ $(function() {
           return;
         }
         $(this).removeClass('edit-rank-'+ranks[rank]);
-        rank = (rank+1)%9;
+        rank = (rank+1)%(ranks.length);
         $(this).addClass('edit-rank-'+ranks[rank]);
         $(this).attr('data-rank', ranks[rank]);
         var param = [{'id':parseInt($(this).parent().attr('data-id')),'rank':rank}];
@@ -462,7 +462,7 @@ $(function() {
       $('.edit-clear').on('click touch', function(e) {
         var clear = parseInt($(this).attr('data-clear'));
         $(this).removeClass('edit-clear-'+clears[clear]);
-        clear = (clear+1)%8;
+        clear = (clear+1)%(clears.length);
         $(this).addClass('edit-clear-'+clears[clear]);
         $(this).attr('data-clear', clear);
         var param = [{'id':parseInt($(this).parent().attr('data-id')),'clear':clear}]
