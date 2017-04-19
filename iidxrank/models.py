@@ -52,7 +52,7 @@ class Player(models.Model):
     also can relate with logged-in user.
     """
     time = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(User, null=True, on_delete=CASCADE)
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=CASCADE)
 
     iidxid = models.CharField(max_length=20)
     iidxmeid = models.CharField(max_length=20)
