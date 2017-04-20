@@ -211,8 +211,11 @@ def join(request):
         if (form.is_valid()):
             user = User.objects.create_user(
                     username=form.data['id'],
+                    first_name=form.data['id'],
                     email=form.data['email'],
                     password=form.data['password'])
+            # automatically create player object
+            rp.get_player_from_user(user)
             user = authenticate(username=form.data['id'], password=form.data['password'])
             login_django(request, user)
             return redirect('main')
@@ -242,6 +245,49 @@ def withdraw(request):
     else:
         form = forms.WithdrawForm(initial={'id': request.user.username})
     return render(request, 'user/withdraw.html', {'form': form})
+
+# /!/account/
+def account(request):
+    if (not request.user.is_authenticated()):
+        return redirect('main')
+    user = request.user
+    player = rp.get_player_from_request(request)
+    if (request.method == "POST"):
+        form = forms.AccountForm(request.POST)
+        if (form.is_valid()):
+            user.first_name = form.data['first_name']
+            player.iidxid = form.data['iidxid']
+            player.iidxnick = form.data['iidxnick']
+            player.spclass = form.data['spclass']
+            player.dpclass = form.data['dpclass']
+            user.save()
+            player.save()
+            return redirect('main')
+    else:
+        form = forms.AccountForm(initial={
+            'first_name': user.first_name,
+            'iidxid': player.iidxid,
+            'iidxnick': player.iidxnick,
+            'spclass': player.spclass,
+            'dpclass': player.dpclass
+            })
+    return render(request, 'user/account.html', {'form': form})
+
+# /!/set_password/
+def set_password(request):
+    if (not request.user.is_authenticated()):
+        return redirect('main')
+    if (request.method == "POST"):
+        form = forms.SetPasswordForm(request.POST)
+        if (form.is_valid()):
+            user = request.user
+            user.set_password(form.data['new_password'])
+            user.save()
+            return redirect('main')
+    else:
+        form = forms.SetPasswordForm()
+    return render(request, 'user/setpassword.html', {'form':form})
+
 
 # JSON
 # /!/modify/

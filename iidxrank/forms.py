@@ -4,6 +4,7 @@ from captcha.fields import ReCaptchaField
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 import models
+import iidx
 
 
 """
@@ -36,6 +37,23 @@ class JoinForm(forms.Form):
         if (user != None):
             raise forms.ValidationError('%s is already exists' % username)
         if (self.data['password'] != self.data['password_again']):
+            raise forms.ValidationError('Password does not match!')
+
+class AccountForm(forms.Form):
+    first_name = forms.CharField(widget=forms.TextInput())
+    iidxid = forms.CharField(widget=forms.TextInput())
+    iidxnick = forms.CharField(widget=forms.TextInput())
+    classes = iidx.classes
+    spclass = forms.ChoiceField(choices=classes)
+    dpclass = forms.ChoiceField(choices=classes)
+
+
+class SetPasswordForm(forms.Form):
+    new_password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control input-sm'}), min_length=4)
+    new_password_again = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control input-sm'}))
+
+    def clean(self):
+        if (self.data['new_password'] != self.data['new_password_again']):
             raise forms.ValidationError('Password does not match!')
 
 class WithdrawForm(forms.Form):

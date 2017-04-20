@@ -62,6 +62,8 @@ urlpatterns = [
             url(r'^!/login/$', views.login, name='login'),
             url(r'^!/join/$', views.join),
             url(r'^!/logout/$', views.logout),
+            url(r'^!/account/$', views.account),
+            url(r'^!/setpassword/$', views.set_password),
             url(r'^!/withdraw/$', views.withdraw),
 
             url(r'^!/modify/$', views.modify),

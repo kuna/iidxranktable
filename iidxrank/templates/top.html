@@ -6,7 +6,7 @@
     {% if user.is_authenticated %}
     <li>ID:{{ user.username }}</li>
     <li><a href="/!/logout/">로그아웃</a></li>
-    <li><a href="/!/withdraw/">탈퇴</a></li>
+    <li><a href="/!/account/">설정</a></li>
     {% else %}
     <li><a href="/!/login/">로그인</a></li>
     {% endif %}

@@ -14,30 +14,29 @@ def get_ranktable(tablename):
         return None
     return ranktable
 
+def get_player_from_user(user, create_if_none=True):
+    player = models.Player.objects.filter(user=user).first()
+    if (create_if_none and player == None):
+        pid = "user_%s" % user.username
+        if (models.Player.objects.filter(iidxmeid=pid).count()):
+            # maybe previous modeled data exists, link it
+            player = models.Player.objects.get(iidxmeid=pid)
+            player.user = request.user
+            player.save()
+        else:
+            player = models.Player.objects.create(
+                    iidxmeid=pid,
+                    iidxid='00000000',
+                    iidxnick=user.username,
+                    user=user
+                    )
+    return player
+
 def get_player_from_request(request):
     if (request.user.is_authenticated()):
-        player = models.Player.objects.filter(user=request.user).first()
-        if (player == None):
-            user = request.user
-            pid = "user_%s" % user.username
-            if (models.Player.objects.filter(iidxmeid=pid).count()):
-                # maybe previous modeled data exists, link it
-                player = models.Player.objects.get(iidxmeid=pid)
-                player.user = request.user
-                player.save()
-            else:
-                player = models.Player.objects.create(
-                        iidxmeid=pid,
-                        iidxid='00000000',
-                        iidxnick=user.username,
-                        user=user
-                        )
-        return player
+        return get_player_from_user(request.user)
     else:
         return None
-
-def get_player_from_user(user):
-    return models.Player.objects.filter(user=user).first()
 
 """
 get songs in ranktable

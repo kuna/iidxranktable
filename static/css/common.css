@@ -180,6 +180,7 @@ table .loading { color:#999; text-align: center; padding:20px; }
   height: 24px;
 }
 
+#editwidget>a { color: #fff; }
 #editwidget.beforeedit .afteredit { display:none; }
 #editwidget.afteredit .beforeedit { display:none; }
 /*mobile: full screen*/

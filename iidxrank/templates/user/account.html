@@ -1,0 +1,26 @@
+{% if not form.is_valid %}
+{{ form.errors }}
+{% endif %}
+
+<form method="POST" action="./">
+  {% csrf_token %}
+  <div class="row">
+    <label>NICKNAME {{ form.first_name }}</label>
+  </div>
+  <div class="row">
+    <label>IIDX ID (0000-0000) {{ form.iidxid }}</label>
+  </div>
+  <div class="row">
+    <label>IIDX NICKNAME {{ form.iidxnick }}</label>
+  </div>
+  <div class="row">
+    <label>IIDX SP CLASS {{ form.spclass }}</label>
+  </div>
+  <div class="row">
+    <label>IIDX DP CLASS {{ form.dpclass }}</label>
+  </div>
+  <a href="../../"><button type="button" class="btn btn-default">돌아가기</button></a>
+  <a href="../setpassword/"><button type="button" class="btn btn-default">패스워드 변경하기</button></a>
+  <a href="../withdraw/"><button type="button" class="btn btn-default">탈퇴하기</button></a>
+  <button class="btn btn-primary">수정하기</button>
+</form>
