@@ -50,6 +50,11 @@ env.py
 !testunit.py
 *.swp
 settings.py
+log.txt
+
+# grab this file using
+# python manage.py collectstatic
+/static/admin
 
 # 
 celerybeat*
