@@ -53,17 +53,17 @@ function sortTabledata(type) {
 $(function () {
   $("#ranksort_clear").click(function () {
     sortTabledata("clear");
-    dorender("clear");
+    dorender();
   });
 
   $("#ranksort_rate").click(function () {
     sortTabledata("rate");
-    dorender("rate");
+    dorender();
   });
 
   $("#ranksort_name").click(function () {
     sortTabledata("name");
-    dorender("clear");
+    dorender();
   });
 });
 
@@ -81,7 +81,7 @@ function dorender(rendermode)
     $('#rankimg').empty();
 
     // mode check
-    var ttheme;
+    //var ttheme;
     if (rendermode == "clear") {
       ttheme = new DefaultRenderer();
     } else if (rendermode == "score") {
@@ -92,9 +92,7 @@ function dorender(rendermode)
 
     // generate renderer and render
     var t = new TableRenderer(ttheme);
-    $(function() {
-        t.RenderTo(tabledata, $('#rankimg'));
-    });
+    t.RenderTo(tabledata, $('#rankimg'));
 }
 
 $(function() { dorender("clear"); }); 
