@@ -8,11 +8,11 @@ function DefaultScoreRenderer(ctx) {
   self.ctx = ctx;
 
   // load image/resources
+  var img_loadcnt = 0;
   var img_score = new Image();
+  img_score.onload = function() { img_loadcnt++; }
+  self.isLoaded = function() { return img_loadcnt >= 1; }
   img_score.src = "/static/img/rank.png";
-  self.isLoaded = function() {
-    return (img_score);
-  }
 
   //
   // privates

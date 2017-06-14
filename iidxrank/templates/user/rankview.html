@@ -53,17 +53,17 @@ function sortTabledata(type) {
 $(function () {
   $("#ranksort_clear").click(function () {
     sortTabledata("clear");
-    dorender();
+    dorender("clear");
   });
 
   $("#ranksort_rate").click(function () {
     sortTabledata("rate");
-    dorender();
+    dorender("rate");
   });
 
   $("#ranksort_name").click(function () {
     sortTabledata("name");
-    dorender();
+    dorender("clear");
   });
 });
 
@@ -75,58 +75,33 @@ sortTabledata();
 
 
 
-/////////////////////////////////
-// table renderer code
+function dorender(rendermode)
+{
+    // clear previous object
+    $('#rankimg').empty();
 
-
-var ttheme = new DefaultRenderer();
-var t = new TableRenderer(ttheme);
-var rendermode = "clear"
-var dorender = function(_rendermode) {
-  if (_rendermode) {
-    rendermode = _rendermode;
+    // mode check
+    var ttheme;
     if (rendermode == "clear") {
       ttheme = new DefaultRenderer();
     } else if (rendermode == "score") {
       ttheme = new DefaultScoreRenderer();
+    } else if (rendermode == "rev2") {
+      ttheme = new Rev2Renderer();
     }
-    ttheme.ctx = t.getContext();
-    t.renderer = ttheme;
-  }
-  setTimeout(function() {
-    if (!ttheme.isLoaded()) {
-      dorender();
-      return;
-    }
-    if (!t.RenderTable(tabledata)) {
-      console.log("Error occured during rendering.");
-      return;
-    }
-    var canvas = t.getCanvas();
-    /*
-    $(canvas).bind('contextmenu', function(e) {
-      var offset = $(this).offset();
-      var x = e.pageX - offset.left;
-      var y = e.pageY - offset.top;
-      item = t.Click(tabledata, x, y);
-      if (item)
-        openComment("/songcomment/{{ pageinfo.tablename }}_" + item.pkid);
-      return false;
+
+    // generate renderer and render
+    var t = new TableRenderer(ttheme);
+    $(function() {
+        t.RenderTo(tabledata, $('#rankimg'));
     });
-    */
-    $(canvas).addClass('mobile_img');
-    $("#rankimg").append(canvas);
-  }, 100)};
+}
+
+$(function() { dorender("clear"); }); 
 
 
 
-
-
-
-
-
-
-
+/*
 $(function (){
 	dorender();
 
@@ -190,7 +165,7 @@ $(function (){
   $(canvas).insertAfter("#rankimg");
   //$("#rankimg").insertAfter(canvas);
 });
-
+*/
 </script>
 
 {% endblock %}

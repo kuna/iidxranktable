@@ -17,7 +17,7 @@ class Song(models.Model):
 
     # used with DBM/DBR,
     # and it'll update itself when original song record is updated.
-    original = models.ForeignKey('self', null=True)
+    original = models.ForeignKey('self', null=True, blank=True)
 
     # TODO: add iidx song english name
     #songtitle_eng = models.CharField(max_length=100)

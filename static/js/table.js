@@ -2,6 +2,7 @@
 // table renderer script
 // by @lazykuna, under MIT License.
 // COMMENT: requires default skin, if no default skin designated.
+// rev 170614
 //
 
 
@@ -41,16 +42,25 @@ var TableRenderer = function(renderer) {
   self._width = 1000;
   self._height = 1000;
   self._margin = 20;
-  self._colwidth = 140;
+  self._colwidth = 150;
   self._itemcol = 5;
   self._itemheight = 30;
   self._itemwidth = 200;  // will be recalculated automatically
+
+  // backward compatibility
+  if (renderer.width) self._width = renderer.width;
+  if (renderer.colwidth) self._colwidth = renderer.colwidth;
+  if (renderer.itemcol) self._itemcol = renderer.itemcol;
+  if (renderer.itemheight) self._itemheight = renderer.itemheight;
+  if (renderer.theme_maincate_margin === undefined) renderer.theme_maincate_margin = 0;
+
   function _CalculateHeight(t) {
     // calculate total table size
     var _h = self.renderer.margin_bottom + self.renderer.margin_top;
     for (var i in t) {
       _h += self._itemheight * Math.floor((t[i].items.length - 1) / self._itemcol + 1);
       _h += self.renderer.theme_cate_margin;
+      if (t[i].categorytype == 1) _h += self.renderer.theme_maincate_margin;
     }
     self._height = _h;
     // initalize canvas with properties
@@ -81,6 +91,11 @@ var TableRenderer = function(renderer) {
   //
   self.RenderColumn = function(data) {
     // /this should be private ...? TODO
+    // margin calculate first
+    self._y += self.renderer.theme_cate_margin;
+    if (data.categorytype == 1) {
+      self._y += self.renderer.theme_maincate_margin;
+    }
     // save base y position
     var _y_save = self._y;
     ctx.beginPath();
@@ -99,12 +114,26 @@ var TableRenderer = function(renderer) {
     self.renderer.drawCategory(data,self._x,_y_save,self._colwidth,_cheight);
     // render total category box
     self.renderer.drawCategoryBox(data,self._x,_y_save,self._innerwidth,_cheight);
-    self._y += self.renderer.theme_cate_margin;
   };
-  self.RenderTable = function(tdata) {
+  self.RenderTable = function(tdata, bWait, callback) {
+    // wait until loading is done
+    if (bWait !== undefined && !self.renderer.isLoaded()) {
+      setTimeout(function() {
+        self.RenderTable(tdata, bWait, callback);
+      }, 100);
+      return;
+    }
+
+    var bSucceed = true;
+
     // check tdata validation
     if (!('categories' in tdata))
-      return false;
+    {
+      bSucceed = false;
+      if (callback) { callback(bSucceed); }
+      return;
+    }
+
     // calculate total table size at very first
     _Reset();
     _CalculateHeight(tdata.categories);
@@ -115,16 +144,18 @@ var TableRenderer = function(renderer) {
     for (var i in tdata.categories) {
       self.RenderColumn(tdata.categories[i]);
     }
-    // after rendering
+    // after rendering (draw bottom things mostly)
     self.renderer.drawTableAfter(tdata,self._margin,self.renderer.margin_top,
       self._width-self._margin*2,self._height-self.renderer.margin_bottom-self.renderer.margin_top);
-    return true;
+
+    // if callback func exists?
+    if (callback) { callback(bSucceed); }
   }
   self.Clear = function() {
     // clear table inner position.
     // must be called before you redraw table.
     _Reset();
-  }
+  };
   self.Click = function(tdata, x, y) {
     // get clicked item from click pos
     var sx = self._margin;
@@ -133,8 +164,9 @@ var TableRenderer = function(renderer) {
     for (var i in tdata.categories) {
       if (item) break;
       c = tdata.categories[i];
+      sy += self.renderer.theme_cate_margin;
       if (c.categorytype == 1) {
-        sy += self.renderer.theme_cate_margin;
+        sy += self.renderer.theme_maincate_margin;
       }
       for (var j in c.items) {
         if (j > 0 && j % self._itemcol == 0) {
@@ -151,6 +183,17 @@ var TableRenderer = function(renderer) {
     }
     return item;
   }
+
+
+  // helper func
+  self.RenderTo = function(tdata, dest) {
+    var todest = function() {
+      var canvas = self.getCanvas();
+      $(canvas).addClass('ranktable');
+      dest.append(canvas);
+    }
+    self.RenderTable(tdata, true, todest);
+  };
 }
 
 //
@@ -160,9 +203,10 @@ function RoundRect(ctx, x, y, w, h, color, stroke) {
 
 }
 
-function TextDrawer(ctx, fnt, fntsub, color) {
+function TextDrawer(ctx, fnt, fntsub, color, br) {
   // default argument
   color = color !== undefined ? color : "#000";
+  br = br !== undefined ? br : false;   // line-break for subtitle
 
   // regex used to catch subtitle
   var reg = /\(.+?\).*$|-.+?-.*$|~.+?~.*$|～.+?～.*$|”.+?”.*$|feat\..+$/g;
@@ -184,13 +228,24 @@ function TextDrawer(ctx, fnt, fntsub, color) {
     }
 
     // get total text size
-    var subtitle_x = 0;
-    var textWidth = 0;
+    var iSubtitle_x = 0;
+    var iMainWidth = 0;
+    var iSubWidth = 0;
+    var iTotalWidth = 0;
     self.ctx.font = self.fnt;
-    textWidth += (subtitle_x = self.ctx.measureText(title).width);
+    iMainWidth = (iSubtitle_x = self.ctx.measureText(title).width);
     self.ctx.font = self.fntsub;
-    textWidth += self.ctx.measureText(subtitle).width;
+    iSubWidth = self.ctx.measureText(subtitle).width;
+    iTotalWidth = iMainWidth + iSubWidth;
 
+    if (!br) {
+      self.drawText_nobr(title,subtitle,x,y,w,h,iTotalWidth,iSubtitle_x);
+    } else {
+      self.drawText_br(title,subtitle,x,y,w,h,iMainWidth,iSubWidth);
+    }
+  }
+
+  this.drawText_nobr = function(title,subtitle,x,y,w,h,textWidth,subtitle_x) {
     // set context size
     var ratio = 1;
     if (textWidth > w) {
@@ -205,6 +260,31 @@ function TextDrawer(ctx, fnt, fntsub, color) {
     self.ctx.fillText(title, 0, 0);
     self.ctx.font = self.fntsub;
     self.ctx.fillText(subtitle, subtitle_x, 0);
+    self.ctx.setTransform(1,0,0,1,0,0);
+  };
+
+  this.drawText_br = function(title,subtitle,x,y,w,h,iMainWidth,iSubWidth) {
+    // title draw
+    var ratio = 1;
+    if (iMainWidth > w) {
+      ratio = w / iMainWidth;
+    }
+    self.ctx.textAlign="left";
+    self.ctx.setTransform(ratio,0,0,1,x+10,y);
+    self.ctx.fillStyle = this.color;
+    self.ctx.font = self.fnt;
+    self.ctx.fillText(title, 0, 0);
+
+    // subtitle draw
+    ratio = 1;
+    if (iSubWidth > w) {
+      ratio = w / iSubWidth;
+    }
+    self.ctx.setTransform(ratio,0,0,1,x+10,y+10);
+    self.ctx.font = self.fntsub;
+    self.ctx.fillText(subtitle, 0, 0);
+
+    // reset
     self.ctx.setTransform(1,0,0,1,0,0);
   };
 }
