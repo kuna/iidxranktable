@@ -57,10 +57,15 @@ var TableRenderer = function(renderer) {
   function _CalculateHeight(t) {
     // calculate total table size
     var _h = self.renderer.margin_bottom + self.renderer.margin_top;
+    var idx=0;
     for (var i in t) {
       _h += self._itemheight * Math.floor((t[i].items.length - 1) / self._itemcol + 1);
-      _h += self.renderer.theme_cate_margin;
-      if (t[i].categorytype == 1) _h += self.renderer.theme_maincate_margin;
+      if (idx > 0)
+      {
+        _h += self.renderer.theme_cate_margin;
+        if (t[i].categorytype == 1) _h += self.renderer.theme_maincate_margin;
+      }
+      idx++;
     }
     self._height = _h;
     // initalize canvas with properties
@@ -89,21 +94,25 @@ var TableRenderer = function(renderer) {
   //
   // public functions
   //
-  self.RenderColumn = function(data) {
-    // /this should be private ...? TODO
+  self.RenderColumn = function(data,idx) {
     // margin calculate first
-    self._y += self.renderer.theme_cate_margin;
-    if (data.categorytype == 1) {
-      self._y += self.renderer.theme_maincate_margin;
+    if (idx > 0)
+    {
+      self._y += self.renderer.theme_cate_margin;
+      if (data.categorytype == 1) {
+        self._y += self.renderer.theme_maincate_margin;
+      }
     }
     // save base y position
     var _y_save = self._y;
     ctx.beginPath();
     // first render all of the items
+    var cell_idx = 0;
     for (var i in data.items) {
       self._x = self._margin + (i % self._itemcol) * self._itemwidth + self._colwidth;
       self._y = Math.floor(i / self._itemcol) * self._itemheight + _y_save;
-      self.renderer.drawCell(data.items[i],self._x,self._y,self._itemwidth,self._itemheight);
+      self.renderer.drawCell(data.items[i],self._x,self._y,self._itemwidth,self._itemheight,cell_idx,idx);
+      cell_idx += 1;
     }
     // second render category
     self._y += self._itemheight;        // add itemheight
@@ -111,9 +120,9 @@ var TableRenderer = function(renderer) {
     self._x = self._margin;
     ctx.closePath();
     // render category
-    self.renderer.drawCategory(data,self._x,_y_save,self._colwidth,_cheight);
+    self.renderer.drawCategory(data,self._x,_y_save,self._colwidth,_cheight,idx);
     // render total category box
-    self.renderer.drawCategoryBox(data,self._x,_y_save,self._innerwidth,_cheight);
+    self.renderer.drawCategoryBox(data,self._x,_y_save,self._innerwidth,_cheight,idx);
   };
   self.RenderTable = function(tdata, bWait, callback) {
     // wait until loading is done
@@ -138,11 +147,13 @@ var TableRenderer = function(renderer) {
     _Reset();
     _CalculateHeight(tdata.categories);
     // before rendering
-    self.renderer.drawTableBefore(tdata,self._margin,self._margin_top,
-      self._width-self._margin*2,self._height-self.renderer.margin_bottom-self._margin_top);
+    self.renderer.drawTableBefore(tdata,self._margin,self._margin,
+      self._width-self._margin*2,self._height-self.renderer.margin_bottom-self._margin);
     // render table
+    var idx=0;
     for (var i in tdata.categories) {
-      self.RenderColumn(tdata.categories[i]);
+      self.RenderColumn(tdata.categories[i],idx);
+      idx += 1;
     }
     // after rendering (draw bottom things mostly)
     self.renderer.drawTableAfter(tdata,self._margin,self.renderer.margin_top,
@@ -161,13 +172,18 @@ var TableRenderer = function(renderer) {
     var sx = self._margin;
     var sy = self.renderer.margin_top;
     var item = undefined;
+    var idx = 0;
     for (var i in tdata.categories) {
       if (item) break;
       c = tdata.categories[i];
-      sy += self.renderer.theme_cate_margin;
-      if (c.categorytype == 1) {
-        sy += self.renderer.theme_maincate_margin;
+      if (idx > 0)
+      {
+        sy += self.renderer.theme_cate_margin;
+        if (c.categorytype == 1) {
+          sy += self.renderer.theme_maincate_margin;
+        }
       }
+      idx += 1;
       for (var j in c.items) {
         if (j > 0 && j % self._itemcol == 0) {
           sy += self._itemheight;
@@ -199,8 +215,38 @@ var TableRenderer = function(renderer) {
 //
 // some helpers for rendering
 //
-function RoundRect(ctx, x, y, w, h, color, stroke) {
-
+function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
+  if (typeof stroke == 'undefined') {
+    stroke = true;
+  }
+  if (typeof radius === 'undefined') {
+    radius = 5;
+  }
+  if (typeof radius === 'number') {
+    radius = {tl: radius, tr: radius, br: radius, bl: radius};
+  } else {
+    var defaultRadius = {tl: 0, tr: 0, br: 0, bl: 0};
+    for (var side in defaultRadius) {
+      radius[side] = radius[side] || defaultRadius[side];
+    }
+  }
+  ctx.beginPath();
+  ctx.moveTo(x + radius.tl, y);
+  ctx.lineTo(x + width - radius.tr, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
+  ctx.lineTo(x + width, y + height - radius.br);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - radius.br, y + height);
+  ctx.lineTo(x + radius.bl, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
+  ctx.lineTo(x, y + radius.tl);
+  ctx.quadraticCurveTo(x, y, x + radius.tl, y);
+  ctx.closePath();
+  if (fill) {
+    ctx.fill();
+  }
+  if (stroke) {
+    ctx.stroke();
+  }
 }
 
 function TextDrawer(ctx, fnt, fntsub, color, br) {

@@ -103,13 +103,13 @@ table .loading { color:#999; text-align: center; padding:20px; }
 .user .userlevel { float:left; margin-left: 10px; }
 .user .userlevel .level { cursor:pointer; margin:0; }
 #header #menu { position:absolute; margin-top: 88px; margin-left: 240px; }
+#rankimg canvas { width: 100% !important; }
 @media screen and (max-width: 768px) {
   .user { margin-top: 10px; padding-left: 15px; }
   .user .userimage img { width: 64px; height: 64px; padding:6px; }
   .user .usergrade { clear:left; float:left; margin-left: 0px; }
   .user .usergrade, .user .userlevel { margin-top: 10px; }
   #header #menu { margin-left: 15px; }
-  .mobile_img { width: 100% !important; }
 }
 #sidemenu { position:absolute; margin-top: 40px; width: 1000px; }
 #sidemenu button { float:right; }

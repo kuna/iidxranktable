@@ -2,9 +2,9 @@
 {% block subtitle %} - {{ pageinfo.title }}{% endblock %}
 {% block head %}
 {% load staticfiles %}
-<script type="text/javascript" src="{% static 'js/table.default.skin.js' %}?v=170415"></script>
-<script type="text/javascript" src="{% static 'js/table.defscore.skin.js' %}?v=170417"></script>
-<script type="text/javascript" src="{% static 'js/table.js' %}?v=170415"></script>
+<script type="text/javascript" src="{% static 'js/table.default.skin.js' %}?v=170615"></script>
+<script type="text/javascript" src="{% static 'js/table.default2.skin.js' %}?v=170615"></script>
+<script type="text/javascript" src="{% static 'js/table.js' %}?v=170615"></script>
 
 <link href='https://fonts.googleapis.com/css?family=Comfortaa' rel='stylesheet' type='text/css'>
 <script language="javascript">
@@ -83,11 +83,14 @@ function dorender(rendermode)
     // mode check
     //var ttheme;
     if (rendermode == "clear") {
-      ttheme = new DefaultRenderer();
+      ttheme = new Default2Renderer();
     } else if (rendermode == "score") {
-      ttheme = new DefaultScoreRenderer();
-    } else if (rendermode == "rev2") {
-      ttheme = new Rev2Renderer();
+      ttheme = new Default2Renderer();
+      ttheme.drawscore = true;
+    } else if (rendermode == "wide") {
+      ttheme = new Default2Renderer();
+      ttheme.width = 1800;
+      ttheme.itemcol = 10;
     }
 
     // generate renderer and render
@@ -194,6 +197,7 @@ $(function (){
     <ul class="list theme">
       <a href="#"><li class="sel" data-value="clear">클리어</li></a>
       <a href="#"><li data-value="score">점수</li></a>
+      <a href="#"><li data-value="wide">WIDE</li></a>
     </ul>
   </div>
   <div class="clear"></div>
