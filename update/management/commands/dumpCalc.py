@@ -17,6 +17,8 @@ def dump_json():
         if (p.playrecord_set.count() < 20):
             ignore_user_cnt += 1
             valid = 0
+        if (valid == 0):
+            continue
         valid_user_cnt += 1
         prs = []
         user = {
@@ -116,7 +118,7 @@ class Command(BaseCommand):
     def dump(self, path):
         j = dump_json()
         with open(path, 'w') as f:
-            print 'output file: ', options['path']
+            print 'output file: ', path
             json.dump(j, f)
 
     def load(self, path):
