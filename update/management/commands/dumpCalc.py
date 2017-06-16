@@ -29,8 +29,16 @@ def dump_json():
             'valid': valid,
             'prs': prs,
             }
+        cnt_sp = 0
+        cnt_dp = 0
         for pr in p.playrecord_set.all():
             prs.append( (pr.song.id, pr.playclear) )
+            if (pr.song.songtype[:2].lower() == "sp"):
+                cnt_sp += 1
+            if (pr.song.songtype[:2].lower() == "dp"):
+                cnt_dp += 1
+        user['validsp'] = 0 if cnt_sp < 10 else 1
+        user['validdp'] = 0 if cnt_dp < 10 else 1
         lst_users.append(user)
     print 'ignored users: %d, valid: %d' % (ignore_user_cnt, valid_user_cnt)
     
