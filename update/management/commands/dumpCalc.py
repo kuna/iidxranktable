@@ -62,6 +62,7 @@ def dump_json():
             'whd': s.calcweight_hd,
             'lexh': s.calclevel_exh,
             'wexh': s.calcweight_exh,
+            'type': s.songtype[:2].lower(),
             'valid': valid,
             'ps': ps
         }
