@@ -1,4 +1,5 @@
 import tensorflow as tf
+import json
 
 _DEBUG_MSG = False
 
@@ -102,7 +103,7 @@ def digest_jsondata(j, initslevel=False):
 # clear: 3 easy 5 hd 6 exh
 def get_user_data(user, d_songs, stype='sp', onlyvalid=True):
   data = []
-  for sid,clear in user['ss']:  # song id, clear
+  for sid,clear in user['prs']:  # song id, clear
     s = d_songs[sid]
     if (onlyvalid and not s['valid']):
       pass
@@ -164,6 +165,7 @@ def calc(j, itercnt=100, initslevel=False):
   dj = digest_jsondata(j)
   d_users = dj['users']
   d_songs = dj['songs']
+  print d_songs.keys()
 
   sess = tf.Session()
   for i in range(itercnt):
@@ -171,6 +173,17 @@ def calc(j, itercnt=100, initslevel=False):
     calc_songs(sess, d_users, d_songs)
     print 'iter %d' % i
 
+def calcdumpfile(fpath):
+  print 'loading ...'
+  with open(fpath) as f:
+    j = json.load(f)
+  print 'calculating ...'
+  calc(j)
+  print 'writing ...'
+  with open(fpath, 'w') as f:
+    json.dump(j,f)
+
+# -----
 
 # @description test for tensorflow module
 def test_songlvl():
@@ -289,7 +302,13 @@ def test_userlvl():
   print learn_userlvl(sess, data, itercnt, 2)
 
 
+import sys
 if (__name__ == "__main__"):
-  print "run algorithm validation test"
-  test_songlvl()
-  #test_userlvl()
+  if (len(sys.argv) == 1):
+    print "run algorithm validation test"
+    test_songlvl()
+    #test_userlvl()
+  else:
+    fn = sys.argv[1]
+    print 'fn: %s' % fn
+    calcdumpfile(fn)

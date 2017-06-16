@@ -69,6 +69,7 @@ def dump_json():
         }
         for pr in s.playrecord_set.all():
             ps.append( (pr.player.id, pr.playclear) )
+        lst_songs.append(song)
     print 'ignored songs: %d, valid: %d' % (ignore_song_cnt, valid_song_cnt)
     return j
 
