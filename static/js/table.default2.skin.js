@@ -46,7 +46,7 @@ function Default2Renderer(ctx) {
   self.itemcol = 6;
   self.itemheight = 30;
   self.margin_top = 150;
-  self.margin_bottom = 50;
+  self.margin_bottom = 100;
   self.theme_cate_margin = 0;
   self.theme_maincate_margin = 30;
   self.drawscore = false;
@@ -117,15 +117,7 @@ function Default2Renderer(ctx) {
 
     // lamp
     var totalcnt = d.items.length;
-    var clear = 99;
-    if (totalcnt > 5) {
-      for (var i=1; i<=7; i++) {
-        for (var j=0; j<totalcnt; j++) {
-          if (d.items[j].clear < clear)
-            clear = d.items[j].clear;
-        }
-      }
-    }
+    var clear = d.categoryclear;
     if (clear < 10) {
       self.ctx.drawImage(img_clear,
           0,30 * (clear-1),15,30,
@@ -278,11 +270,39 @@ function Default2Renderer(ctx) {
       self.ctx.textAlign="left";
       self.ctx.fillText(copyright, x, y+h+20);
     }
-    self.ctx.textAlign="center";
-    // rank count
+
+
+    var rate_fillstyle = ["#fff", "#eee", "#c99", "#9c6"/*E*/, "#9ac", "#e33", "#ec0", "#6ee"];
     var ey = y+h;
+
+    // rank count
+    var rank_box_wid = 35;
+    var rank_box_hei = 15;
+    var rank_box_yoff = 36;
+    var rank_box_xoff = 150;
+    var rank_box_wid_tot = 480;
+
+    var rbox_xwidoff = (rank_box_wid_tot - rank_box_wid)/(8-1);
+    var rbox_xoff = rank_box_xoff + x;
+    for (var i=0; i<8; i++)
+    {
+      if (self.rank_count[i] > 0)
+      {
+        self.ctx.fillStyle = rate_fillstyle[i];
+        self.ctx.strokeStyle = "#333";
+        var is_stroke = false;
+        if (i == 0) is_stroke = true;
+        roundRect(self.ctx, rbox_xoff, ey+rank_box_yoff, rank_box_wid, rank_box_hei, 5, true, is_stroke);
+        self.ctx.textAlign="center";
+        self.ctx.fillStyle = "#000";
+        self.ctx.font = "bold 11px Arial";
+        self.ctx.fillText(self.rank_count[i], rbox_xoff+rank_box_wid/2, ey+rank_box_yoff+11);
+      }
+      rbox_xoff += rbox_xwidoff;
+    }
+
+    // rank box
     var rate = Array(8);
-    var rate_fillstyle = ["#fff", "#eee", "#c99", "#9c6"/*E*/, "#9ac", "#e33", "#ec0", "#9cc"];
     var rate_accuml = 0;
     var tot = 0;
     for (var i=0; i<8; i++) { tot += self.rank_count[i]; }
