@@ -1,5 +1,7 @@
 import tensorflow as tf
 import json
+from operator import itemgetter
+from scipy.stats import norm
 
 _DEBUG_MSG = False
 
@@ -18,7 +20,10 @@ def learn_userlvl(sess, data, cnt, use_top_cnt=10):
       clr_level.append(d[0])
       if (len(clr_level) >= use_top_cnt):
         break
-  clr_level_avg = sum(clr_level) / len(clr_level)
+  if (len(clr_level) == 0):
+    clr_level_avg = 0
+  else:
+    clr_level_avg = sum(clr_level) / len(clr_level)
   if (_DEBUG_MSG):
     print 'EXPECTED LVL:', clr_level_avg
     if (len(clr_level) < use_top_cnt):
@@ -76,6 +81,42 @@ def learn_songlvl(sess, songlvl, data, cnt, reverse=-1):
       sess.run(W,feed_dict=feed_dict))
   return r
 
+def learn_userlvl_avg(data, cnt):
+  import matplotlib.pyplot as plt
+  plt.plot(map(lambda x:x[0],data), map(lambda x:x[1],data), 'ro')
+  plt.show()
+
+  # top average method
+  clr_level = []
+  for d in reversed(data):
+    if (d[1] > 0):
+      clr_level.append(d[0])
+  if (len(clr_level) == 0):
+    clr_level_avg = 0
+  if (len(clr_level) < 50):
+    return 0,0,0
+  clr_level = clr_level[-50:]
+  clr_level_avg = sum(clr_level) / len(clr_level)
+  return clr_level_avg,0,0  # just do normal variation or average?
+
+def learn_songlvl_avg(songlvl, data, cnt):
+  # we don't use userlvl; use average of clear instead
+  # ascending order
+  arr_lv_data = []
+  arr_clr_data = []
+  for d in data:
+    if (d[1] == 0):
+      continue
+    arr_lv_data.append(d[0])
+    arr_clr_data.append(d[1])
+  if (len(arr_lv_data) < 50):
+    return 0,0,0
+  arr_lv_data = arr_lv_data[:20]
+  clr_level_avg = sum(arr_lv_data) / len(arr_lv_data)
+  # mix songlevel with clr_level_avg
+  clr_level = songlvl + (norm.cdf(songlvl - clr_level_avg) - 0.5) * 2
+  return clr_level,0,0
+
 
 
 # utils for digesting raw json fi
@@ -89,12 +130,12 @@ def digest_jsondata(j, initslevel=False):
   for s in lst_songs:
     d_songs[s['id']] = s
     if (initslevel):
-      s.calclevel_easy = s.level
-      s.calclevel_hd = s.level+0.2
-      s.calclevel_exh = s.level+0.4
-      s.calcweight_easy = 3
-      s.calcweight_hd = 3
-      s.calcweight_exh = 3
+      s['leasy'] = s['level']
+      s['lhd'] = s['level']+0.2
+      s['lexh'] = s['level']+0.4
+      s['weasy'] = 3
+      s['whd'] = 3
+      s['wexh'] = 3
   r = {'users':d_users, 'songs':d_songs}
   return r
 
@@ -103,60 +144,78 @@ def digest_jsondata(j, initslevel=False):
 # clear: 3 easy 5 hd 6 exh
 def get_user_data(user, d_songs, stype='sp', onlyvalid=True):
   data = []
-  for sid,clear in user['prs']:  # song id, clear
+  for sid,c in user['prs']:  # song id, clear
     s = d_songs[sid]
     if (onlyvalid and not s['valid']):
       pass
     if (s['type'] != stype):
       continue
     if (c >= 6):
-      data.append( (s.calclevel_exh,1) )
+      data.append( (s['lexh'],1) )
     elif (c >= 5):
-      data.append( (s.calclevel_hd,1) )
+      data.append( (s['lhd'],1) )
     elif (c >= 3):
-      data.append( (s.calclevel_easy,1) )
+      data.append( (s['leasy'],1) )
     else:
-      data.append( (s.calclevel_easy,0) )
+      # TODO: too low difficutly should not be added
+      data.append( (s['leasy'],0) )
   # sort data (ascending)
-  return sorted(data, key=itemgetter(0))
+  data_sorted = sorted(data, key=itemgetter(0))
+  # over 100 data is too much; filter it
+  data_sorted = data_sorted[-100:]
+  return data_sorted
 
 
 def get_song_data(song, d_users, clear, onlyvalid=True):
   data = []
   for uid,uclear in song['ps']:
     stype = song['type']  # is song SP or DP?
+    if (uid not in d_users):
+      continue
     if (onlyvalid and not d_users[uid]['valid'+stype]):
       continue
     c = 1
     if (uclear < clear):
       c = 0
     data.append( (d_users[uid][stype+'level'], c) )
-  return data
+  # ascending order
+  data_sorted = sorted(data, key=itemgetter(0))
+  return data_sorted
 
 
 def calc_user_data(sess, user, d_songs):
   itercnt = 10
   data = get_user_data(user, d_songs, 'sp')
-  user['spclass'] = learn_userlvl(sess, data, itercnt)
+  spcalc = learn_userlvl_avg(data, itercnt)
   data = get_user_data(user, d_songs, 'dp')
-  user['dpclass'] = learn_userlvl(sess, data, itercnt)
+  dpcalc = learn_userlvl_avg(data, itercnt)
+  user['splevel'] = float(spcalc[0])
+  user['dplevel'] = float(dpcalc[0])
 
 def calc_song_data(sess, song, d_users):
   itercnt = 10
   songlvl = song['level']
   data = get_song_data(song, d_users, 3)
-  song['calclevel_easy'], song['calcweight_easy'], _ = learn_songlvl(sess, songlvl, data, itercnt)
+  song['leasy'], song['weasy'], _ = learn_songlvl_avg(songlvl, data, itercnt)
   data = get_song_data(song, d_users, 5)
-  song['calclevel_hd'], song['calcweight_hd'], _ = learn_songlvl(sess, songlvl, data, itercnt)
+  song['lhd'], song['whd'], _ = learn_songlvl_avg(songlvl, data, itercnt)
   data = get_song_data(song, d_users, 6)
-  song['calclevel_exh'], song['calcweight_exh'], _ = learn_songlvl(sess, songlvl, data, itercnt)
+  song['lexh'], song['wexh'], _ = learn_songlvl_avg(songlvl, data, itercnt)
 
 def calc_users(sess, d_users, d_songs):
+  i = 0
   for uid,user in d_users.items():
+    i+=1
     calc_user_data(sess, user, d_songs)
+    if (i<5):
+      print user['spclass'],user['splevel']
 def calc_songs(sess, d_users, d_songs):
-  for sid,song in d_users.items():
+  i = 0
+  for sid,song in d_songs.items():
+    i+=1
     calc_song_data(sess, song, d_users)
+    if (i>=1000 and i<1005):
+      print song['level'], song['leasy'], song['lhd'], song['lexh']
 
 
 # calc modify original data so be careful
@@ -165,7 +224,6 @@ def calc(j, itercnt=100, initslevel=False):
   dj = digest_jsondata(j)
   d_users = dj['users']
   d_songs = dj['songs']
-  print d_songs.keys()
 
   sess = tf.Session()
   for i in range(itercnt):
@@ -255,7 +313,7 @@ def test_userlvl():
 
   # song lvl : 11
   songlvl = 11
-  itercnt = 10
+  itercnt = 5
   # general song diff test
   print 'general test - 1 unclear song'
   data=[
