@@ -57,6 +57,7 @@ def dump_json():
         ps = []
         song = {
             'id': s.id,
+            'level': s.songlevel,
             'leasy': s.calclevel_easy,
             'weasy': s.calcweight_easy,
             'lhd': s.calclevel_hd,

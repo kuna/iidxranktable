@@ -1,5 +1,6 @@
 from django.core.management import BaseCommand
 import update.calcdump as calcdump
+import json
 
 class Command(BaseCommand):
     help = """dump song/user level/clear info into json file for calculation"""

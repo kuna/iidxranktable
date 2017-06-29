@@ -39,6 +39,8 @@ var TableRenderer = function(renderer) {
   var ctx = self._canvas.getContext("2d");
   self.getContext = function () { return ctx; }
   self.getCanvas = function() { return self._canvas; }
+  self.onItemClick = function(item,pos) { console.log(item); }
+  self.onItemHover = undefined;
   self._width = 1000;
   self._height = 1000;
   self._margin = 20;
@@ -46,6 +48,7 @@ var TableRenderer = function(renderer) {
   self._itemcol = 5;
   self._itemheight = 30;
   self._itemwidth = 200;  // will be recalculated automatically
+  self._vitempos = [];    // (itemdata, pos: (x, y, w, h), parent)
 
   // backward compatibility
   if (renderer.width) self._width = renderer.width;
@@ -54,6 +57,41 @@ var TableRenderer = function(renderer) {
   if (renderer.itemheight) self._itemheight = renderer.itemheight;
   if (renderer.theme_maincate_margin === undefined) renderer.theme_maincate_margin = 0;
 
+  function convPos(e,obj) {
+    var offset = obj.offset();
+    var ratio = 1.0/obj.width()*self._width;
+    var x = (e.pageX - offset.left) * ratio;
+    var y = (e.pageY - offset.top) * ratio;
+    return {'x':x,'y':y};
+  }
+  function onItemClick_internal(e) {
+    if (self.onItemClick === undefined)
+      return;
+    var p = convPos(e,$(this));
+    for (var idx in self._vitempos)
+    {
+      var itempos = self._vitempos[idx];
+      if (p.x >= itempos.pos[0] && p.x < itempos.pos[2] &&
+          p.y >= itempos.pos[1] && p.y < itempos.pos[3])
+      {
+        self.onItemClick(itempos.item, itempos.idx);
+      }
+    }
+  }
+  function onItemHover_internal(e) {
+    if (self.onItemHover === undefined)
+      return;
+    var p = convPos(e,$(this));
+    for (var idx in self._vitempos)
+    {
+      var itempos = self._vitempos[idx];
+      if (p.x >= itempos.pos[0] && p.x < itempos.pos[2] &&
+          p.y >= itempos.pos[1] && p.y < itempos.pos[3])
+      {
+        self.onItemHover(itempos.item, itempos.idx);
+      }
+    }
+  }
   function _CalculateHeight(t) {
     // calculate total table size
     var _h = self.renderer.margin_bottom + self.renderer.margin_top;
@@ -113,6 +151,12 @@ var TableRenderer = function(renderer) {
       self._y = Math.floor(i / self._itemcol) * self._itemheight + _y_save;
       self.renderer.drawCell(data.items[i],self._x,self._y,self._itemwidth,self._itemheight,cell_idx,idx);
       cell_idx += 1;
+      // append item to _vitempos
+      self._vitempos.push({
+        'item': data.items[i],
+        'idx': cell_idx,
+        'pos': [self._x, self._y, self._x+self._itemwidth, self._y+self._itemheight]
+      });
     }
     // second render category
     self._y += self._itemheight;        // add itemheight
@@ -159,6 +203,10 @@ var TableRenderer = function(renderer) {
     self.renderer.drawTableAfter(tdata,self._margin,self.renderer.margin_top,
       self._width-self._margin*2,self._height-self.renderer.margin_bottom-self.renderer.margin_top);
 
+    // attach event
+    $(self._canvas).click(onItemClick_internal);
+    $(self._canvas).mousemove(onItemHover_internal);
+
     // if callback func exists?
     if (callback) { callback(bSucceed); }
   }
@@ -167,39 +215,6 @@ var TableRenderer = function(renderer) {
     // must be called before you redraw table.
     _Reset();
   };
-  self.Click = function(tdata, x, y) {
-    // get clicked item from click pos
-    var sx = self._margin;
-    var sy = self.renderer.margin_top;
-    var item = undefined;
-    var idx = 0;
-    for (var i in tdata.categories) {
-      if (item) break;
-      c = tdata.categories[i];
-      if (idx > 0)
-      {
-        sy += self.renderer.theme_cate_margin;
-        if (c.categorytype == 1) {
-          sy += self.renderer.theme_maincate_margin;
-        }
-      }
-      idx += 1;
-      for (var j in c.items) {
-        if (j > 0 && j % self._itemcol == 0) {
-          sy += self._itemheight;
-        }
-        sx = self._margin + self._colwidth + (j % self._itemcol) * self._itemwidth;
-        if (x >= sx && x < sx + self._itemwidth &&
-            y >= sy && y < sy + self._itemheight) {
-          item = c.items[j];
-          break;
-        }
-      }
-      sy += self._itemheight;
-    }
-    return item;
-  }
-
 
   // helper func
   self.RenderTo = function(tdata, dest) {
