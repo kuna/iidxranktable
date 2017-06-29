@@ -59,6 +59,10 @@ $(function () {
 });
 </script>
 
+  <style type="text/css">
+.lv-easy { color:#0C9; } .lv-hd { color:#C00; }
+  </style>
+
 <div id="container"><div class="inner">
   <a href="/admin/iidxrank/ranktable/{{ tableid }}/change/" target="_blank">테이블/카테고리 정보 수정</a>
   <div class="clear"></div>
@@ -77,7 +81,11 @@ $(function () {
       <div class="item"
         data-id='{{ item.itemid }}'
         data-songid='{{ item.pkid }}'
-        data-title='{{ item.data.title }}'>{{ item.data.title }}</div>
+        data-title='{{ item.data.title }}'>
+        {{ item.data.title }}
+        <span class="lv-easy">{{ item.data.lveasy|floatformat:3 }}</span>
+        <span class="lv-hd">{{ item.data.lvhd|floatformat:2 }}</span>
+      </div>
       {% endfor %}
     </div>
     {% endfor %}

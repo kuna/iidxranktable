@@ -80,6 +80,8 @@ def generate_prdata_from_song(song):
             'id': song.songid,
             'version': song.version,
             'notes': 0,
+            'lveasy': song.calclevel_easy,
+            'lvhd': song.calclevel_hd,
         }
     }
 
@@ -302,6 +304,8 @@ def generate_pr(songs, player=None):
                     'id': song.songid,
                     'version': song.version,
                     'notes': 0,
+                    'lveasy': song.calclevel_easy,
+                    'lvhd': song.calclevel_hd,
                 },
                 'tags': song.get_tags(),
                 'score': 0,
@@ -339,6 +343,8 @@ def generate_pr(songs, player=None):
                     'id': song.songid,
                     'version': song.version,
                     'notes': notes,
+                    'lveasy': song.calclevel_easy,
+                    'lvhd': song.calclevel_hd,
                 },
                 'tags': song.get_tags(),
                 'score': score,
