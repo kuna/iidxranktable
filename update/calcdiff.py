@@ -1,9 +1,10 @@
 import tensorflow as tf
 import json
 from operator import itemgetter
-from scipy.stats import norm
+from scipy.stats import norm, logistic
 
 _DEBUG_MSG = False
+_UPDATE_RATE = 0.3
 
 # @description
 # sess: tf sess
@@ -16,7 +17,7 @@ def learn_userlvl(sess, data, cnt, use_top_cnt=10):
   # but we check user's approx level with top10 songs average clear score
   clr_level = []
   for d in reversed(data):
-    if (d[1] > 0):
+    if (d[1] > 0 and d[0] > 0):
       clr_level.append(d[0])
       if (len(clr_level) >= use_top_cnt):
         break
@@ -81,40 +82,46 @@ def learn_songlvl(sess, songlvl, data, cnt, reverse=-1):
       sess.run(W,feed_dict=feed_dict))
   return r
 
-def learn_userlvl_avg(data, cnt):
-  import matplotlib.pyplot as plt
-  plt.plot(map(lambda x:x[0],data), map(lambda x:x[1],data), 'ro')
-  plt.show()
-
+avg_weight_mat = []
+for i in range(30):
+  avg_weight_mat.append( logistic.cdf( (i - 10)/10.0 ) )
+print avg_weight_mat
+def learn_userlvl_avg(data, cnt, level):
+  #import matplotlib.pyplot as plt
+  #plt.plot(map(lambda x:x[0],data), map(lambda x:x[1],data), 'ro')
+  #plt.show()
   # top average method
   clr_level = []
   for d in reversed(data):
-    if (d[1] > 0):
+    if (d[1] > 0 and d[0] > 0):
       clr_level.append(d[0])
   if (len(clr_level) == 0):
     clr_level_avg = 0
   if (len(clr_level) < 50):
     return 0,0,0
-  clr_level = clr_level[-50:]
-  clr_level_avg = sum(clr_level) / len(clr_level)
+  clr_level = clr_level[-30:]
+  clr_level_avg = sum(map(lambda x: x[0]*x[1], zip(clr_level,avg_weight_mat))) / sum(avg_weight_mat)
+  #clr_level_avg = sum(clr_level) / len(clr_level)
+  clr_level_avg = level * (1-_UPDATE_RATE) + clr_level_avg * _UPDATE_RATE
   return clr_level_avg,0,0  # just do normal variation or average?
 
-def learn_songlvl_avg(songlvl, data, cnt):
+def learn_songlvl_avg(songlvl, data, cnt, level, weight):
   # we don't use userlvl; use average of clear instead
   # ascending order
   arr_lv_data = []
   arr_clr_data = []
   for d in data:
-    if (d[1] == 0):
+    if (d[1] == 0 or d[0] == 0):
       continue
     arr_lv_data.append(d[0])
     arr_clr_data.append(d[1])
   if (len(arr_lv_data) < 50):
     return 0,0,0
-  arr_lv_data = arr_lv_data[:20]
+  arr_lv_data = arr_lv_data[:15]
   clr_level_avg = sum(arr_lv_data) / len(arr_lv_data)
   # mix songlevel with clr_level_avg
-  clr_level = songlvl + (norm.cdf(songlvl - clr_level_avg) - 0.5) * 2
+  clr_level = songlvl + (norm.cdf(clr_level_avg - songlvl) - 0.5) * 2.5
+  clr_level = level * (1-_UPDATE_RATE) + clr_level * _UPDATE_RATE
   return clr_level,0,0
 
 
@@ -150,9 +157,9 @@ def get_user_data(user, d_songs, stype='sp', onlyvalid=True):
       pass
     if (s['type'] != stype):
       continue
-    if (c >= 6):
+    if (c >= 6 and s['lexh'] > 0):
       data.append( (s['lexh'],1) )
-    elif (c >= 5):
+    elif (c >= 5 and s['lhd'] > 0):
       data.append( (s['lhd'],1) )
     elif (c >= 3):
       data.append( (s['leasy'],1) )
@@ -186,9 +193,9 @@ def get_song_data(song, d_users, clear, onlyvalid=True):
 def calc_user_data(sess, user, d_songs):
   itercnt = 10
   data = get_user_data(user, d_songs, 'sp')
-  spcalc = learn_userlvl_avg(data, itercnt)
+  spcalc = learn_userlvl_avg(data, itercnt, user['splevel'])
   data = get_user_data(user, d_songs, 'dp')
-  dpcalc = learn_userlvl_avg(data, itercnt)
+  dpcalc = learn_userlvl_avg(data, itercnt, user['dplevel'])
   user['splevel'] = float(spcalc[0])
   user['dplevel'] = float(dpcalc[0])
 
@@ -196,11 +203,11 @@ def calc_song_data(sess, song, d_users):
   itercnt = 10
   songlvl = song['level']
   data = get_song_data(song, d_users, 3)
-  song['leasy'], song['weasy'], _ = learn_songlvl_avg(songlvl, data, itercnt)
+  song['leasy'], song['weasy'], _ = learn_songlvl_avg(songlvl, data, itercnt, song['leasy'], song['weasy'])
   data = get_song_data(song, d_users, 5)
-  song['lhd'], song['whd'], _ = learn_songlvl_avg(songlvl, data, itercnt)
+  song['lhd'], song['whd'], _ = learn_songlvl_avg(songlvl, data, itercnt, song['lhd'], song['whd'])
   data = get_song_data(song, d_users, 6)
-  song['lexh'], song['wexh'], _ = learn_songlvl_avg(songlvl, data, itercnt)
+  song['lexh'], song['wexh'], _ = learn_songlvl_avg(songlvl, data, itercnt, song['lexh'], song['wexh'])
 
 def calc_users(sess, d_users, d_songs):
   i = 0
@@ -215,6 +222,8 @@ def calc_songs(sess, d_users, d_songs):
     i+=1
     calc_song_data(sess, song, d_users)
     if (i>=1000 and i<1005):
+      print song['level'], song['leasy'], song['lhd'], song['lexh']
+    if (i>=3500 and i<3505):
       print song['level'], song['leasy'], song['lhd'], song['lexh']
 
 
