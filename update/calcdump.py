@@ -81,7 +81,7 @@ def load_json(j):
     # load users
     print 'user loading ...'
     for user in lst_users:
-        obj = models.Player.filter(id=user['id']).first()
+        obj = models.Player.objects.filter(id=user['id']).first()
         if (obj == None):
             print 'id %d(%s) invalid data' % (user['id'], user['iidxid'])
             continue
@@ -93,9 +93,13 @@ def load_json(j):
     # load songs
     print 'song loading ...'
     for song in lst_songs:
-        obj = models.Song.filter(id=song['id']).first()
+        obj = models.Song.objects.filter(id=song['id']).first()
         if (obj == None):
             print 'song %d invalid data' % song['id']
             continue
+        obj.calclevel_easy = song['leasy']
+        #obj.calclevel_normal = song['lnormal']
+        obj.calclevel_hd = song['lhd']
+        obj.calclevel_exh = song['lexh']
         obj.save()
     print len(lst_songs)
