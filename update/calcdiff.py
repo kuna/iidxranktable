@@ -85,7 +85,6 @@ def learn_songlvl(sess, songlvl, data, cnt, reverse=-1):
 avg_weight_mat = []
 for i in range(30):
   avg_weight_mat.append( logistic.cdf( (i - 10)/20.0 ) )
-print avg_weight_mat
 def learn_userlvl_avg(data, cnt, level):
   #import matplotlib.pyplot as plt
   #plt.plot(map(lambda x:x[0],data), map(lambda x:x[1],data), 'ro')
@@ -110,26 +109,63 @@ def learn_songlvl_avg(songlvl, data, cnt, level, weight):
   # we don't use userlvl; use average of clear instead
   # ascending order
   arr_lv_data = []
-  arr_clr_data = []
+  arr_fail_data = []  # failed level data
   for d in data:
-    if (d[1] == 0 or d[0] == 0):
+    if (d[0] == 0):
       continue
-    arr_lv_data.append(d[0])
-    arr_clr_data.append(d[1])
+    if (d[1] == 1):
+      arr_lv_data.append(d[0])
+    else:
+      arr_fail_data.append(d[0])
+  #if (len(arr_lv_data) < 20 or len(arr_fail_data) < 5):
   if (len(arr_lv_data) < 20):
     return 0,0,0
-  sample_cnt = len(arr_lv_data)/5
+  sample_cnt = len(arr_lv_data)/4
   if (sample_cnt < 5):
     sample_cnt = 5
   if (sample_cnt > 30):
     sample_cnt = 30
   arr_lv_data = arr_lv_data[1:sample_cnt]
-  clr_level_avg = sum(arr_lv_data) / len(arr_lv_data)
-  #clr_level_avg = arr_lv_data[len(arr_lv_data)/2]
-  # mix songlevel with clr_level_avg
-  clr_level = songlvl + (norm.cdf(clr_level_avg - songlvl) - 0.5) * 2.5
+  clr_level = sum(arr_lv_data) / len(arr_lv_data)
+  clr_level = songlvl + (logistic.cdf((clr_level - songlvl)*1)-0.5) * 4
   clr_level = level * (1-_UPDATE_RATE) + clr_level * _UPDATE_RATE
   return clr_level,0,0
+
+# we need this function
+# as fail data can't do proper feedback;
+# instead we normalize data for each epoch.
+import random 
+def normalize_songlvl(d_songs):
+  def flat_diff(diffname, avg_target, s_array):
+    diff_sum = 0.0
+    diff_cnt = 0
+    for s in s_array:
+      if (s[diffname] == 0):
+        continue
+      diff_sum += s[diffname]
+      diff_cnt += 1
+    diff_avg = diff_sum / diff_cnt
+    print diff_cnt, avg_target, diff_avg
+    diff_delta = avg_target - diff_avg
+    for s in s_array:
+      if (s[diffname] == 0):
+        continue
+      s[diffname] += diff_delta
+
+  # make flat-distribution(norm) for each level/type
+  for s_type in ('sp','dp'):
+    for s_level in range(8,13):
+      s_array = []
+      for _,s in d_songs.items():
+        if (s['type'] == s_type and s['level'] == s_level):
+          s_array.append(s)
+      flat_diff('leasy', s_level-0.3, s_array)
+      flat_diff('lhd', s_level+0.3, s_array)
+      flat_diff('lexh', s_level+0.8, s_array)
+
+def normalize_userlvl(data):
+  # do nothing
+  pass
 
 
 
@@ -168,11 +204,11 @@ def get_user_data(user, d_songs, stype='sp', onlyvalid=True):
       data.append( (s['lexh'],1) )
     elif (c >= 5 and s['lhd'] > 0):
       data.append( (s['lhd'],1) )
-    elif (c >= 3):
+    elif (c >= 3 and s['leasy'] > 0):
       data.append( (s['leasy'],1) )
-    else:
+#    else:
       # TODO: too low difficutly should not be added
-      data.append( (s['leasy'],0) )
+#      data.append( (s['leasy'],0) )
   # sort data (ascending)
   data_sorted = sorted(data, key=itemgetter(0))
   # over 100 data is too much; filter it
@@ -201,6 +237,10 @@ def calc_user_data(sess, user, d_songs):
   itercnt = 10
   data = get_user_data(user, d_songs, 'sp')
   spcalc = learn_userlvl_avg(data, itercnt, user['splevel'])
+#  if (user['id'] == 1056):
+#    print 'chopd37',user['spclass'],user['splevel']
+#    print len(data)
+#    print data
   data = get_user_data(user, d_songs, 'dp')
   dpcalc = learn_userlvl_avg(data, itercnt, user['dplevel'])
   user['splevel'] = float(spcalc[0])
@@ -223,7 +263,8 @@ def calc_users(sess, d_users, d_songs):
     calc_user_data(sess, user, d_songs)
     if (i<5):
       print user['spclass'],user['splevel']
-def calc_songs(sess, d_users, d_songs):
+  normalize_userlvl(d_users)
+def calc_songs(sess, d_users, d_songs, norm=True):
   i = 0
   for sid,song in d_songs.items():
     i+=1
@@ -232,6 +273,8 @@ def calc_songs(sess, d_users, d_songs):
       print song['level'], song['leasy'], song['lhd'], song['lexh']
     if (i>=3500 and i<3505):
       print song['level'], song['leasy'], song['lhd'], song['lexh']
+  if (norm):
+    normalize_songlvl(d_songs)
 
 
 # calc modify original data so be careful
@@ -244,7 +287,7 @@ def calc(j, itercnt=100, initslevel=False):
   sess = tf.Session()
   for i in range(itercnt):
     calc_users(sess, d_users, d_songs)  # should calculate user first with song data
-    calc_songs(sess, d_users, d_songs)
+    calc_songs(sess, d_users, d_songs, itercnt-1 > i)
     print 'iter %d' % i
 
 def calcdumpfile(fpath):
