@@ -115,9 +115,14 @@ def learn_songlvl_avg(songlvl, data, cnt, level, weight):
       continue
     arr_lv_data.append(d[0])
     arr_clr_data.append(d[1])
-  if (len(arr_lv_data) < 50):
+  if (len(arr_lv_data) < 20):
     return 0,0,0
-  arr_lv_data = arr_lv_data[:15]
+  sample_cnt = len(arr_lv_data)/3
+  if (sample_cnt < 5):
+    sample_cnt = 5
+  if (sample_cnt > 30):
+    sample_cnt = 30
+  arr_lv_data = arr_lv_data[:sample_cnt]
   clr_level_avg = sum(arr_lv_data) / len(arr_lv_data)
   # mix songlevel with clr_level_avg
   clr_level = songlvl + (norm.cdf(clr_level_avg - songlvl) - 0.5) * 2.5
