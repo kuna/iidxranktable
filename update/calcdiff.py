@@ -84,7 +84,7 @@ def learn_songlvl(sess, songlvl, data, cnt, reverse=-1):
 
 avg_weight_mat = []
 for i in range(30):
-  avg_weight_mat.append( logistic.cdf( (i - 10)/10.0 ) )
+  avg_weight_mat.append( logistic.cdf( (i - 10)/20.0 ) )
 print avg_weight_mat
 def learn_userlvl_avg(data, cnt, level):
   #import matplotlib.pyplot as plt
@@ -99,6 +99,7 @@ def learn_userlvl_avg(data, cnt, level):
     clr_level_avg = 0
   if (len(clr_level) < 50):
     return 0,0,0
+  clr_level.reverse()
   clr_level = clr_level[-30:]
   clr_level_avg = sum(map(lambda x: x[0]*x[1], zip(clr_level,avg_weight_mat))) / sum(avg_weight_mat)
   #clr_level_avg = sum(clr_level) / len(clr_level)
@@ -115,10 +116,16 @@ def learn_songlvl_avg(songlvl, data, cnt, level, weight):
       continue
     arr_lv_data.append(d[0])
     arr_clr_data.append(d[1])
-  if (len(arr_lv_data) < 50):
+  if (len(arr_lv_data) < 20):
     return 0,0,0
-  arr_lv_data = arr_lv_data[:15]
+  sample_cnt = len(arr_lv_data)/5
+  if (sample_cnt < 5):
+    sample_cnt = 5
+  if (sample_cnt > 30):
+    sample_cnt = 30
+  arr_lv_data = arr_lv_data[1:sample_cnt]
   clr_level_avg = sum(arr_lv_data) / len(arr_lv_data)
+  #clr_level_avg = arr_lv_data[len(arr_lv_data)/2]
   # mix songlevel with clr_level_avg
   clr_level = songlvl + (norm.cdf(clr_level_avg - songlvl) - 0.5) * 2.5
   clr_level = level * (1-_UPDATE_RATE) + clr_level * _UPDATE_RATE
