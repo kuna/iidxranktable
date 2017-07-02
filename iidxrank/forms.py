@@ -1,5 +1,6 @@
 #-*- coding: utf-8 -*-
 from django import forms
+from django.core.validators import RegexValidator
 from captcha.fields import ReCaptchaField
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
@@ -10,12 +11,19 @@ import iidx
 """
 membership related
 """
+
+alphanumeric = RegexValidator(r'^[0-9a-zA-Z_]*$', 'ID: Only alphanumeric characters are allowed. 영문/숫자,_만 입력 가능합니다.')
+
 class LoginForm(forms.Form):
-    id = forms.CharField(widget=forms.TextInput(), min_length=5)
+    id = forms.CharField(widget=forms.TextInput(), min_length=4, validators=[alphanumeric])
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control input-sm'}))
 
     def clean(self):
         cleaned_data = super(LoginForm, self).clean()
+        if ('id' not in cleaned_data):
+            return
+        if ('password' not in cleaned_data):
+            return
         _username = cleaned_data['id']
         _password = cleaned_data['password']
         user = authenticate(username=_username, password=_password)
@@ -24,7 +32,7 @@ class LoginForm(forms.Form):
 
 class JoinForm(forms.Form):
     captcha = ReCaptchaField()
-    id = forms.CharField(widget=forms.TextInput(), min_length=5)
+    id = forms.CharField(widget=forms.TextInput(), min_length=4, validators=[alphanumeric])
     email = forms.CharField(widget=forms.EmailInput())
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control input-sm'}),
             min_length=4)
