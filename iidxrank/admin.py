@@ -8,6 +8,9 @@ from django.core.urlresolvers import reverse
 from django.conf.urls import url
 from django import forms
 import models
+import dper
+
+# ------ Admin classes ------
 
 class RankCategoryInline(admin.TabularInline):
   model = models.RankCategory
@@ -32,13 +35,16 @@ class SongAdmin(admin.ModelAdmin):
   search_fields = ['songtitle', 'songtype']
   # https://medium.com/@hakibenita/how-to-add-custom-action-buttons-to-django-admin-8d266f5b0d41
   def process_dbr(self, request, songid, *args, **kwargs):
-      return HttpResponse("""
-      <script>
-      alert('not importemented');
-      history.back();
-      </script>
-      """)
-      #return HttpResponseRedirect('/admin/iidxrank/song/')
+      r, msg = dper.copy_as_dbr(songid)
+      if (r):
+          return HttpResponseRedirect('/admin/iidxrank/song/')
+      else:
+          return HttpResponse("""
+          <script>
+          alert('%s');
+          history.back();
+          </script>
+          """ % msg)
   def get_urls(self):
       urls = super(SongAdmin, self).get_urls()
       custom_urls = [
