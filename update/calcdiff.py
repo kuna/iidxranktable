@@ -84,6 +84,7 @@ def learn_songlvl(sess, songlvl, data, cnt, reverse=-1):
 
 avg_weight_mat = []
 for i in range(30):
+<<<<<<< HEAD
 	avg_weight_mat.append( logistic.cdf( (i - 10)/10.0 ) )
 print avg_weight_mat
 def learn_userlvl_avg(data, cnt, level):
@@ -123,6 +124,54 @@ def learn_songlvl_avg(songlvl, data, cnt, level, weight):
 	clr_level = songlvl + (norm.cdf(clr_level_avg - songlvl) - 0.5) * 2.5
 	clr_level = level * (1-_UPDATE_RATE) + clr_level * _UPDATE_RATE
 	return clr_level,0,0
+=======
+  avg_weight_mat.append( logistic.cdf( (i - 10)/20.0 ) )
+print avg_weight_mat
+def learn_userlvl_avg(data, cnt, level):
+  #import matplotlib.pyplot as plt
+  #plt.plot(map(lambda x:x[0],data), map(lambda x:x[1],data), 'ro')
+  #plt.show()
+  # top average method
+  clr_level = []
+  for d in reversed(data):
+    if (d[1] > 0 and d[0] > 0):
+      clr_level.append(d[0])
+  if (len(clr_level) == 0):
+    clr_level_avg = 0
+  if (len(clr_level) < 50):
+    return 0,0,0
+  clr_level.reverse()
+  clr_level = clr_level[-30:]
+  clr_level_avg = sum(map(lambda x: x[0]*x[1], zip(clr_level,avg_weight_mat))) / sum(avg_weight_mat)
+  #clr_level_avg = sum(clr_level) / len(clr_level)
+  clr_level_avg = level * (1-_UPDATE_RATE) + clr_level_avg * _UPDATE_RATE
+  return clr_level_avg,0,0  # just do normal variation or average?
+
+def learn_songlvl_avg(songlvl, data, cnt, level, weight):
+  # we don't use userlvl; use average of clear instead
+  # ascending order
+  arr_lv_data = []
+  arr_clr_data = []
+  for d in data:
+    if (d[1] == 0 or d[0] == 0):
+      continue
+    arr_lv_data.append(d[0])
+    arr_clr_data.append(d[1])
+  if (len(arr_lv_data) < 20):
+    return 0,0,0
+  sample_cnt = len(arr_lv_data)/5
+  if (sample_cnt < 5):
+    sample_cnt = 5
+  if (sample_cnt > 30):
+    sample_cnt = 30
+  arr_lv_data = arr_lv_data[1:sample_cnt]
+  clr_level_avg = sum(arr_lv_data) / len(arr_lv_data)
+  #clr_level_avg = arr_lv_data[len(arr_lv_data)/2]
+  # mix songlevel with clr_level_avg
+  clr_level = songlvl + (norm.cdf(clr_level_avg - songlvl) - 0.5) * 2.5
+  clr_level = level * (1-_UPDATE_RATE) + clr_level * _UPDATE_RATE
+  return clr_level,0,0
+>>>>>>> 3c61ec43f324ffd09859200b357ccf79b93320e6
 
 
 
