@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 #
 # parse_users: return user lists
 #
-def parse_users():
+def parse_users(page_limit=999):
     def parse_users_page(num, arr):
         def getUsers(soup, arr):
             names = soup.find_all(class_="djname")
@@ -32,6 +32,8 @@ def parse_users():
     pcnt = getPageCount()
     r = []
     for i in range(1, pcnt+1):
+        if (i > page_limit):
+            break
         print 'parsing page %d ...' % i
         parse_users_page(i, r)
     return r
@@ -184,21 +186,21 @@ def parse_userinfo_http(username):
     else:
         return ( parsedata['userdata']['djname'], username, parsedata['userdata']['iidxid'] )
 
-def parse_songs_http():
+def parse_songs_http(username='delmitz'):
     urls = [
-        'http://iidx.me/delmitz/sp/ver/24/normal',
-        'http://iidx.me/delmitz/sp/ver/24/hyper',
-        'http://iidx.me/delmitz/sp/ver/24/another',
-        'http://iidx.me/delmitz/dp/ver/24/normal',
-        'http://iidx.me/delmitz/dp/ver/24/hyper',
-        'http://iidx.me/delmitz/dp/ver/24/another',
-        'http://iidx.me/delmitz/sp/level/leggendaria',
-        'http://iidx.me/delmitz/dp/level/leggendaria',
+        'http://iidx.me/%s/sp/ver/24/normal',
+        'http://iidx.me/%s/sp/ver/24/hyper',
+        'http://iidx.me/%s/sp/ver/24/another',
+        'http://iidx.me/%s/dp/ver/24/normal',
+        'http://iidx.me/%s/dp/ver/24/hyper',
+        'http://iidx.me/%s/dp/ver/24/another',
+        'http://iidx.me/%s/sp/level/leggendaria',
+        'http://iidx.me/%s/dp/level/leggendaria',
         ]
     ret = []
     # remove scores
     for url in urls:
-        parsedata = parse_iidxme_http(url)
+        parsedata = parse_iidxme_http(url % username)
         for music in parsedata['musicdata']:
             music['data']['diff'] = music['data']['diff'].upper()
             ret.append(music['data'])
