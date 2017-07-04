@@ -49,6 +49,9 @@ def dump_json():
     ignore_song_cnt = 0
     valid_song_cnt = 0
     for s in models.Song.objects.all():
+        if (s.original != None):
+            # DBR/DBM songs are ignored
+            continue
         valid = 1
         if (s.playrecord_set.count() < 10):
             ignore_song_cnt += 1

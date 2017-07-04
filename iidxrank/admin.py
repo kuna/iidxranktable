@@ -1,8 +1,16 @@
 # https://docs.djangoproject.com/en/1.9/intro/tutorial02/
 
 from django.contrib import admin
+from django.utils.html import format_html
+from django.http import HttpResponseRedirect
+from django.http import HttpResponse
+from django.core.urlresolvers import reverse
+from django.conf.urls import url
 from django import forms
 import models
+import dper
+
+# ------ Admin classes ------
 
 class RankCategoryInline(admin.TabularInline):
   model = models.RankCategory
@@ -23,8 +31,33 @@ class PlayerAdmin(admin.ModelAdmin):
   list_display = ('iidxmeid', 'iidxid', 'splevel', 'dplevel', 'spclass', 'dpclass', 'time', 'get_playrecord_count')
   search_fields = ['iidxid', 'iidxmeid']
 class SongAdmin(admin.ModelAdmin):
-  list_display = ('songtitle', 'songtype', 'songlevel')
+  list_display = ('songtitle', 'songtype', 'songlevel', 'dper_actions')
   search_fields = ['songtitle', 'songtype']
+  # https://medium.com/@hakibenita/how-to-add-custom-action-buttons-to-django-admin-8d266f5b0d41
+  def process_dbr(self, request, songid, *args, **kwargs):
+      r, msg = dper.copy_as_dbr(songid)
+      if (r):
+          return HttpResponseRedirect('/admin/iidxrank/song/')
+      else:
+          return HttpResponse("""
+          <script>
+          alert('%s');
+          history.back();
+          </script>
+          """ % msg)
+  def get_urls(self):
+      urls = super(SongAdmin, self).get_urls()
+      custom_urls = [
+        url(r'^(?P<songid>.+)/dbr',
+        self.admin_site.admin_view(self.process_dbr),
+        name='dper-dbr'),
+      ]
+      return custom_urls + urls
+  def dper_actions(self, obj):
+      return format_html(
+        '<a class="button" href="{}">DBR</a>',
+        reverse('admin:dper-dbr', args=[obj.pk])
+        )
 
 # register
 admin.site.register(models.RankTable, RankTableAdmin)
