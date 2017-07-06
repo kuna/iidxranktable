@@ -33,6 +33,21 @@ function DummyRenderer(ctx) {
   }
 }
 
+function getOffset(el) {
+  /*
+  el = el.getBoundingClientRect();
+  alert(el.top);
+  return {
+    left: el.left + window.scrollX,
+    top: el.top + window.scrollY
+  }
+  */
+  return {
+    left: el.offsetLeft,
+    top: el.offsetTop
+  };
+}
+
 var TableRenderer = function(renderer) {
   var self = this;
   self._canvas = document.createElement("canvas");
@@ -58,7 +73,8 @@ var TableRenderer = function(renderer) {
   if (renderer.theme_maincate_margin === undefined) renderer.theme_maincate_margin = 0;
 
   function convPos(e,obj) {
-    var offset = obj.offset();
+    //var offset = obj.offset();
+    var offset = getOffset(obj[0]);
     var ratio = 1.0/obj.width()*self._width;
     var x = (e.pageX - offset.left) * ratio;
     var y = (e.pageY - offset.top) * ratio;
