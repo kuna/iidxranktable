@@ -222,11 +222,10 @@ table .loading { color:#999; text-align: center; padding:20px; }
 .rank-item .edit-rank-AA:before { content:'AA'; color:#FFC; }
 .rank-item .edit-rank-AAA:before { content:'AAA'; color:#FFF; }
 .rank-item .edit-rank-MAX:before { content:'MAX'; color:#EFF; }
+
+#editwidget { display:none; }
 @media screen and (max-width: 768px) {
-  /*
-  #editwidget { max-height: 100%; width: 100%; left: 0%; right: 0; overflow-y: scroll; }
-  #editsonglist { max-height: none; overflow-y: visible; }
-  */
+  #editwidget { display:block; }
   #editwidget { width: 100%; left: 0%; right: 0;}
   #editsonglist { max-height: 980px; }
 

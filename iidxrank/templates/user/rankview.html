@@ -4,7 +4,7 @@
 {% load staticfiles %}
 <script type="text/javascript" src="{% static 'js/table.default.skin.js' %}?v=170615"></script>
 <script type="text/javascript" src="{% static 'js/table.default2.skin.js' %}?v=170617"></script>
-<script type="text/javascript" src="{% static 'js/table.js' %}?v=170706"></script>
+<script type="text/javascript" src="{% static 'js/table.js' %}?v=170706_2"></script>
 
 <link href='https://fonts.googleapis.com/css?family=Comfortaa' rel='stylesheet' type='text/css'>
 <script language="javascript">
@@ -115,6 +115,7 @@ function dorender(rendermode)
         p_x -= 320;
       editor.css({ top: p_y+'px', left: p_x+'px' });
       editor.show();
+      editor.text('loading ...');
       editor.load('/!/rankedit/'+item.pkid+'/', function() {
         /* attach click event */
         $('.edit-rank').on('click touch', function (e) {
@@ -194,8 +195,18 @@ $(function() { dorender("clear"); });
 
 
 
-  <!-- edit tool -->
   {% if editable %}
+  <!-- edit tool start -->
+  <!-- only for mobile
+  <div id="editwidget" class="beforeedit">
+    <div id="editstart" class="beforeedit widget-title widget-click">서열표 편집하기</div>
+    <a href="./"><div id="editfinish" class="afteredit widget-title widget-click">서열표 새로고침</div></a>
+    <div id="editsonglist" class="songlist afteredit">
+    </div>
+  </div>
+  -->
+
+  <!-- PC -->
   <div id="editor">
   </div>
   <div style="display:none;">
@@ -205,6 +216,7 @@ $(function() { dorender("clear"); });
       <input id="editform-v" name="v">
     </form>
   </div>
+  <!-- edit tool end -->
   {% endif %}
 
 </div>
