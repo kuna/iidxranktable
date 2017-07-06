@@ -234,6 +234,7 @@ table .loading { color:#999; text-align: center; padding:20px; }
   #editsonglist .edit-rank { width: 100px; }
 }
 @media screen and (max-width: 420px) {
+  #editor { transform-origin: top left; transform: scale(0.4); }
   #editsonglist .rank-item .title { width: 180px; }
   #editsonglist { max-height: 600px; }
   #editsonglist .edit-button { width: 100px;  }
