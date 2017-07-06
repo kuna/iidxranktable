@@ -4,7 +4,7 @@
 {% load staticfiles %}
 <script type="text/javascript" src="{% static 'js/table.default.skin.js' %}?v=170615"></script>
 <script type="text/javascript" src="{% static 'js/table.default2.skin.js' %}?v=170617"></script>
-<script type="text/javascript" src="{% static 'js/table.js' %}?v=170615"></script>
+<script type="text/javascript" src="{% static 'js/table.js' %}?v=170706"></script>
 
 <link href='https://fonts.googleapis.com/css?family=Comfortaa' rel='stylesheet' type='text/css'>
 <script language="javascript">
@@ -96,77 +96,54 @@ function dorender(rendermode)
     // generate renderer and render
     var t = new TableRenderer(ttheme);
     t.RenderTo(tabledata, $('#rankimg'));
+
+    {% if editable %}
+    // click handler for editing songa
+    var clears = ['0','1','2','3','4','5','6','7'];
+    var ranks = ['F','E','D','C','B','A','AA','AAA','MAX'];
+    t.onItemClick = function(e, item, idx) {
+      var editor = $('#editor');
+      if (item === undefined)
+      {
+        editor.hide();
+        return;
+      }
+      // load and display
+      var p_x = e.pageX;
+      var p_y = e.pageY;
+      if (p_x > 600)
+        p_x -= 320;
+      editor.css({ top: p_y+'px', left: p_x+'px' });
+      editor.show();
+      editor.load('/!/rankedit/'+item.pkid+'/', function() {
+        /* attach click event */
+        $('.edit-rank').on('click touch', function (e) {
+          var rank_str = $(this).attr('data-rank');
+          var rank = ranks.indexOf(rank_str);
+          if (rank < 0) { alert('error'); return; }
+          var param = [{'id':item.pkid,'rank':rank}];
+          _submit('edit', JSON.stringify(param));
+          // redraw canvas
+          item.rank = rank_str;
+          item.rate = rank / 9.0 * 100 + 0.1;
+          t.Redraw(tabledata);
+          return false;
+        });
+        $('.edit-clear').on('click touch', function (e) {
+          var clear = parseInt($(this).attr('data-clear'));
+          var param = [{'id':item.pkid,'clear':clear}];
+          _submit('edit', JSON.stringify(param));
+          // redraw canvas
+          item.clear = clear;
+          t.Redraw(tabledata);
+          return false;
+        });
+      });
+    }
+    {% endif %}
 }
 
 $(function() { dorender("clear"); }); 
-
-
-
-/*
-$(function (){
-	dorender();
-
-  // TODO: render another ...
-  var height_per_element = 30;
-  var height = tabledata.categories.length * height_per_element + 60;
-  var canvas = document.createElement("canvas");
-  $(canvas).addClass('mobile_img');
-  var ctx = canvas.getContext("2d");
-  canvas.width = 600;
-  canvas.height = height;
-
-  var ypos = 30;
-  ctx.font = "12px Arial";
-  var fillclr = [
-    "#F0F0F0",
-    "#CCCCCC",
-    "#FFAAFF",
-    "#99CC33",
-    "#3399FF",
-    "#D03333",  // hard gauge
-    "#E0E066",
-    "#33FFCC"];
-  var graphx = 120;
-  var graphw = 440;
-  var graphh = 20;
-
-  for (var k=0; k<tabledata.categories.length; k++) {
-    var d = tabledata.categories[k];
-    ctx.fillStyle="#000000";
-    ctx.textAlign="center";
-    ctx.fillText(d.category, 50, ypos+15);
-
-    var totalcnt = d.items.length;
-    var clearrate = [1,0,0,0,0,0,0,0 ,0]; // last one is dummy
-    var clearcnt = [0,0,0,0,0,0,0,0 ,0];
-    var ccnt = 0;
-
-    for (var i=0; i<=7; i++) {
-      ccnt = 0;
-      for (var j=0; j<totalcnt; j++) {
-        if (d.items[j].clear >= i) ccnt++;
-      }
-      clearrate[i] = ccnt / totalcnt;
-      clearcnt[i] = ccnt;
-      ctx.fillStyle=fillclr[i];
-      // box size: 840, 20
-      ctx.fillRect(graphx, ypos, graphw*clearrate[i], graphh);
-    }
-    ctx.fillStyle="#FFFFFF";
-    ctx.textAlign="center";
-    for (var i=0; i<=7; i++) {
-      var cnt = clearcnt[i+1] - clearcnt[i];
-      if (cnt==0) continue;
-      var xp = (clearrate[i+1] + (clearrate[i]-clearrate[i+1])/2) * graphw;
-      ctx.fillText(clearcnt[i]-clearcnt[i+1], graphx+xp, ypos+15);
-    }
-
-    ypos += height_per_element;
-  }
-  $(canvas).insertAfter("#rankimg");
-  //$("#rankimg").insertAfter(canvas);
-});
-*/
 </script>
 
 {% endblock %}
@@ -219,18 +196,14 @@ $(function (){
 
   <!-- edit tool -->
   {% if editable %}
-  <div id="editwidget" class="beforeedit">
-    <div id="editstart" class="beforeedit widget-title widget-click">서열표 편집하기</div>
-    <a href="./"><div id="editfinish" class="afteredit widget-title widget-click">서열표 새로고침</div></a>
-    <div id="editsonglist" class="songlist afteredit">
-    </div>
-    <div style="display:none;">
-      <form id="editform">
-        {% csrf_token %}
-        <input id="editform-action" name="action">
-        <input id="editform-v" name="v">
-      </form>
-    </div>
+  <div id="editor">
+  </div>
+  <div style="display:none;">
+    <form id="editform">
+      {% csrf_token %}
+      <input id="editform-action" name="action">
+      <input id="editform-v" name="v">
+    </form>
   </div>
   {% endif %}
 

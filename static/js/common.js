@@ -419,22 +419,23 @@ $(function() {
 /*
  * edit tool
  */
+function _submit(action,v) {
+  $('#editform-action').val(action);
+  $('#editform-v').val(v);
+  var jstr = $('#editform').serialize();
+  console.log(jstr);
+  $.ajax({
+    url: "/!/modify/",
+    type: "POST",
+    data: jstr,
+    success: function(r) {
+      console.log(r);
+      showMessage(r.message);
+    }
+  });
+}
 $(function() {
-  function submit(action,v) {
-    $('#editform-action').val(action);
-    $('#editform-v').val(v);
-    var jstr = $('#editform').serialize();
-    console.log(jstr);
-    $.ajax({
-      url: "/!/modify/",
-      type: "POST",
-      data: jstr,
-      success: function(r) {
-        console.log(r);
-        showMessage(r.message);
-      }
-    });
-  }
+  var submit = _submit;
 
   $('#editstart').on('click touch', function () {
     var clears = ['0','1','2','3','4','5','6','7'];

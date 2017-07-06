@@ -32,7 +32,7 @@ urlpatterns = [
 
 	# update (NOT WORKING NOW)
             url(r'^update/', include([
-                    url(r'^rankedit/(?P<tablename>\w+)/$', views.rankedit, name="rankedit"),
+                    url(r'^rankedit/(?P<tablename>\w+)/$', views.ranktableedit, name="ranktableedit"),
             ])),
 
         # comment, board
@@ -66,6 +66,7 @@ urlpatterns = [
             url(r'^!/setpassword/$', views.set_password),
             url(r'^!/withdraw/$', views.withdraw),
 
+            url(r'^!/rankedit/(?P<id>[0-9]+)/$', views.rankedit),
             url(r'^!/modify/$', views.modify),
 
         # common urls (mainpage, userpage, rankpage)

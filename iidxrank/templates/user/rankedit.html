@@ -1,0 +1,34 @@
+<!-- rank edit for individual song -->
+<div class="rankedit">
+{% if valid %}
+  <div class="rankedit-toolset">
+    <div class="row">
+      <span class="title">{{ title }}</span>
+    </div>
+    <div class="row rank-item">
+      <span class="name">CLEAR</span>
+      <button class="btn edit-button edit-clear edit-clear-0 curr-clear-{{ item.clear }}" data-clear="0"></button>
+      <button class="btn edit-button edit-clear edit-clear-1 curr-clear-{{ item.clear }}" data-clear="1"></button>
+      <button class="btn edit-button edit-clear edit-clear-2 curr-clear-{{ item.clear }}" data-clear="2"></button>
+      <button class="btn edit-button edit-clear edit-clear-3 curr-clear-{{ item.clear }}" data-clear="3"></button>
+      <button class="btn edit-button edit-clear edit-clear-4 curr-clear-{{ item.clear }}" data-clear="4"></button>
+      <button class="btn edit-button edit-clear edit-clear-5 curr-clear-{{ item.clear }}" data-clear="5"></button>
+      <button class="btn edit-button edit-clear edit-clear-6 curr-clear-{{ item.clear }}" data-clear="6"></button>
+      <button class="btn edit-button edit-clear edit-clear-7" data-clear="7"></button>
+    </div>
+    <div class="row rank-item">
+      <span class="name">SCORE</span>
+      <button class="btn edit-button edit-rank edit-rank-F" data-rank="F"></button>
+      <button class="btn edit-button edit-rank edit-rank-B" data-rank="B"></button>
+      <button class="btn edit-button edit-rank edit-rank-A" data-rank="A"></button>
+      <button class="btn edit-button edit-rank edit-rank-AA" data-rank="AA"></button>
+      <button class="btn edit-button edit-rank edit-rank-AAA" data-rank="AAA"></button>
+      <button class="btn edit-button edit-rank edit-rank-MAX" data-rank="MAX"></button>
+    </div>
+  </div>
+{% else %}
+  <p>Invalid record. maybe song data inavailable.</p>
+  <p>잘못된 플레이 기록입니다. 혹은 해당 곡이 DB에 등록되지 않았을 수 있습니다.<br>
+  갱신을 기다려주세요!</p>
+{% endif %}
+</div>

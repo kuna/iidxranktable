@@ -126,7 +126,35 @@ def rankjson(request, username="!", tablename="SP12"):
         raise Http404
     return JsonResponse(pdata)
 
-def rankedit(request, tablename):
+def rankedit(request, id=-1):
+    # render rankedit page for each user (for internal load)
+    if (not request.user.is_authenticated()):
+        islogined = False
+        valid = False
+        pr_obj = None
+        title = ''
+    else:
+        islogined = True
+        user = request.user
+        # check song is exists
+        song_obj = models.Song.objects.filter(id=id).first()
+        title = song_obj.songtitle
+        if (song_obj == None):
+            valid = False
+        else:
+            valid = True
+            # fetch playrecord if available
+            pr_obj = models.PlayRecord.objects.filter(player_id=user.id, song_id=id).first()
+            if (pr_obj == None):
+                pr_obj = models.PlayRecord()
+    return render(request, 'user/rankedit.html', {
+        'valid': valid,
+        'islogined': islogined,
+        'title': title,
+        'item': pr_obj,
+        })
+
+def ranktableedit(request, tablename):
     tablename = tablename.upper()
 
     # only admin can access it

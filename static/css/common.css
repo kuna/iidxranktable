@@ -180,6 +180,11 @@ table .loading { color:#999; text-align: center; padding:20px; }
   height: 24px;
 }
 
+#editor { position: absolute; background:rgba(0,0,0,0.8); width: 380px; height:220px; border-radius: 5px; padding: 10px; display: none; color: #ccc; border: 5px solid #fff; box-shadow: 0 0 5px #000; }
+#editor .title { color: #fff; font-weight: bold; }
+#editor .row { clear: both; margin-bottom: 10px; }
+#editor .name { display: block; clear: both; margin-bottom: 10px; }
+
 #editwidget>a { color: #fff; }
 #editwidget.beforeedit .afteredit { display:none; }
 #editwidget.afteredit .beforeedit { display:none; }
@@ -198,25 +203,25 @@ table .loading { color:#999; text-align: center; padding:20px; }
 #editsonglist .rank-item-A .level { color:#C99; }
 #editsonglist .rank-item-H .level { color:#CC9; }
 #editsonglist .rank-item-N .level { color:#69C; }
-#editsonglist .edit-button { background:none; border: 1px solid #666; line-height: 10px; padding: 5px; width: 80px; text-align: center; float: right; margin-right: 10px; }
-#editsonglist .edit-rank { width: 40px; }
-#editsonglist .edit-clear-0:before { content:'NOPLAY'; color:#666; }
-#editsonglist .edit-clear-1:before { content:'FAILED'; color:#999; }
-#editsonglist .edit-clear-2:before { content:'ASSIST'; color:#CAA; }
-#editsonglist .edit-clear-3:before { content:'EASY'; color:#9C6; }
-#editsonglist .edit-clear-4:before { content:'NORMAL'; color:#69C; }
-#editsonglist .edit-clear-5:before { content:'HARD'; color:#C99; }
-#editsonglist .edit-clear-6:before { content:'EXHARD'; color:#CC9; }
-#editsonglist .edit-clear-7:before { content:'FC'; color:#FFF; }
-#editsonglist .edit-rank-F:before { content:'F'; color:#666; }
-#editsonglist .edit-rank-E:before { content:'E'; color:#666; }
-#editsonglist .edit-rank-D:before { content:'D'; color:#666; }
-#editsonglist .edit-rank-C:before { content:'C'; color:#666; }
-#editsonglist .edit-rank-B:before { content:'B'; color:#CCC; }
-#editsonglist .edit-rank-A:before { content:'A'; color:#FCC; }
-#editsonglist .edit-rank-AA:before { content:'AA'; color:#FFC; }
-#editsonglist .edit-rank-AAA:before { content:'AAA'; color:#FFF; }
-#editsonglist .edit-rank-MAX:before { content:'MAX'; color:#EFF; }
+.edit-button { background:none; border: 1px solid #666; line-height: 10px; padding: 5px; width: 80px; text-align: center; float: right; margin-right: 10px; }
+.rank-item .edit-rank { width: 40px; }
+.rank-item .edit-clear-0:before { content:'NOPLAY'; color:#666; }
+.rank-item .edit-clear-1:before { content:'FAILED'; color:#999; }
+.rank-item .edit-clear-2:before { content:'ASSIST'; color:#CAA; }
+.rank-item .edit-clear-3:before { content:'EASY'; color:#9C6; }
+.rank-item .edit-clear-4:before { content:'NORMAL'; color:#69C; }
+.rank-item .edit-clear-5:before { content:'HARD'; color:#C99; }
+.rank-item .edit-clear-6:before { content:'EXHARD'; color:#CC9; }
+.rank-item .edit-clear-7:before { content:'FC'; color:#FFF; }
+.rank-item .edit-rank-F:before { content:'F'; color:#666; }
+.rank-item .edit-rank-E:before { content:'E'; color:#666; }
+.rank-item .edit-rank-D:before { content:'D'; color:#666; }
+.rank-item .edit-rank-C:before { content:'C'; color:#666; }
+.rank-item .edit-rank-B:before { content:'B'; color:#CCC; }
+.rank-item .edit-rank-A:before { content:'A'; color:#FCC; }
+.rank-item .edit-rank-AA:before { content:'AA'; color:#FFC; }
+.rank-item .edit-rank-AAA:before { content:'AAA'; color:#FFF; }
+.rank-item .edit-rank-MAX:before { content:'MAX'; color:#EFF; }
 @media screen and (max-width: 768px) {
   /*
   #editwidget { max-height: 100%; width: 100%; left: 0%; right: 0; overflow-y: scroll; }

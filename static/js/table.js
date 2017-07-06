@@ -39,7 +39,7 @@ var TableRenderer = function(renderer) {
   var ctx = self._canvas.getContext("2d");
   self.getContext = function () { return ctx; }
   self.getCanvas = function() { return self._canvas; }
-  self.onItemClick = function(item,pos) { console.log(item); }
+  self.onItemClick = function(e,item,pos) { console.log(item); }
   self.onItemHover = undefined;
   self._width = 1000;
   self._height = 1000;
@@ -74,9 +74,11 @@ var TableRenderer = function(renderer) {
       if (p.x >= itempos.pos[0] && p.x < itempos.pos[2] &&
           p.y >= itempos.pos[1] && p.y < itempos.pos[3])
       {
-        self.onItemClick(itempos.item, itempos.idx);
+        self.onItemClick(e, itempos.item, itempos.idx);
+        return;
       }
     }
+    self.onItemClick(e, undefined, -1);
   }
   function onItemHover_internal(e) {
     if (self.onItemHover === undefined)
@@ -88,7 +90,8 @@ var TableRenderer = function(renderer) {
       if (p.x >= itempos.pos[0] && p.x < itempos.pos[2] &&
           p.y >= itempos.pos[1] && p.y < itempos.pos[3])
       {
-        self.onItemHover(itempos.item, itempos.idx);
+        self.onItemHover(e, itempos.item, itempos.idx);
+        return;
       }
     }
   }
@@ -225,6 +228,9 @@ var TableRenderer = function(renderer) {
     }
     self.RenderTable(tdata, true, todest);
   };
+  self.Redraw = function(tdata) {
+    self.RenderTable(tdata, true);
+  }
 }
 
 //
