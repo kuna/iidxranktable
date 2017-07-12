@@ -351,6 +351,7 @@ def modify(request):
                     pr.playscore = int(song.songnotes * rate * 2 / 100)
                 pr.save()
         except Exception as e:
+            print e
             return JsonResponse({'code': 1, 'message': 'Invalid Song modification', 'detail':str(e)})
     elif (action == 'delete'):
         try:

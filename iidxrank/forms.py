@@ -15,7 +15,7 @@ membership related
 alphanumeric = RegexValidator(r'^[0-9a-zA-Z_]*$', 'ID: Only alphanumeric characters are allowed. 영문/숫자,_만 입력 가능합니다.')
 
 class LoginForm(forms.Form):
-    id = forms.CharField(widget=forms.TextInput(), min_length=4, validators=[alphanumeric])
+    id = forms.CharField(widget=forms.TextInput(), min_length=4)
     password = forms.CharField(widget=forms.PasswordInput(attrs={'class':'form-control input-sm'}))
 
     def clean(self):
