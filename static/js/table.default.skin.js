@@ -60,7 +60,7 @@ function DefaultRenderer(ctx) {
       self.ctx.fillRect(x,y,w,h);
       // 2 draw font
       fnt_color = "#000";
-      if (d.data.version >= 24) fnt_color = "#C6F";
+      if (d.data.version >= 25) fnt_color = "#C6F";
       tdrawer = new TextDrawer(self.ctx, "12px Arial", "9px Arial", fnt_color);
       tdrawer.drawText(d.data.title,x,y+h/2+4,w-35,h);
       // 3 draw border

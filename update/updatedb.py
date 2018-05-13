@@ -7,46 +7,54 @@ from django.db import transaction
 import log
 import iidxrank.models as models
 
+# to make version FORCE
+VERSION = -1
+
+# returns 1 if added
+# returns 0 if not added(updated)
+def update_song_by_object(song, do_add=True):
+    if (VERSION >= 0):
+        song['version'] = VERSION
+    # if not exists, then add
+    # if exists, then check level and title, then update.
+    added = 0
+    obj_song = models.Song.objects.filter(songid=song['id'], songtype=song['diff']).first()
+    if obj_song == None:
+        if (do_add):
+            if (song['notes'] == None):
+                song['notes'] = 0
+
+            obj_song = models.Song.objects.create(songtitle=song['title'], 
+                songtype=song['diff'],
+                songid=song['id'],
+                songlevel=song['level'],
+                songnotes=song['notes'],
+                version=song['version'],
+                calclevel_easy=0,
+                calcweight_easy=0,
+                calclevel_normal=0,
+                calcweight_normal=0,
+                calclevel_hd=0,
+                calcweight_hd=0,
+                calclevel_exh=0,
+                calcweight_exh=0)
+            added = 1
+    else:
+        if (obj_song.songlevel != song['level'] or
+                obj_song.version != song['version'] or
+                obj_song.songtitle != song['title']):
+            log.Print("song %s updated" % song['title'])
+            obj_song.songlevel = song['level']
+            obj_song.version = song['version']
+            obj_song.songtitle = song['title']
+            obj_song.save()
+    return (obj_song, added)
+
 #
+# update metadata of new songs from iidx.me
 # TODO: we need to separate SPA/SPL, as updating is confusing.
 #
 def update_iidxme():
-    def update(data):
-        added_data = 0
-        for song in data:
-# if not exists, then add
-# if exists, then check level and title, then update.
-            obj_song = models.Song.objects.filter(songid=song['id'], songtype=song['diff']).first()
-            if obj_song == None:
-                if (song['notes'] == None):
-                    song['notes'] = 0
-
-                obj_song = models.Song.objects.create(songtitle=song['title'], 
-                    songtype=song['diff'],
-                    songid=song['id'],
-                    songlevel=song['level'],
-                    songnotes=song['notes'],
-                    version=song['version'],
-                    calclevel_easy=0,
-                    calcweight_easy=0,
-                    calclevel_normal=0,
-                    calcweight_normal=0,
-                    calclevel_hd=0,
-                    calcweight_hd=0,
-                    calclevel_exh=0,
-                    calcweight_exh=0)
-                added_data = added_data+1
-            else:
-                if (obj_song.songlevel != song['level'] or
-                        obj_song.version != song['version'] or
-                        obj_song.songtitle != song['title']):
-                    log.Print("song %s updated" % song['title'])
-                    obj_song.songlevel = song['level']
-                    obj_song.version = song['version']
-                    obj_song.songtitle = song['title']
-                    obj_song.save()
-        log.Print("added %d datas" % added_data)
-
     # when json is possible
     """
     for lvl in range(6, 13):
@@ -61,8 +69,19 @@ def update_iidxme():
     """
     # temp method for json inavailable
     data = parser_iidxme.parse_songs_http()
-    update(data)
+    added_data_cnt = 0
+    for song in data:
+        obj, is_added = update_song_by_object(song)
+        added_data_cnt += is_added
+    log.Print("added %d datas" % added_data_cnt)
 
+#
+# update single song metadata from iidx.me
+#
+def update_iidxme_song(songnum, username='delmitz'):
+    data = parser_iidxme.parse_iidxme_songdata('http://iidx.me/%s/music/%d' % (username, songnum))
+    for song in data:
+        update_song_by_object(song['data'])
 
 # update or create rank table
 # (depreciated)

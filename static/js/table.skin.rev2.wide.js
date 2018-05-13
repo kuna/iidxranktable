@@ -79,7 +79,7 @@ function Rev2Renderer(ctx) {
 
       // 2 draw font
       fnt_color = "#000";
-      if (d.data.version >= 24) fnt_color = "#C6F";
+      if (d.data.version >= 25) fnt_color = "#C6F";
       tdrawer = new TextDrawer(self.ctx, "12px Arial", "9px Arial", fnt_color,true);
       tdrawer.drawText(d.data.title,x,y+h/2+4,w-20,h);
 
