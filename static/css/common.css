@@ -342,3 +342,10 @@ table .loading { color:#999; text-align: center; padding:20px; }
 #message { position:fixed; display:block; right:0px; top:0px; height:auto; width:auto; background-color:#cc6; color:#fff; font-size:12px; padding: 7px; z-index:999; }
 #loading_background { background-color: rgba(0,0,0,0.5); position:fixed; width:100%; height:100%; top:0; left:0; z-index:999; }
 #loading_message { background-color: #fff; position:fixed; width:240px; height:60px; text-align: center; padding:20px; top:50%; left:50%; border-radius:20px; margin-left:-120px; margin-top:-30px; box-shadow:#000 0 0 20px; cursor:default; z-index:1000; }
+
+.panel-notice .panel-text { line-height:1.6; font-size: 9pt; display:block; border-top: 1px solid #ccc; padding-top: 5px; }
+.panel-notice .panel-text p { margin:0; }
+.panel-notice .panel-text li { margin-bottom: 0px !important; }
+.panel-notice .panel-text table { margin:3px 0; }
+.panel-notice .panel-text table th,
+.panel-notice .panel-text table td { padding:3px; }

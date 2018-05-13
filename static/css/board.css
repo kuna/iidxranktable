@@ -39,6 +39,7 @@
 .post .info .writer { float: left; }
 .post .info .detail { float: right; color: #999; }
 .post .body { margin-bottom: 20px; }
+.post .body table { margin-bottom: 5px; }
 .admin { font-weight:bold; color:#933; }
 
 /* writeform part */

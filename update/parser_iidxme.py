@@ -188,12 +188,12 @@ def parse_userinfo_http(username):
 
 def parse_songs_http(username='delmitz'):
     urls = [
-        'http://iidx.me/%s/sp/ver/24/normal',
-        'http://iidx.me/%s/sp/ver/24/hyper',
-        'http://iidx.me/%s/sp/ver/24/another',
-        'http://iidx.me/%s/dp/ver/24/normal',
-        'http://iidx.me/%s/dp/ver/24/hyper',
-        'http://iidx.me/%s/dp/ver/24/another',
+        'http://iidx.me/%s/sp/ver/25/normal',
+        'http://iidx.me/%s/sp/ver/25/hyper',
+        'http://iidx.me/%s/sp/ver/25/another',
+        'http://iidx.me/%s/dp/ver/25/normal',
+        'http://iidx.me/%s/dp/ver/25/hyper',
+        'http://iidx.me/%s/dp/ver/25/another',
         'http://iidx.me/%s/sp/level/leggendaria',
         'http://iidx.me/%s/dp/level/leggendaria',
         ]

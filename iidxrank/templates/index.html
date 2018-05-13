@@ -55,14 +55,14 @@ glyphicon glyphicon-home"></span></button></a></center>
     </div>
 
 		<div class="row input-group">
-      <div class="panel panel-default">
+      <div class="panel panel-default panel-notice">
         <div class="panel-heading"><a href="/board/notice/">Notice</a></div>
         <div class="list-group" style="overflow-y:scroll; height:200px;">
           {% autoescape off %}
           <span class="title">{{ noticepost.title }}</span>
           <span class="time">{{ noticepost.time|date:"y-m-d" }}</span>
           <div class="clear"></div>
-          <span class="text">{{ noticepost.text|safe }}</span>
+          <span class="text panel-text">{{ noticepost.text|safe }}</span>
           {% endautoescape %}
         </div>
       </div>
@@ -111,9 +111,6 @@ glyphicon glyphicon-home"></span></button></a></center>
     </div>
   </div>
   {% else %}
-  <div class="notice-boards">
-    Contact: @lazykuna<br>DB 업데이트는 비정기적으로 진행됩니다.
-  </div>
   {% endif %}
 
 
