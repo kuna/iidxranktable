@@ -142,52 +142,54 @@ def parse_iidxme_songdata(url):
     html = data.read()
     data.close()
     musicdata = []
-    try:
-        soup = BeautifulSoup(html, "lxml")
-        contentobj = soup.find('div', attrs={'id': 'content'})
-        _genre = contentobj.find('p', class_='genre').get_text()
-        _title = contentobj.find('p', class_='title').get_text()
-        _artist = contentobj.find('p', class_='artist').get_text()
-        _id = int( url.split('/')[-1])
-        _types = ["SP", "DP"]
-        _typeidx = 0
-        for table in contentobj.findAll('div', class_='table musicdata'):
-            mode = _types[_typeidx]
-            _typeidx += 1
-            for tr in table.findAll('div', class_='tr')[1:-2]:
-                cells = tr.findAll('div', class_='td')
-                if (len(cells) == 0
-                        or 'separator' in cells[0]['class']
-                        or 'detail' in cells[0]['class']
-                        or 'th' in cells[0]['class']):
-                    continue
-                obj = {}
-                _, _, clr, _ = cells[0]['class']
-                _, _, diffchar, lvstr = cells[1]['class']
-                obj['clear'] = int(clr.replace('clear', ''))
-                obj['score'] = 0    # TODO- it's quite hard...
-                obj['data'] = {}
-                obj['data']['level'] = int(lvstr[2:])
-                obj['data']['diff'] = (mode + diffchar).upper()
-                obj['data']['title'] = _title
-                obj['data']['id'] = _id
-                obj['data']['version'] = VERSION
-                try:
-                    obj['data']['notes'] = int(cells[2].get_text())
-                except ValueError:
-                    obj['data']['notes'] = 0
-                if ('noscore' in cells[6]['class']):
-                    obj['score'] = 0
-                else:
-                    obj['score'] = int(cells[6].find('span',class_='scorenum').get_text())
-                obj['rate'] = float(cells[7].find('span').get_text()[:-1])
-                try:
-                    obj['miss'] = int(cells[8].get_text())
-                except ValueError:
-                    obj['miss'] = 0
-                musicdata.append(obj)
-    except Exception as e:
-        print e
+
+    soup = BeautifulSoup(html, "lxml")
+    contentobj = soup.find('div', attrs={'id': 'content'})
+    _genre = contentobj.find('p', class_='genre').get_text()
+    _title = contentobj.find('p', class_='title').get_text()
+    _artist = contentobj.find('p', class_='artist').get_text()
+    _id = int( url.split('/')[-1])
+    _types = ["SP", "DP"]
+    _typeidx = 0
+    for table in contentobj.findAll('div', class_='table musicdata'):
+        mode = _types[_typeidx]
+        _typeidx += 1
+        for tr in table.findAll('div', class_='tr')[1:-2]:
+            cells = tr.findAll('div', class_='td')
+            if (len(cells) == 0
+                    or 'separator' in cells[0]['class']
+                    or 'detail' in cells[0]['class']
+                    or 'th' in cells[0]['class']):
+                continue
+            # if result cell, not song cell? --> go to next cell
+            if (len(cells[0]['class']) <= 3):
+                continue
+            obj = {}
+            _, _, clr, _ = cells[0]['class']
+            _, _, diffchar, lvstr = cells[1]['class']
+            obj['clear'] = int(clr.replace('clear', ''))
+            obj['score'] = 0    # TODO- it's quite hard...
+            obj['data'] = {}
+            obj['data']['level'] = int(lvstr[2:])
+            obj['data']['diff'] = (mode + diffchar).upper()
+            obj['data']['title'] = _title
+            obj['data']['id'] = _id
+            obj['data']['version'] = VERSION
+            try:
+                obj['data']['notes'] = int(cells[2].get_text())
+            except ValueError:
+                obj['data']['notes'] = 0
+            if ('noscore' in cells[6]['class']):
+                obj['score'] = 0
+            else:
+                obj['score'] = int(cells[6].find('span',class_='scorenum').get_text())
+            obj['rate'] = float(cells[7].find('span').get_text()[:-1])
+            try:
+                obj['miss'] = int(cells[8].get_text())
+            except ValueError:
+                obj['miss'] = 0
+            musicdata.append(obj)
+            
     return musicdata
 
 def parse_iidxme_http(url):

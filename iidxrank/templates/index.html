@@ -1,5 +1,6 @@
 {% extends "common.html" %}
 {% load staticfiles %}
+{% load hijack_tags %}
 {% block head %}
 
 {% endblock %}
@@ -69,6 +70,36 @@ glyphicon glyphicon-home"></span></button></a></center>
 		</div>
     <!--<center><a href="/board/freetalk/">건의는 이곳에</a></center>-->
 	</div>
+
+
+  {% if user.is_superuser %}
+    Admin mode
+    <div>
+      <script>
+        function hijack_() {
+          var id = $("#account_hi").val();
+          window.location.href = "/hijack/username/" + id + "/";
+        }
+        $(function() { $("#account_hi_btn").click(hijack_) });
+      </script>
+      <input type="text" id="account_hi">
+      <button id="account_hi_btn">Hijack Account</button>
+    </div>
+    <div>
+      <form action="/hijack/release-hijack/" method="POST">
+        {% csrf_token %}
+        <button>Release Hijack</button>
+      </form>
+    </div>
+  {% endif %}
+  {% if request|is_hijacked %}
+    <div>
+      <form action="/hijack/release-hijack/" method="POST">
+        {% csrf_token %}
+        <button>Release Hijack</button>
+      </form>
+    </div>
+  {% endif %}
 
 
   {% if false %}

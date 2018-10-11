@@ -58,6 +58,9 @@ urlpatterns = [
                     url(r'^recommend/(?P<username>(\w|-)+)/(?P<type>\w+)/(?P<level>[0-9]+)/$', views_json.json_recommend),
             ])),
 
+            # hijack
+            url(r'^hijack/', include('hijack.urls', namespace='hijack')),
+
         # membership
             url(r'^!/login/$', views.login, name='login'),
             url(r'^!/join/$', views.join),
@@ -88,5 +91,6 @@ urlpatterns = [
                     url(r'^(?P<tablename>\w+)/table/$', views.ranktable),
                     url(r'^(?P<tablename>\w+)/json/$', views.rankjson),
             ])),
+
 	])),
 ]

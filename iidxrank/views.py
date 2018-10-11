@@ -1,6 +1,7 @@
 #-*- coding: utf-8 -*-
 from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse
 from django.core.exceptions import PermissionDenied
+from django.core.exceptions import MultipleObjectsReturned
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
@@ -350,9 +351,22 @@ def modify(request):
                 elif (rate != None):
                     pr.playscore = int(song.songnotes * rate * 2 / 100)
                 pr.save()
+        except MultipleObjectsReturned as e:
+            # check if pr returns more than one
+            pr = models.PlayRecord.objects.filter(song=song,player=player).first()
+            pr.delete()
+            return JsonResponse({
+                'code': 1,
+                'message': 'Internal error (MultipleObjectReturned). Please try again!',
+                'detail':str(e)
+            })
         except Exception as e:
             print e
-            return JsonResponse({'code': 1, 'message': 'Invalid Song modification', 'detail':str(e)})
+            return JsonResponse({
+                'code': 1,
+                'message': 'Invalid Song modification - ' + str(e) + ' / ' + str(l),
+                'detail':str(e) + '/' + str(l)
+            })
     elif (action == 'delete'):
         try:
             sid = int(v)
