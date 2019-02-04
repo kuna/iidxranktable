@@ -54,7 +54,7 @@ def update_song_by_object(song, do_add=True):
 # update metadata of new songs from iidx.me
 # TODO: we need to separate SPA/SPL, as updating is confusing.
 #
-def update_iidxme():
+def update_iidxme(username='delmitz', ver=25):
     # when json is possible
     """
     for lvl in range(6, 13):
@@ -68,7 +68,7 @@ def update_iidxme():
         update(data)
     """
     # temp method for json inavailable
-    data = parser_iidxme.parse_songs_http()
+    data = parser_iidxme.parse_songs_http(username, ver)
     added_data_cnt = 0
     for song in data:
         obj, is_added = update_song_by_object(song)

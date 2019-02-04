@@ -4,7 +4,7 @@ import jsondata
 import urllib
 from bs4 import BeautifulSoup
 
-VERSION=99
+VERSION=25
 
 #
 # parse_users: return user lists
@@ -242,21 +242,23 @@ def parse_userinfo_http(username):
     else:
         return ( parsedata['userdata']['djname'], username, parsedata['userdata']['iidxid'] )
 
-def parse_songs_http(username='delmitz'):
+def parse_songs_http(username='delmitz', ver=25):
     urls = [
-        'http://iidx.me/%s/sp/ver/25/normal',
-        'http://iidx.me/%s/sp/ver/25/hyper',
-        'http://iidx.me/%s/sp/ver/25/another',
-        'http://iidx.me/%s/dp/ver/25/normal',
-        'http://iidx.me/%s/dp/ver/25/hyper',
-        'http://iidx.me/%s/dp/ver/25/another',
-        'http://iidx.me/%s/sp/level/leggendaria',
-        'http://iidx.me/%s/dp/level/leggendaria',
+        'http://iidx.me/%s/sp/ver/%d/normal' % (username,ver),
+        'http://iidx.me/%s/sp/ver/%d/hyper' % (username,ver),
+        'http://iidx.me/%s/sp/ver/%d/another' % (username,ver),
+        'http://iidx.me/%s/dp/ver/%d/normal' % (username,ver),
+        'http://iidx.me/%s/dp/ver/%d/hyper' % (username,ver),
+        'http://iidx.me/%s/dp/ver/%d/another' % (username,ver),
+        'http://iidx.me/%s/sp/level/leggendaria' % (username),
+        'http://iidx.me/%s/dp/level/leggendaria' % (username),
         ]
     ret = []
     # remove scores
     for url in urls:
-        parsedata = parse_iidxme_http(url % username)
+        parsedata = parse_iidxme_http(url)
+        if ('musicdata' not in parsedata):
+            raise Exception('Failed to retrieve data from iidx.me');
         for music in parsedata['musicdata']:
             music['data']['diff'] = music['data']['diff'].upper()
             ret.append(music['data'])
