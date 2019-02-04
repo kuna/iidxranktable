@@ -12,18 +12,24 @@
 {{ form.errors }}
 {% endif %}
 
+<h3>Upload Single Play</h3>
 <form method="POST" action="./">
   {% csrf_token %}
   <div class="row">
-    <label>ID {{ form.id }}</label>
+    <label>SP CSV <input type="file" name="file" /></label>
   </div>
-  <div class="row">
-    <label>PASS {{ form.password }}</label>
-  </div>
-  <a href="../../"><button type="button" class="btn btn-default">돌아가기</button></a>
-  <a href="../join/"><button type="button" class="btn btn-default">가입하기</button></a>
-  <button class="btn btn-primary">로그인하기</button>
+  <button class="btn btn-primary">SP CSV upload</button>
 </form>
+
+<h3>Upload Double Play</h3>
+<form method="POST" action="./">
+  {% csrf_token %}
+  <div class="row">
+    <label>DP CSV <input type="file" name="file" /></label>
+  </div>
+  <button class="btn btn-primary">DP CSV upload</button>
+</form>
+
 </div>
 
 {% endblock %}

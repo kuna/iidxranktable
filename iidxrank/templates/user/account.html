@@ -1,3 +1,14 @@
+{% extends "common.html" %}
+{% block subtitle %}- Login{% endblock %}
+{% block head %}
+
+{% endblock %}
+{% block body %}
+
+{% include "top.html" %}
+
+<div id="container">
+
 {% if not form.is_valid %}
 {{ form.errors }}
 {% endif %}
@@ -24,3 +35,7 @@
   <a href="../withdraw/"><button type="button" class="btn btn-default">탈퇴하기</button></a>
   <button class="btn btn-primary">수정하기</button>
 </form>
+</div>
+
+{% endblock %}
+{% block etc %}{% endblock %}

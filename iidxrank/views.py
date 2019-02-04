@@ -177,7 +177,6 @@ def ranktableedit(request, tablename):
     tableinfo = rp.get_ranktable_metadata(ranktable)
     return render(request, 'rankedit.html', { 'categories': categories, 'tableid': ranktable.id, 'tableinfo': tableinfo })
 
-
 # /iidx/musiclist
 #@xframe_options_exempt
 def musiclist(request):
@@ -317,6 +316,16 @@ def set_password(request):
         form = forms.SetPasswordForm()
     return render(request, 'user/setpassword.html', {'form':form})
 
+# /!/update/
+# XXX: should allow cross-domain request to allow extern site
+@csrf_exempt
+def updatelamp(request):
+    if (request.method == "POST"):
+        if (not request.user.is_authenticated()):
+            return JsonResponse({'status': 'Please login to iidx.me first.'})
+    if (not request.user.is_authenticated()):
+        return redirect('main')
+    return render(request, 'user/updatelamp.html')
 
 # JSON
 # /!/modify/
