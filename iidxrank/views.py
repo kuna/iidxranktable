@@ -15,6 +15,7 @@ import board.models
 import settings
 
 import rankpage as rp
+import update.parser_csv as parser_csv
 import iidx
 import json
 import views_json
@@ -320,12 +321,26 @@ def set_password(request):
 # XXX: should allow cross-domain request to allow extern site
 @csrf_exempt
 def updatelamp(request):
+    form = {'is_valid': True, 'errors':'no errors.', 'message': ['Ready.',]}
     if (request.method == "POST"):
         if (not request.user.is_authenticated()):
             return JsonResponse({'status': 'Please login to iidx.me first.'})
+        if ('type' not in request.POST or 'file' not in request.FILES):
+            form['is_valid'] = False
+            form['errors'] = 'Invalid form data.'
+        else:
+            import csv
+            csvtype = request.POST['type']
+            csvfile = request.FILES['file']
+            tbl = csv.reader(csvfile, delimiter=',')
+            log = []
+            print "* updatelamp: user %s, %s" % (request.user.username, csvtype)
+            parser_csv.update(tbl, csvtype, request.user, log)
+            form['message'] = log
+            print "* updatelamp end."
     if (not request.user.is_authenticated()):
         return redirect('main')
-    return render(request, 'user/updatelamp.html')
+    return render(request, 'user/updatelamp.html', {'form':form})
 
 # JSON
 # /!/modify/
@@ -341,41 +356,23 @@ def modify(request):
         action = request.GET.get('action', '')
         v = request.GET.get('v', '')
     if (action == 'edit'):
-        try:
-            lst = json.loads(v)
-            for l in lst:
-                sid = int(l['id'])
-                song = models.Song.objects.get(id=sid)
-                (pr,_) = models.PlayRecord.objects.get_or_create(song=song,player=player)
-                if ('clear' in l):
-                    pr.playclear = int(l['clear'])
-                rate = None
-                if ('rate' in l):
-                    rate = float(l['rate'])
-                if ('rank' in l):
-                    ranks = [0,22.3,33.4,44.5,55.6,66.7,77.8,88.9,100]
-                    rate = ranks[l['rank']]
-                if ('score' in l):
-                    pr.playscore = int(l['score'])
-                elif (rate != None):
-                    pr.playscore = int(song.songnotes * rate * 2 / 100)
-                pr.save()
-        except MultipleObjectsReturned as e:
-            # check if pr returns more than one
-            pr = models.PlayRecord.objects.filter(song=song,player=player).first()
-            pr.delete()
-            return JsonResponse({
-                'code': 1,
-                'message': 'Internal error (MultipleObjectReturned). Please try again!',
-                'detail':str(e)
-            })
-        except Exception as e:
-            print e
-            return JsonResponse({
-                'code': 1,
-                'message': 'Invalid Song modification - ' + str(e) + ' / ' + str(l),
-                'detail':str(e) + '/' + str(l)
-            })
+        lst = json.loads(v)
+        for l in lst:
+            sid = int(l['id'])
+            desc = { 'clear': int(l['clear']) }
+            if ('rate' in l):
+                desc['rate'] = float(l['rate'])
+            if ('rank' in l):
+                desc['rank'] = l['rank']
+            if ('score' in l):
+                desc['score'] = int(l['score'])
+            log = []
+            if (not rp.update_record(sid, player, desc, log)):
+                return JsonResponse({
+                    'code': 1,
+                    'message': log[0],
+                    'detail':str(e)
+                })
     elif (action == 'delete'):
         try:
             sid = int(v)

@@ -9,7 +9,9 @@
 
 <div id="container">
 {% if not form.is_valid %}
-{{ form.errors }}
+  <div class="form_error">
+  {{ form.errors }}
+  </div>
 {% endif %}
 
 <p>이메일은 회원가입 외 다른 용도(제 3자에게 제공 등)로 사용되지 않습니다.</p>

@@ -461,4 +461,42 @@ def categorize_musicdata(musicdata, ranktable, remove_empty_category=True):
 
 
 
-
+"""
+update player record
+- desc requires: clear, rate(opt), rank(opt), score(opt)
+"""
+def update_record(sid, player, desc, log=[]):
+    song = models.Song.objects.get(id=sid)
+    if (desc['clear'] == 0):
+        # NO_PLAY --> attempt to remove record
+        try:
+            obj = models.PlayRecord.objects.get(song=song,player=player)
+            obj.delete()
+        except models.PlayRecord.DoesNotExist:
+            pass # no record not means failure
+    else:
+        try:
+            (pr,_) = models.PlayRecord.objects.get_or_create(song=song,player=player)
+            if ('clear' in desc):
+                pr.playclear = desc['clear']
+            rate = None
+            if ('rate' in desc):
+                rate = desc['rate']
+            if ('rank' in desc):
+                ranks = [0,22.3,33.4,44.5,55.6,66.7,77.8,88.9,100]
+                rate = ranks[desc['rank']]
+            if ('score' in desc):
+                pr.playscore = desc['score']
+            elif (rate != None):
+                pr.playscore = int(song.songnotes * rate * 2 / 100)
+            pr.save()
+        except MultipleObjectsReturned as e:
+            # check if pr returns more than one
+            pr = models.PlayRecord.objects.filter(song=song,player=player).first()
+            pr.delete()
+            log.append('Internal error (MultipleObjectReturned). Please try again!')
+            return False
+        except Exception as e:
+            log.append('Invalid Song modification - ' + str(e))
+            return False
+    return True

@@ -9,7 +9,9 @@
 
 <div id="container">
 {% if not form.is_valid %}
-{{ form.errors }}
+  <div class="form_error">
+  {{ form.errors }}
+  </div>
 {% endif %}
 
 <form method="POST" action="./">

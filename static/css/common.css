@@ -349,3 +349,5 @@ table .loading { color:#999; text-align: center; padding:20px; }
 .panel-notice .panel-text table { margin:3px 0; }
 .panel-notice .panel-text table th,
 .panel-notice .panel-text table td { padding:3px; }
+
+.form_error { color:#c66;  }

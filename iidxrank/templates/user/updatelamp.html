@@ -1,7 +1,17 @@
 {% extends "common.html" %}
 {% block subtitle %}- Login{% endblock %}
 {% block head %}
-
+  <script>
+    $(function() {
+      $('form').submit(function () {
+        if (!confirm("Continue?")) {
+          event.preventDefault();
+        } else {
+          $('button').prop("disabled", true);
+        }
+      });
+    });
+  </script>
 {% endblock %}
 {% block body %}
 
@@ -9,25 +19,45 @@
 
 <div id="container">
 {% if not form.is_valid %}
-{{ form.errors }}
+  <div class="form_error">
+  {{ form.errors }}
+  </div>
+{% else %}
+  <div class="form_message" style="overflow-y:scroll; max-height: 320px; padding-left: 20px;">
+    <ul>
+    {% for msg in form.message %}
+    <li>{{ msg }}</li>
+    {% endfor %}
+    </ul>
+  </div>
 {% endif %}
 
+<div>
+  시간이 오래 걸릴 수 있으니(1~2분) 기다려주시기 바랍니다. 또한, 갱신된 데이터는 되돌릴 수 없습니다.<br>
+  Please wait for a while after file uploading. Be aware that you cannot undo your update.
+</div>
+
+<h3>How to use</h3>
+<pre>javascript:$.getScript('https://iidx.insane.pe.kr/static/js/update.js?d=190206');</pre>
+
 <h3>Upload Single Play</h3>
-<form method="POST" action="./">
+<form method="POST" action="./" enctype="multipart/form-data">
   {% csrf_token %}
   <div class="row">
     <label>SP CSV <input type="file" name="file" /></label>
+    <input type="hidden" name="type" value="SP" />
   </div>
-  <button class="btn btn-primary">SP CSV upload</button>
+  <div class="row"><button class="btn btn-primary btn-submit">SP CSV upload</button></div>
 </form>
 
 <h3>Upload Double Play</h3>
-<form method="POST" action="./">
+<form method="POST" action="./" enctype="multipart/form-data">
   {% csrf_token %}
   <div class="row">
     <label>DP CSV <input type="file" name="file" /></label>
+    <input type="hidden" name="type" value="DP" />
   </div>
-  <button class="btn btn-primary">DP CSV upload</button>
+  <div class="row"><button class="btn btn-primary btn-submit">DP CSV upload</button></div>
 </form>
 
 </div>
