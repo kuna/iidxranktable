@@ -317,7 +317,7 @@ def songcomment(request, tag):
     # and prepare virtual posting object
     try:
         tablename, song_pkid = tag.rsplit("_",1)
-        print song_pkid
+        #print song_pkid
         song = iidxrank.models.Song.objects.get(id=song_pkid)
     except Exception as e:
         # invalid item no.

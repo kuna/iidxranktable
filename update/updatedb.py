@@ -1,6 +1,6 @@
 #-*- coding: utf-8 -*-
 
-import parser_clickagain, parser_zasa, parser_iidxme, parser_custom
+import parser_clickagain, parser_zasa, parser_iidxme, parser_custom, parser_textage
 import textdistance
 import datetime
 from django.db import transaction
@@ -9,6 +9,9 @@ import iidxrank.models as models
 
 # to make version FORCE
 VERSION = -1
+
+# should actually update record if test flag is off.
+TEST = 0
 
 # returns 1 if added
 # returns 0 if not added(updated)
@@ -24,30 +27,32 @@ def update_song_by_object(song, do_add=True):
             if (song['notes'] == None):
                 song['notes'] = 0
 
-            obj_song = models.Song.objects.create(songtitle=song['title'], 
-                songtype=song['diff'],
-                songid=song['id'],
-                songlevel=song['level'],
-                songnotes=song['notes'],
-                version=song['version'],
-                calclevel_easy=0,
-                calcweight_easy=0,
-                calclevel_normal=0,
-                calcweight_normal=0,
-                calclevel_hd=0,
-                calcweight_hd=0,
-                calclevel_exh=0,
-                calcweight_exh=0)
+            if (TEST == 0):
+                obj_song = models.Song.objects.create(songtitle=song['title'], 
+                    songtype=song['diff'],
+                    songid=song['id'],
+                    songlevel=song['level'],
+                    songnotes=song['notes'],
+                    version=song['version'],
+                    calclevel_easy=0,
+                    calcweight_easy=0,
+                    calclevel_normal=0,
+                    calcweight_normal=0,
+                    calclevel_hd=0,
+                    calcweight_hd=0,
+                    calclevel_exh=0,
+                    calcweight_exh=0)
             added = 1
     else:
         if (obj_song.songlevel != song['level'] or
                 obj_song.version != song['version'] or
                 obj_song.songtitle != song['title']):
             log.Print("song %s updated" % song['title'])
-            obj_song.songlevel = song['level']
-            obj_song.version = song['version']
-            obj_song.songtitle = song['title']
-            obj_song.save()
+            if (TEST == 0):
+                obj_song.songlevel = song['level']
+                obj_song.version = song['version']
+                obj_song.songtitle = song['title']
+                obj_song.save()
     return (obj_song, added)
 
 #
@@ -69,6 +74,17 @@ def update_iidxme(username='delmitz', ver=25):
     """
     # temp method for json inavailable
     data = parser_iidxme.parse_songs_http(username, ver)
+    added_data_cnt = 0
+    for song in data:
+        obj, is_added = update_song_by_object(song)
+        added_data_cnt += is_added
+    log.Print("added %d datas" % added_data_cnt)
+
+#
+# update new song from textage.cc
+#
+def update_from_textage(ver=-1):
+    data = parser_textage.parse(ver)
     added_data_cnt = 0
     for song in data:
         obj, is_added = update_song_by_object(song)

@@ -56,11 +56,16 @@ $(function () {
     var songid = $(this).attr('data-songid');
     window.open('/admin/iidxrank/song/' + songid + '/change/');
   });
+  // make category as fixed one
+  $('div.category_title').on('dblclick', function (e) {
+    var did = 'd'+$(this).data('id');
+    $('#'+did).toggleClass('category_topfix');
+  });
 });
 </script>
 
   <style type="text/css">
-.lv-easy { color:#0C9; } .lv-hd { color:#C00; }
+.lv-easy { color:#0C9; } .lv-hd { color:#C00; } .category_topfix { position:fixed; right:10px; top: 40px; width: 800px; height: 800px; overflow-y: scroll !important; }
   </style>
 
 <div id="container"><div class="inner">
@@ -75,8 +80,8 @@ $(function () {
     {% for category in categories %}
     <div class="category_title ctype{{ category.categorytype }}"
       data-sortindex='{{ category.sortindex }}'
-      data-type='{{ category.categorytype }}'>{{ category.category }}</div>
-    <div class="category" data-id='{{ category.id }}'>
+      data-type='{{ category.categorytype }}' data-id='{{ category.id }}'>{{ category.category }}</div>
+    <div class="category" data-id='{{ category.id }}' id='d{{ category.id }}'>
       {% for item in category.items %}
       <div class="item"
         data-id='{{ item.itemid }}'

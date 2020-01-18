@@ -10,6 +10,7 @@ class Command(BaseCommand):
         parser.add_argument('--num', type=int, help='specific song number of iidx.me to update')
         parser.add_argument('--set_version', type=int, help='specific version of added song')
         parser.add_argument('--username', type=str, default='delmitz')
+        parser.add_argument('--test', type=int, help='only for test (not actually update record)')
 
     def handle(self, *args, **options):
         #self.stdout.write("TEST")
@@ -20,6 +21,8 @@ class Command(BaseCommand):
         usrname = options['username']
         if (options['set_version']):
             updatedb.VERSION = options['set_version']
+        if (options['test']):
+            updatedb.TEST = options['test']
         if (options['num']):
             updatedb.update_iidxme_song(options['num'])
         else:

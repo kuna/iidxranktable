@@ -5,7 +5,7 @@
 // rev 170614
 //
 
-window._cur_version = 26;
+window._cur_version = 27;
 
 function DummyRenderer(ctx) {
   var self = this;
