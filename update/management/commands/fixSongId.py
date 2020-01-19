@@ -2,12 +2,12 @@
 # fix iidx.me song id from iidx.me database
 
 from django.core.management import BaseCommand
+import update.updatedb as updatedb
+
+"""
 import iidxrank.models as models
 import update.parser_iidxme as iidxme
 import copy
-
-
-
 def mark_ids(songs, songdata):
     musicdata = songdata['musicdata']
     song_remained = []
@@ -25,7 +25,7 @@ def mark_ids(songs, songdata):
 
 
 class Command(BaseCommand):
-    help = """this fixes iidx.me song id"""
+    help = "this fixes iidx.me song id"
 
     def handle(self, *args, **options):
         print 'parsing iidx.me song info ...'
@@ -62,3 +62,16 @@ class Command(BaseCommand):
                 continue
             song.save()
         print 'DB saving done'
+"""
+
+class Command(BaseCommand):
+    help = """rebuild song id with own hash algorithm"""
+
+    def add_arguments(self, parser):
+        parser.add_argument('--songtitle', type=str, help='set song title to update id (if not set, updates all)')
+
+    def handle(self, *args, **options):
+        songtitle = ''
+        if (options['songtitle']):
+            version = options['songtitle']
+        updatedb.invalidate_song_id(songtitle)

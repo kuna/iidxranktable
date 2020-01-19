@@ -116,7 +116,7 @@ def MakeSafeText(text, remove_marks=False):
          .replace('', '') \
          .replace('Λ', 'L') \
          .replace('Π', 'P') \
-         .replacE('Σ', 'S')
+         .replace('Σ', 'S')
          #.replace('★', '☆') \
     if (remove_marks):
         t = t.replace(' ', '') \
@@ -126,11 +126,14 @@ def MakeSafeText(text, remove_marks=False):
              .replace(';', '') \
              .replace(':', '') \
              .replace('(', '') \
-             .replace(')', '')
+             .replace(')', '') \
+             .replace('[', '') \
+             .replace(']', '')
     return t
 
 #
 # change text into integer hash
 #
 def CreateIntHashFromText(text):
-    return int(hashlib.sha1(text).hexdigest(), 16) % (10 ** 8)
+    text_s = MakeSafeText(text.encode('utf-8'), True)
+    return int(hashlib.sha1(text_s).hexdigest(), 16) % (10 ** 8)

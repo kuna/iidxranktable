@@ -21,16 +21,22 @@ def update_song_by_object(song, do_add=True):
     # if not exists, then add
     # if exists, then check level and title, then update.
     added = 0
-    obj_song = models.Song.objects.filter(songid=song['id'], songtype=song['diff']).first()
+    song_id = textdistance.CreateIntHashFromText(song['title'])
+    obj_song = models.Song.objects.filter(songid=song_id, songtype=song['diff']).first()
     if obj_song == None:
         if (do_add):
             if (song['notes'] == None):
                 song['notes'] = 0
 
             if (TEST == 0):
-                obj_song = models.Song.objects.create(songtitle=song['title'], 
+                iidxme_id = 0
+                if ('id' in song):
+                    iidxme_id = song['id']
+
+                obj_song = models.Song.objects.create(songtitle=song['title'],
                     songtype=song['diff'],
-                    songid=song['id'],
+                    songid=song_id,
+                    songid_iidxme=iidxme_id,
                     songlevel=song['level'],
                     songnotes=song['notes'],
                     version=song['version'],
@@ -42,12 +48,13 @@ def update_song_by_object(song, do_add=True):
                     calcweight_hd=0,
                     calclevel_exh=0,
                     calcweight_exh=0)
+                print("song %s/%s added (id %d)" % (song['title'], song['diff'], song_id))
             added = 1
     else:
         if (obj_song.songlevel != song['level'] or
                 obj_song.version != song['version'] or
                 obj_song.songtitle != song['title']):
-            log.Print("song %s updated" % song['title'])
+            log.Print("song %s/%s updated" % (song['title'], song['diff']))
             if (TEST == 0):
                 obj_song.songlevel = song['level']
                 obj_song.version = song['version']
@@ -98,6 +105,22 @@ def update_iidxme_song(songnum, username='delmitz'):
     data = parser_iidxme.parse_iidxme_songdata('http://iidx.me/%s/music/%d' % (username, songnum))
     for song in data:
         update_song_by_object(song['data'])
+
+#
+# invalidate database song id
+# @warn large cost process
+#
+def invalidate_song_id(songtitle=''):
+    query_songs = None
+    if (len(songtitle) == 0):
+        query_songs = models.Song.objects.all()
+    else:
+        query_songs = models.Song.objects.filter_by(songtitle=songtitle)
+    if (query_songs == None):
+        return
+    for song in query_songs:
+        song.songid = textdistance.CreateIntHashFromText(song.songtitle)
+        song.save()
 
 # update or create rank table
 # (depreciated)
