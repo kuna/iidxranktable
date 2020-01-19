@@ -13,6 +13,7 @@
 # used to recognize new song's id (matching song name)
 #
 from operator import itemgetter
+import hashlib
 
 def getTextDistance(a_, b_):
 	# before start, modify text in proper mode (same uppercase etc..)
@@ -67,3 +68,69 @@ def getNearTextDistance(arr, target):
 #print getTextDistance("abcd", "bcd")
 #print getTextDistance("abcd", "wer")
 #print getNearTextDistance(["stoic （ストイコ）", "Spica （スピカ）"], "Spica")
+
+#
+# change full-size character text into compatible one
+#
+def MakeSafeText(text, remove_marks=False):
+    t = text
+    t = t.replace('†', '') \
+         .replace('　', ' ') \
+         .replace('。', '.') \
+         .replace('，', ',') \
+         .replace('．', '.') \
+         .replace('：', ':') \
+         .replace('；', ';') \
+         .replace('・', '*') \
+         .replace('？', '?') \
+         .replace('！', '!') \
+         .replace('＾', '^') \
+         .replace('（', '(') \
+         .replace('）', ')') \
+         .replace('〔', '[') \
+         .replace(' 〕', ']') \
+         .replace('［', '[') \
+         .replace('］', ']') \
+         .replace('｛', '{') \
+         .replace('｝', '}') \
+         .replace('〈', '<') \
+         .replace('〉', '>') \
+         .replace('《', '<') \
+         .replace('》', '>') \
+         .replace('「', '[') \
+         .replace('」', ']') \
+         .replace('『', '[') \
+         .replace('』', ']') \
+         .replace('【', '[') \
+         .replace('】', ']') \
+         .replace('＋', '+') \
+         .replace('－', '-') \
+         .replace('×', '*') \
+         .replace('～', '~') \
+         .replace('＄', '$') \
+         .replace('％', '%') \
+         .replace('＃', '#') \
+         .replace('＆', '&') \
+         .replace('＊', '*') \
+         .replace('＠', '@') \
+         .replace('', '') \
+         .replace('Λ', 'L') \
+         .replace('Π', 'P') \
+         .replacE('Σ', 'S')
+         #.replace('★', '☆') \
+    if (remove_marks):
+        t = t.replace(' ', '') \
+             .replace('.', '') \
+             .replace(',', '') \
+             .replace('*', '') \
+             .replace(';', '') \
+             .replace(':', '') \
+             .replace('(', '') \
+             .replace(')', '')
+    return t
+
+#
+# change text into integer hash
+#
+def CreateIntHashFromText(text):
+    return int(hashlib.sha1(text).hexdigest(), 16) % (10 ** 8)

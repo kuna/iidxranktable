@@ -124,6 +124,9 @@ def parse(version):
                 obj['miss'] = 0
                 obj['id'] = obj_id
                 obj['diff'] = playtype
+                # if playtype is SPL / DPL, then add leggendary mark
+                if (playtype == 'SPL' or playtype == 'DPL'):
+                    obj['title'] += '†'
                 musicdata.append(obj)
     except Exception as e:
         print e

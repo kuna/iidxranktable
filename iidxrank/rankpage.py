@@ -242,7 +242,7 @@ def get_pdata_from_iidxme(data, ranktable):
         # add song pk/tag
         song_query = models.Song.objects
         try:
-            song_obj = song_query.get(songid=music['data']['id'], songtype=music['data']['diff'])
+            song_obj = song_query.get(songid_iidxme=music['data']['id'], songtype=music['data']['diff'])
             music['pkid'] = song_obj.id
             music['tags'] = song_obj.get_tags()
         except Exception as e:

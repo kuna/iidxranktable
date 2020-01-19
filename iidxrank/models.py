@@ -15,6 +15,8 @@ class Song(models.Model):
     songnotes = models.IntegerField(default=0)
     version = models.CharField(max_length=20)
 
+    songid_iidxme = models.IntegerField(default=0)
+
     # used with DBM/DBR,
     # and it'll update itself when original song record is updated.
     original = models.ForeignKey('self', null=True, blank=True)
