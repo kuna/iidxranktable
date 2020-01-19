@@ -399,6 +399,10 @@ def categorize_musicdata(musicdata, ranktable, remove_empty_category=True):
     item_itemid = {}
     categories_dict = {}            # key: category pkid
     for category in ranktable.rankcategory_set.all():
+        # special rule: if starts with 'delete', then ignore this category.
+        # (all songs in that category will pushed into 'others' category)
+        if (category.categoryname.startswith('delete')):
+            continue
         for item in category.rankitem_set.all():
             item_to_category[item.song.id] = category.id
             item_itemid[item.song.id] = item.id
@@ -412,7 +416,11 @@ def categorize_musicdata(musicdata, ranktable, remove_empty_category=True):
             'categoryclearstring': iidx.getclearstring(7),
             'categoryclear': 7,
             'items': [],
+            'hide': False
         }
+        # special rule: if categoryname starts with hidden_, then mark hide attribute
+        if (category.categoryname.startswith('hidden')):
+            categories_dict[category.id]['hide'] = True
     categories_dict[-1] = {
         'category': '-',
         'categorytype': 1,
@@ -420,7 +428,12 @@ def categorize_musicdata(musicdata, ranktable, remove_empty_category=True):
         'categoryclearstring': iidx.getclearstring(7),
         'categoryclear': 7,
         'items': [],
+        'hide': False
     }
+
+    #
+    # merge music data into categories_dict
+    #
     for music in musicdata:
         pkid = music['pkid']
         if (pkid in item_to_category):
@@ -434,7 +447,8 @@ def categorize_musicdata(musicdata, ranktable, remove_empty_category=True):
     categories = []
     for k, v in categories_dict.iteritems():
         v['id'] = k
-        categories.append(v)
+        if (v['hide'] == False):
+            categories.append(v)
 
     # category lamp process
     for catearray in categories:

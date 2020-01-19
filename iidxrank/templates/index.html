@@ -73,7 +73,14 @@ glyphicon glyphicon-home"></span></button></a></center>
 
 
   {% if user.is_superuser %}
-    Admin mode
+  <div class="superuser">
+    <h3>Admin mode</h3>
+    <ul>
+      <li><a href='https://docs.google.com/spreadsheets/d/e/2PACX-1vSUdp6iuEzE8Z5AL1hkoxzLexp89nJnLQMmICm6_MC0_UjCp1ImZFzabcZkvCpK7mcWvm_2t6iYoJRg/pubhtml#' target='_blank'>SP12</a> <a href='https://twitter.com/iidx_sp12' target='_blank'>twitter</a></li>
+      <li><a href='https://w.atwiki.jp/bemani2sp11/' target='_blank'>SP11</a></li>
+      <li><a href='https://zasa.sakura.ne.jp/dp/' target='_blank'>DP</a></li>
+      <li><a href='https://docs.google.com/spreadsheets/d/1t4dB6VFW31Xpbsro5o7NxQtBbtGd5_zyEjN2tPtuXAw/edit#gid=392389217' target='_blank'>DBR</a></li>
+    </ul>
     <div>
       <script>
         function hijack_() {
@@ -91,14 +98,15 @@ glyphicon glyphicon-home"></span></button></a></center>
         <button>Release Hijack</button>
       </form>
     </div>
+  </div>
   {% endif %}
   {% if request|is_hijacked %}
-    <div>
-      <form action="/hijack/release-hijack/" method="POST">
-        {% csrf_token %}
-        <button>Release Hijack</button>
-      </form>
-    </div>
+  <div class="superuser">
+    <form action="/hijack/release-hijack/" method="POST">
+      {% csrf_token %}
+      <button>Release Hijack</button>
+    </form>
+  </div>
   {% endif %}
 
 
