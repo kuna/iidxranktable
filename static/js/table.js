@@ -183,6 +183,32 @@ var TableRenderer = function(renderer) {
     var _cheight = self._y - _y_save;   // calc category height
     self._x = self._margin;
     ctx.closePath();
+    /* before rendering category, change category title from browser language */
+    var _lang = navigator.language || navigator.browserLanguage;
+    if (_lang == 'ko-KR' || _lang == 'ko')
+    {
+      /* nothing to do */
+    } else if (_lang == 'ja')
+    {
+      /* ja */
+      data.category = data.category.replace("하드", "ハード")
+        .replace("노말", "ノマゲ")
+        .replace("노멀", "ノマゲ")
+        .replace("클리어", "クリア")
+        .replace("지력", "地力")
+        .replace("처리력", "地力")
+        .replace("개인차", "個人差")
+        .replace(" ", "");
+    } else {
+      /* en? */
+      data.category = data.category.replace("하드", "HARD")
+        .replace("노말", "NORMAL")
+        .replace("노멀", "NORMAL")
+        .replace("클리어", "CLEAR")
+        .replace("지력", "地力")
+        .replace("처리력", "地力")
+        .replace("개인차", "個人差");
+    }
     // render category
     self.renderer.drawCategory(data,self._x,_y_save,self._colwidth,_cheight,idx);
     // render total category box
