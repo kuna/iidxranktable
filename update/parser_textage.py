@@ -3,6 +3,7 @@ import io, json
 import jsondata
 import urllib
 import re
+import codecs
 from bs4 import BeautifulSoup
 
 USE_CACHE = True
@@ -45,7 +46,7 @@ def crawl(version):
         #
         # and upload it to server.
         #
-        with open('textage.json', 'r') as f:
+        with codecs.open('textage.json', 'rb', encoding='utf-8') as f:
             jsontxt = f.read()
     else:
         # -- make javascript into json --
@@ -104,7 +105,7 @@ def parse(version):
             if (linfo[0] == 2): # is old?
                 continue
             levels = (linfo[5], linfo[7], linfo[9], linfo[11], linfo[15], linfo[17], linfo[19], linfo[21])
-            title_str = re.sub(cleanr, '', meta[5])
+            title_str = re.sub(cleanr, '', meta[5]).encode('utf-8')
             playtypes = ('SPN', 'SPH', 'SPA', 'SPL', 'DPN', 'DPH', 'DPA', 'DPL')
             d  = {}
             obj_id = 100000 + meta[1] # TODO: compatible with iidx.me later ..?
@@ -113,7 +114,9 @@ def parse(version):
             d['diff'] = ''
             d['version'] = version
             for lvl,playtype in zip(levels, playtypes):
-                if (lvl <= 0):
+                # XXX: we ignore level below 10 on purpose to reduce DB weight
+                # XXX: must ignore level 0 - it means not-existing-chart
+                if (lvl < 10):
                     continue
                 obj = d.copy()
                 #obj['data'] = dd
@@ -126,7 +129,7 @@ def parse(version):
                 obj['diff'] = playtype
                 # if playtype is SPL / DPL, then add leggendary mark
                 if (playtype == 'SPL' or playtype == 'DPL'):
-                    obj['title'] += '†'
+                    obj['title'] = title_str + '†'
                 musicdata.append(obj)
     except Exception as e:
         print e

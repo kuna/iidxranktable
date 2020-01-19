@@ -22,6 +22,8 @@ def update_song_by_object(song, do_add=True):
     # if exists, then check level and title, then update.
     added = 0
     song_id = textdistance.CreateIntHashFromText(song['title'])
+    song_title_decode = song['title'].decode('utf-8')
+    version = str(song['version'])
     obj_song = models.Song.objects.filter(songid=song_id, songtype=song['diff']).first()
     if obj_song == None:
         if (do_add):
@@ -48,16 +50,17 @@ def update_song_by_object(song, do_add=True):
                     calcweight_hd=0,
                     calclevel_exh=0,
                     calcweight_exh=0)
-                print("song %s/%s added (id %d)" % (song['title'], song['diff'], song_id))
+            print("song %s/%s added (id %d)" % (song['title'], song['diff'], song_id))
             added = 1
     else:
         if (obj_song.songlevel != song['level'] or
-                obj_song.version != song['version'] or
-                obj_song.songtitle != song['title']):
-            log.Print("song %s/%s updated" % (song['title'], song['diff']))
+                obj_song.version != version or
+                obj_song.songtitle != song_title_decode):
+            log.Print("song %s/%s/%s (org: %s/%d/%s) updated" %
+                    (song_title_decode, song['diff'], version, obj_song.songtitle, obj_song.songlevel, obj_song.version))
             if (TEST == 0):
                 obj_song.songlevel = song['level']
-                obj_song.version = song['version']
+                obj_song.version = version
                 obj_song.songtitle = song['title']
                 obj_song.save()
     return (obj_song, added)

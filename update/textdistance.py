@@ -73,6 +73,8 @@ def getNearTextDistance(arr, target):
 # change full-size character text into compatible one
 #
 def MakeSafeText(text, remove_marks=False):
+    # if error happens here, then text should be input in form of utf-8.
+    # e.g. MakeSafeText(a.encode('utf-8'))
     t = text
     t = t.replace('†', '') \
          .replace('　', ' ') \
@@ -135,5 +137,5 @@ def MakeSafeText(text, remove_marks=False):
 # change text into integer hash
 #
 def CreateIntHashFromText(text):
-    text_s = MakeSafeText(text.encode('utf-8'), True)
+    text_s = MakeSafeText(text, True)
     return int(hashlib.sha1(text_s).hexdigest(), 16) % (10 ** 8)
