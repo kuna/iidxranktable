@@ -120,7 +120,7 @@ function Default2Renderer(ctx) {
     // lamp
     var totalcnt = d.items.length;
     var clear = d.categoryclear;
-    if (clear < 10) {
+    if (clear < 10 && clear > 0) {
       self.ctx.drawImage(img_clear,
           0,30 * (clear-1),15,30,
           x+w-15,y-1,14,h+1);
