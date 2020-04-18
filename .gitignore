@@ -51,7 +51,7 @@ env.py
 *.swp
 settings.py
 log.txt
-textage.json
+textage*.json
 
 # grab this file using
 # python manage.py collectstatic
