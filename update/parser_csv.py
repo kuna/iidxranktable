@@ -42,11 +42,32 @@ def update(tbl, type_, user, log=[]):
     player = rankpage.get_player_from_user(user, True)
     rec_success = 0
     rec_tot = 0
-    for row in list(tbl)[1:]:
+    tbllst = list(tbl)
+    dfs=["NORMAL", "HYPER", "ANOTHER", "LEGGENDARIA"]
+    dfs_col_no = {}
+    for df in dfs:
+        dfs_col_no[df] = []
+        col_no = 0
+        for col in tbllst[0]:
+            if (col.startswith(df)):
+                dfs_col_no[df].append(col_no)
+            col_no += 1
+        if (len(dfs_col_no[df]) != 7):
+            log.append("Difficulty %s column count is not 7 (will be ignored)." % df)
+    for row in tbllst[1:]:
         songname=row[1]
-        recs=[ gen_recs(row[5:11]), gen_recs(row[12:18]), gen_recs(row[19:25]) ]
-        dfs=["NORMAL", "HYPER", "ANOTHER"]
+        recs = []
+        for df in dfs:
+            dfs_col = []
+            for i in dfs_col_no[df]:
+                dfs_col.append(row[i])
+            if (len(dfs_col) == 7):
+                recs.append( gen_recs(dfs_col) )
+            else:
+                recs.append( {'clear': 0, 'score': 0, 'diff': 0} )
         for rec,df in zip(recs,dfs):
+            if (rec['diff'] == 0):
+                continue    # level-zero is invalid song, ignore silently.
             rec_tot = rec_tot + 1
             try:
                 # change type if necessary (leggendaria)
