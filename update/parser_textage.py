@@ -106,6 +106,10 @@ def parse(version):
                 continue
             levels = (linfo[5], linfo[7], linfo[9], linfo[11], linfo[15], linfo[17], linfo[19], linfo[21])
             title_str = re.sub(cleanr, '', meta[5]).encode('utf-8')
+            if (len(meta) > 6):
+                subtitle_str = re.sub(cleanr, '', meta[6]).encode('utf-8').strip()
+                if (len(subtitle_str) > 0):
+                    title_str = title_str + " " + subtitle_str
             playtypes = ('SPN', 'SPH', 'SPA', 'SPL', 'DPN', 'DPH', 'DPA', 'DPL')
             d  = {}
             obj_id = 100000 + meta[1] # TODO: compatible with iidx.me later ..?
