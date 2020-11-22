@@ -10,7 +10,7 @@ def Log(log):
 
 def Print(s):
     Log(s)
-    print s
+    print(s)
 
 def getLogs():
     global logs

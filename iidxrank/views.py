@@ -2,23 +2,23 @@
 from django.http import HttpResponse, HttpResponseRedirect, Http404, JsonResponse
 from django.core.exceptions import PermissionDenied
 from django.core.exceptions import MultipleObjectsReturned
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.core.paginator import Paginator
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
-import models
-import forms
+from iidxrank import models
+from iidxrank import forms
 import board.models
 import settings
 
-import rankpage as rp
+from iidxrank import rankpage as rp
 import update.parser_csv as parser_csv
-import iidx
+from iidxrank import iidx
+from iidxrank import views_json
 import json
-import views_json
 import base64
 
 import update.parser_iidxme as iidxme
@@ -334,10 +334,10 @@ def updatelamp(request):
             csvfile = request.FILES['file']
             tbl = csv.reader(csvfile, delimiter=',')
             log = []
-            print "* updatelamp: user %s, %s" % (request.user.username, csvtype)
+            print("* updatelamp: user %s, %s" % (request.user.username, csvtype))
             parser_csv.update(tbl, csvtype, request.user, log)
             form['message'] = log
-            print "* updatelamp end."
+            print("* updatelamp end.")
     if (not request.user.is_authenticated()):
         return redirect('main')
     return render(request, 'user/updatelamp.html', {'form':form})
@@ -409,7 +409,7 @@ def imgdownload(request):
         raise PermissionDenied
     filename = request.POST['name']
     pngdata = base64.decodestring(request.POST['base64'])
-    print "got request: %s (%d byte)" % (filename, len(pngdata))
+    print("got request: %s (%d byte)" % (filename, len(pngdata)))
     r = HttpResponse(pngdata, content_type="application/octet-stream")
     r['Content-Disposition'] = 'attachment; filename=%s' % filename
     return r
@@ -423,7 +423,7 @@ def imgtl(request):
 
     filename = request.POST['name']
     pngdata = base64.decodestring(request.POST['base64'])
-    print "got request: %s (%d byte)" % (request.POST['name'], len(pngdata))
+    print("got request: %s (%d byte)" % (request.POST['name'], len(pngdata)))
 
     import requests
     import urllib2
@@ -436,7 +436,7 @@ def imgtl(request):
 @csrf_exempt
 def qpro(request, iidxid='!'):
     if ((iidxid.isdigit() and int(iidxid) == 0) or iidxid=='!' ):
-        with open('static/qpro/noname.png', 'r') as f:
+        with open('static/qpro/noname.png', 'rb') as f:
             img_blank = f.read()
         return HttpResponse(img_blank, content_type="image/png")
 
@@ -451,6 +451,6 @@ def qpro(request, iidxid='!'):
         pass
 
     # cannot found
-    with open('static/qpro/blank.png', 'r') as f:
+    with open('static/qpro/blank.png', 'rb') as f:
         img_blank = f.read()
     return HttpResponse(img_blank, content_type="image/png")

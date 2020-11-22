@@ -6,7 +6,7 @@ import iidxrank.models
 # User / UserRecord / SongCalc.
 
 class PlayerCalc(models.Model):
-    player = models.OneToOneField(iidxrank.models.Player)
+    player = models.OneToOneField(iidxrank.models.Player, on_delete=models.CASCADE)
     tag = models.CharField(max_length=20)
 
     valid = models.IntegerField(default=0)  # if no fail, then it's invalid; can't calculate
@@ -16,7 +16,7 @@ class PlayerCalc(models.Model):
     dp_w = models.FloatField(default=0)
 
 class SongCalc(models.Model):
-    song = models.OneToOneField(iidxrank.models.Song)
+    song = models.OneToOneField(iidxrank.models.Song, on_delete=models.CASCADE)
     tag = models.CharField(max_length=20)
 
     valid = models.IntegerField(default=0)  # if no fail, then it's invalid; can't calculate

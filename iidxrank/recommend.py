@@ -1,6 +1,6 @@
-import models
+from iidxrank import models
 from update import calculatedb		# to use model
-import iidx
+from iidxrank import iidx
 
 # a simple common func
 def avg(ar):
@@ -129,7 +129,7 @@ def findRecommend_fast(player, playtype="SP", level=-1):
 
 	# prefetch playrecords (performance important!)
 	precords = player.playrecord_set.select_related('song').all()
-	print 'fetch okay (%d)' % len(precords)
+	print('fetch okay (%d)' % len(precords))
 
 	# search this player's played records
 	for song in models.Song.objects.filter(songtype__istartswith=playtype).all():

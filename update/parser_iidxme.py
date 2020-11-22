@@ -1,8 +1,8 @@
 #-*- coding: utf-8 -*-
 import io, json
-import jsondata
 import urllib
 from bs4 import BeautifulSoup
+from update import jsondata
 
 VERSION=25
 
@@ -36,7 +36,7 @@ def parse_users(page_limit=999):
     for i in range(1, pcnt+1):
         if (i > page_limit):
             break
-        print 'parsing page %d ...' % i
+        print('parsing page %d ...' % i)
         parse_users_page(i, r)
     return r
 
@@ -134,7 +134,7 @@ def parse_iidxme_http_musicdata(html):
                 obj['miss'] = 0
             musicdata.append(obj)
     except Exception as e:
-        print e
+        print(e)
     return musicdata
 
 def parse_iidxme_songdata(url):
@@ -225,10 +225,10 @@ def parse_iidxme_http(url):
                 data_page = urllib.urlopen(url)
                 musicdata += parse_iidxme_http_musicdata(data_page.read())
             except Exception as e:
-                print e
+                print(e)
     except Exception as e:
         # maybe temporaral server connection error, or invalid user
-        print e
+        print(e)
         r = {'status': 'failed'}
     return r
 
@@ -273,5 +273,5 @@ def parse_qpro(username):
         soup = BeautifulSoup(html, "lxml")
         return "http://iidx.me" + soup.find('div', class_='qpro').find('img')['src']
     except Exception as e:
-        print e
+        print(e)
         return None

@@ -1,6 +1,6 @@
 #-*- coding: utf-8 -*-
-import iidx
-import models
+from iidxrank import iidx
+from iidxrank import models
 import time
 from datetime import datetime
 import json
@@ -33,7 +33,7 @@ def get_player_from_user(user, create_if_none=True):
     return player
 
 def get_player_from_request(request):
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         return get_player_from_user(request.user)
     else:
         return None
@@ -389,7 +389,9 @@ def categorize_musicdata(musicdata, ranktable, remove_empty_category=True):
             return 0
         else:
             return -1
-    musicdata.sort(sort_musicdata)
+    def sort_musicdata3(x):
+        return x['data']['title'].upper()
+    musicdata.sort(key = sort_musicdata3)
 
     # 
     # make category-processed array
@@ -445,7 +447,7 @@ def categorize_musicdata(musicdata, ranktable, remove_empty_category=True):
 
     # convert dictionary to normal array
     categories = []
-    for k, v in categories_dict.iteritems():
+    for k, v in categories_dict.items():
         v['id'] = k
         if (v['hide'] == False):
             categories.append(v)
@@ -463,6 +465,10 @@ def categorize_musicdata(musicdata, ranktable, remove_empty_category=True):
             return _x['sortindex']
         # bigger: later
         return int((getValue(y) - getValue(x))*1000)
+    def sort_func3(x):
+        def getValue(_x):
+            return _x['sortindex']
+        return int(-getValue(x) * 1000)
 
     if (remove_empty_category):
         categories_copy = []
@@ -471,7 +477,7 @@ def categorize_musicdata(musicdata, ranktable, remove_empty_category=True):
                 categories_copy.append(category)
     else:
         categories_copy = categories
-    return sorted(categories_copy, cmp=sort_func)
+    return sorted(categories_copy, key=sort_func3)
 
 
 

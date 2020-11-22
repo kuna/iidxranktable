@@ -11,8 +11,8 @@ def loadJSONurl(url):
 		res = urllib.urlopen(url)
 		data = json.loads(res.read())
 		return data
-	except Exception, e:
-		print('Error in json.loadJSONurl: ' + str(e))
+	except Exception as e:
+		print('Error in json.loadJSONurl: %s' % str(e))
 		return None
 
 def getiidxinfo(user, type, lv):

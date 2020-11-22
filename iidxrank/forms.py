@@ -4,8 +4,8 @@ from django.core.validators import RegexValidator
 from captcha.fields import ReCaptchaField
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
-import models
-import iidx
+from iidxrank import models
+from iidxrank import iidx
 
 
 """

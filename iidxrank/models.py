@@ -19,7 +19,7 @@ class Song(models.Model):
 
     # used with DBM/DBR,
     # and it'll update itself when original song record is updated.
-    original = models.ForeignKey('self', null=True, blank=True)
+    original = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE)
 
     # TODO: add iidx song english name
     #songtitle_eng = models.CharField(max_length=100)
@@ -82,8 +82,8 @@ class Player(models.Model):
 
 class PlayRecord(models.Model):
     # MUST use db_index for performance
-    player = models.ForeignKey(Player, on_delete=CASCADE, db_index=True)
-    song = models.ForeignKey(Song, on_delete=CASCADE, db_index=True)
+    player = models.ForeignKey(Player, db_index=True, on_delete=models.CASCADE)
+    song = models.ForeignKey(Song, db_index=True, on_delete=models.CASCADE)
     playscore = models.IntegerField(default=0, null=True)
     playclear = models.IntegerField(default=0)
     playmiss = models.IntegerField(default=0, null=True)
@@ -131,7 +131,7 @@ class RankCategory(models.Model):
 # CLAIM: this does same work as board category!
 class RankItem(models.Model):
     rankcategory = models.ForeignKey(RankCategory, on_delete=models.CASCADE)
-    song = models.ForeignKey(Song, null=True, blank=True)   # this cannot be null & can direct same song
+    song = models.ForeignKey(Song, null=True, blank=True, on_delete=models.CASCADE)   # this cannot be null & can direct same song
     info = models.CharField(max_length=400)     # unique string, maybe...
 
     def get_songtitle(obj):

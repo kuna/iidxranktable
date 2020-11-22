@@ -23,7 +23,7 @@ import board.views as views_board
 urlpatterns = [
 	url(r'', include([
 	# utilities (admin, imgtl ...)
-	    url(r'^admin/', include(admin.site.urls)),
+	    url(r'^admin/', admin.site.urls),
             url(r'^imgtl/$', views.imgtl),
             url(r'^imgdownload/$', views.imgdownload),
             #url(r'^qpro/(?P<iidxid>[0-9]+)/$', views.qpro),

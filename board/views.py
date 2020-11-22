@@ -1,11 +1,11 @@
 #-*- coding: utf-8 -*-
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.core.exceptions import PermissionDenied
-from django.core.urlresolvers import reverse
-from django.shortcuts import render, render_to_response
+from django.urls import reverse
+from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.core.paginator import Paginator
-import models
+from board import models
 import iidxrank.models
 import random
 import datetime
@@ -28,7 +28,7 @@ def getBasicStatus(request):
     writer = request.session.get('writer', '')
     if (is_admin):
         attr = 2
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         writer = request.user.first_name
 
     # status
@@ -321,7 +321,7 @@ def songcomment(request, tag):
         song = iidxrank.models.Song.objects.get(id=song_pkid)
     except Exception as e:
         # invalid item no.
-        print e
+        print(e)
         raise Http404
 
     # check out rankpage also.

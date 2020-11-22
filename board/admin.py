@@ -2,7 +2,7 @@
 
 from django.contrib import admin
 from django import forms
-import models
+from board import models
 
 class BoardCommentForm(forms.ModelForm):
     class Meta:

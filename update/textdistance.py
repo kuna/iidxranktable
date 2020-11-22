@@ -137,5 +137,5 @@ def MakeSafeText(text, remove_marks=False):
 # change text into integer hash
 #
 def CreateIntHashFromText(text):
-    text_s = MakeSafeText(text, True)
+    text_s = MakeSafeText(text, True).encode('utf-8')
     return int(hashlib.sha1(text_s).hexdigest(), 16) % (10 ** 8)

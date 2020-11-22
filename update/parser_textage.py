@@ -1,10 +1,10 @@
 #-*- coding: utf-8 -*-
 import io, json
-import jsondata
 import urllib
 import re
 import codecs
 from bs4 import BeautifulSoup
+from update import jsondata
 
 USE_CACHE = True
 
@@ -27,7 +27,7 @@ def crawl_(version):
         html = data.read()
         data.close()
     except Exception as e:
-        print e
+        print(e)
     return html
 
 def crawl(version):
@@ -136,5 +136,5 @@ def parse(version):
                     obj['title'] = title_str + '†'
                 musicdata.append(obj)
     except Exception as e:
-        print e
+        print(e)
     return musicdata

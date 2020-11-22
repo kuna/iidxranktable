@@ -4,11 +4,10 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.http import HttpResponseRedirect
 from django.http import HttpResponse
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf.urls import url
 from django import forms
-import models
-import dper
+from iidxrank import models
 
 # ------ Admin classes ------
 

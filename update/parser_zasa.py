@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 
 from bs4 import BeautifulSoup
-import urllib, urllib2
+import urllib
 import re
 
 def getGroup(arr, g):
@@ -49,8 +49,8 @@ def parse(diff):
 		'offi': diff,
 		}
 	formdata_raw = urllib.urlencode(formdata)
-	req = urllib2.Request("http://zasa.sakura.ne.jp/dp/rank.php", formdata_raw)
-	data = urllib2.urlopen(req).read()
+	req = urllib.Request("http://zasa.sakura.ne.jp/dp/rank.php", formdata_raw)
+	data = urllib.request.urlopen(req).read()
 	soup = BeautifulSoup(data, "lxml")	# depress warning - parser 'lxml'
 
 	res = []	# [(group, [song name, ..]), ..]

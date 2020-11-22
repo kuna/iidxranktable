@@ -1,7 +1,7 @@
 #-*- coding: utf-8 -*-
 from django import forms
 from captcha.fields import ReCaptchaField
-import models
+from board import models
 
 
 def checkValidText(text):

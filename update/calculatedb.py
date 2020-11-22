@@ -3,9 +3,9 @@
 # using MCMC algorithm
 
 import math
-from random import random as rand
 import random
-import log
+from random import random as rand
+from update import log
 import iidxrank.models as models
 
 # basic initalization

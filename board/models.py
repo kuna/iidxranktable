@@ -40,7 +40,7 @@ class BoardPost(models.Model):
 class BoardComment(models.Model):
   time = models.DateTimeField(default=now)    # db updated time
   post = models.ForeignKey(BoardPost, related_name="comments", on_delete=CASCADE, null=True)
-  parent = models.ForeignKey("self", related_name="childs", null=True, blank=True)
+  parent = models.ForeignKey("self", related_name="childs", on_delete=CASCADE, null=True, blank=True)
   text = models.CharField(max_length=1000)
   writer = models.CharField(max_length=100)
   tag = models.CharField(max_length=100, default="", blank=True)

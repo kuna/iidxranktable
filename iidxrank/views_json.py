@@ -3,9 +3,9 @@
 from django.core.exceptions import PermissionDenied
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
-import models
-import iidx
-import recommend
+from iidxrank import models
+from iidxrank import iidx
+from iidxrank import recommend
 
 def createSonginfoFromModel(songs):
   song_array = []
@@ -131,10 +131,10 @@ def json_rankedit(request):
       else:
         # delete or modify songitem's category
         if (obj_cate == None):
-          print 'deleted'
+          print('deleted')
           obj.delete()
         else:
-          print '%s to %s' % (obj.song.songtitle, obj_cate.categoryname)
+          print('%s to %s' % (obj.song.songtitle, obj_cate.categoryname))
           obj.rankcategory = obj_cate
           obj.save()
       return JsonResponse({'message': 'successfully done'})
