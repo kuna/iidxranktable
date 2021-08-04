@@ -28,11 +28,14 @@ function movecategory(id, songid, cate) {
 
 function SetItemLabelFromText(text, label) {
     var texts = text
-        .replace(/\[L\]/g, '†')
+        .replace(/\[N\]/g, '')
+        .replace(/\[H\]/g, '')
+        .replace(/\[A\]/g, '')
+        .replace(/(\s)?\[L\]/g, '†')
         .trim().split('\n');
     for (var i = 0; i < texts.length; ++i) {
         console.log(texts[i]);
-        $('.item[data-title="' + texts[i].replace(/\"/g, "\\\"") + '"] span').first().text(label);
+        $('.item[data-title="' + texts[i].trim().replace(/\"/g, "\\\"") + '"] span').first().text(label);
     }
 }
 
