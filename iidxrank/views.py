@@ -130,7 +130,7 @@ def rankjson(request, username="!", tablename="SP12"):
 
 def rankedit(request, id=-1):
     # render rankedit page for each user (for internal load)
-    if (not request.user.is_authenticated()):
+    if (not request.user.is_authenticated):
         islogined = False
         valid = False
         pr_obj = None
@@ -218,7 +218,7 @@ user related part
 # /!/login/
 login_django = login
 def login(request):
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         return redirect('main')
     if (request.method == "POST"):
         form = forms.LoginForm(request.POST)
@@ -233,7 +233,7 @@ def login(request):
 
 # /!/join/
 def join(request):
-    if (request.user.is_authenticated()):
+    if (request.user.is_authenticated):
         return redirect('main')
     if (request.method == "POST"):
         form = forms.JoinForm(request.POST)
@@ -262,7 +262,7 @@ def logout(request):
 def withdraw(request):
     if (request.user.is_superuser):
         raise Exception("Superuser CANNOT withdraw!")
-    if (not request.user.is_authenticated()):
+    if (not request.user.is_authenticated):
         return redirect('login')
     if (request.method == "POST"):
         form = forms.WithdrawForm(request.POST)
@@ -277,7 +277,7 @@ def withdraw(request):
 
 # /!/account/
 def account(request):
-    if (not request.user.is_authenticated()):
+    if (not request.user.is_authenticated):
         return redirect('main')
     user = request.user
     player = rp.get_player_from_request(request)
@@ -323,7 +323,7 @@ def set_password(request):
 def updatelamp(request):
     form = {'is_valid': True, 'errors':'no errors.', 'message': ['Ready.',]}
     if (request.method == "POST"):
-        if (not request.user.is_authenticated()):
+        if (not request.user.is_authenticated):
             return JsonResponse({'status': 'Please login to iidx.me first.'})
         if ('type' not in request.POST or 'file' not in request.FILES):
             form['is_valid'] = False
@@ -338,14 +338,14 @@ def updatelamp(request):
             parser_csv.update(tbl, csvtype, request.user, log)
             form['message'] = log
             print("* updatelamp end.")
-    if (not request.user.is_authenticated()):
+    if (not request.user.is_authenticated):
         return redirect('main')
     return render(request, 'user/updatelamp.html', {'form':form})
 
 # JSON
 # /!/modify/
 def modify(request):
-    if (not request.user.is_authenticated()):
+    if (not request.user.is_authenticated):
         return JsonResponse({'code': 1, 'message': 'please log in'})
     user = request.user
     player = rp.get_player_from_request(request)
@@ -408,7 +408,7 @@ def imgdownload(request):
         # allow only POST method
         raise PermissionDenied
     filename = request.POST['name']
-    pngdata = base64.decodestring(request.POST['base64'])
+    pngdata = base64.b64decode(request.POST['base64'])
     print("got request: %s (%d byte)" % (filename, len(pngdata)))
     r = HttpResponse(pngdata, content_type="application/octet-stream")
     r['Content-Disposition'] = 'attachment; filename=%s' % filename
@@ -422,7 +422,7 @@ def imgtl(request):
         raise PermissionDenied
 
     filename = request.POST['name']
-    pngdata = base64.decodestring(request.POST['base64'])
+    pngdata = base64.b64decode(request.POST['base64'])
     print("got request: %s (%d byte)" % (request.POST['name'], len(pngdata)))
 
     import requests
