@@ -26,6 +26,16 @@ function movecategory(id, songid, cate) {
   });
 }
 
+function SetItemLabelFromText(text, label) {
+    var texts = text
+        .replace(/\[L\]/g, '†')
+        .trim().split('\n');
+    for (var i = 0; i < texts.length; ++i) {
+        console.log(texts[i]);
+        $('.item[data-title="' + texts[i].replace(/\"/g, "\\\"") + '"] span').first().text(label);
+    }
+}
+
 $(function () {
   var l = [];
   var objs = document.getElementsByClassName('category'); //document.querySelectorAll('.category');
@@ -61,6 +71,9 @@ $(function () {
     var did = 'd'+$(this).data('id');
     $('#'+did).toggleClass('category_topfix');
   });
+  $('#tagging-submit').click(function () {
+    SetItemLabelFromText($('#songtexts').val(), $('#songlabel').val());
+  });
 });
 </script>
 
@@ -94,6 +107,16 @@ $(function () {
       {% endfor %}
     </div>
     {% endfor %}
+  </div>
+
+  <!-- easy marker utility -->
+  <div class="form-group tagging" id="tagging">
+    <h5>Simple tool for faster song label tagging.</h5>
+    <label class="col-xs-4 control-label">Label</label>
+    <div class="col-xs-8"><input class="form-control input-sm" id="songlabel" /></div>
+    <label class="col-xs-4 control-label">SongTitles (multiline)</label>
+    <div class="col-xs-8"><textarea id="songtexts" style="width: 100%; height: 240px;"></textarea></div>
+    <button id="tagging-submit">apply</button>
   </div>
 
   <!-- hidden forms for POST request -->
