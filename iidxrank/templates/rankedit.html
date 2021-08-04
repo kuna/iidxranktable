@@ -31,6 +31,10 @@ function SetItemLabelFromText(text, label) {
         .replace(/\[N\]/g, '')
         .replace(/\[H\]/g, '')
         .replace(/\[A\]/g, '')
+        .replace(/\(N\)/g, '')
+        .replace(/\(H\)/g, '')
+        .replace(/\(A\)/g, '')
+        .replace(/(\s)?\(L\)/g, '†')
         .replace(/(\s)?\[L\]/g, '†')
         .trim().split('\n');
     for (var i = 0; i < texts.length; ++i) {
