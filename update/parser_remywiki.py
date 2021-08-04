@@ -43,7 +43,7 @@ def get_songs_from_remywiki_source(templates):
             continue    # parse only topmost nodes
         if (t.name == 'IIDX Song'):
             genre = wtp.parse(t.arguments[0].value).plain_text()
-            title = wtp.parse(t.arguments[1].value).plain_text()
+            title = wtp.parse(t.arguments[1].value.split('<br>')[0]).plain_text()
             artist = wtp.parse(t.arguments[2].value).plain_text()
             # 3: bpm
             # 4: beginner
